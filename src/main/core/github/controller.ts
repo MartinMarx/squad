@@ -233,11 +233,7 @@ export const githubController = createRPCController({
     }
   },
 
-  initializeProject: async (params: {
-    targetPath: string;
-    name: string;
-    description?: string;
-  }) => {
+  initializeProject: async (params: { targetPath: string; name: string; description?: string }) => {
     try {
       const ctx = new GitHubAuthExecutionContext(
         new LocalExecutionContext({ root: params.targetPath }),

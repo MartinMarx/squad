@@ -120,6 +120,12 @@ export const APP_SHORTCUTS = defineShortcuts({
     description: 'Create a new conversation in the current task',
     category: 'Task View',
   },
+  openNotebook: {
+    defaultHotkey: 'Mod+Shift+N',
+    label: 'Open Notebook',
+    description: 'Open the task notebook',
+    category: 'Task View',
+  },
   newTerminal: {
     defaultHotkey: 'Mod+Shift+T',
     label: 'New Terminal',

@@ -406,5 +406,4 @@ describe('ProjectSettingsProvider worktreeDirectory validation', () => {
 
     await expect(provider.get()).resolves.not.toHaveProperty('worktreeDirectory');
   });
-
 });

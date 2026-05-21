@@ -86,6 +86,15 @@ export const TASK_COMMAND_DEFS = defineCommandDefs([
     iconKey: 'message-square-plus',
   },
   {
+    id: 'task.openNotebook',
+    label: 'Open Notebook',
+    description: 'Open the task notebook',
+    scope: 'task',
+    shortcutKey: 'openNotebook',
+    group: 'Conversations',
+    iconKey: 'book-open',
+  },
+  {
     id: 'task.sidebarChanges',
     label: 'View Changes',
     description: 'Open the Changes panel in the right sidebar',

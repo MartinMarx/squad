@@ -77,9 +77,12 @@ export async function portProjects({
     const isRemote = toInteger(row.is_remote) === 1;
     if (isRemote) {
       summary.skippedInvalid += 1;
-      log.warn('legacy-port: projects: skipping remote SSH project (SSH projects are no longer supported)', {
-        legacyProjectId,
-      });
+      log.warn(
+        'legacy-port: projects: skipping remote SSH project (SSH projects are no longer supported)',
+        {
+          legacyProjectId,
+        }
+      );
       continue;
     }
 

@@ -10,6 +10,7 @@ import { githubController } from './core/github/controller';
 import { issueController } from './core/issues/controller';
 import { linearController } from './core/linear/controller';
 import { mcpController } from './core/mcp/controller';
+import { notebookController } from './core/notebooks/controller';
 import { projectController } from './core/projects/controller';
 import { promptLibraryController } from './core/prompt-library/controller';
 import { ptyController } from './core/pty/controller';
@@ -51,6 +52,7 @@ export const rpcRouter = createRPCRouter({
   git: gitController,
   dependencies: dependenciesController,
   mcp: mcpController,
+  notebooks: notebookController,
   editorBuffer: editorBufferController,
   pullRequests: pullRequestController,
   viewState: viewStateController,

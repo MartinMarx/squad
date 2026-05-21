@@ -1,6 +1,6 @@
 import type { AgentProviderId } from '@shared/agent-provider-registry';
-import { createCursorClassifier } from './cursor';
 import type { ProviderClassifier } from './base';
+import { createCursorClassifier } from './cursor';
 import { createGenericClassifier } from './generic';
 
 export type { ProviderClassifier, ClassificationResult } from './base';

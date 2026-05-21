@@ -57,6 +57,7 @@ export class TabGroupManagerStore {
       restoreSnapshot: action,
       openConversation: action,
       openConversationPreview: action,
+      openNotebook: action,
     });
   }
 
@@ -222,6 +223,18 @@ export class TabGroupManagerStore {
       }
     }
     this.focusedGroup.openConversationPreview(conversationId);
+  }
+
+  openNotebook(): void {
+    for (const { groupId, tabManager } of this.groups) {
+      const hasNotebook = tabManager.resolvedTabs.some((tab) => tab.kind === 'notebook');
+      if (hasNotebook) {
+        this.activeGroupId = groupId;
+        tabManager.openNotebook();
+        return;
+      }
+    }
+    this.focusedGroup.openNotebook();
   }
 
   get snapshot(): TabGroupsSnapshot {

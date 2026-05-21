@@ -29,11 +29,7 @@ export async function getProjectById(projectId: string): Promise<LocalProject | 
 }
 
 export async function getLocalProjectByPath(path: string): Promise<LocalProject | undefined> {
-  const [row] = await db
-    .select()
-    .from(projects)
-    .where(eq(projects.path, path))
-    .limit(1);
+  const [row] = await db.select().from(projects).where(eq(projects.path, path)).limit(1);
   if (!row || row.workspaceProvider !== 'local') return undefined;
   return rowToLocalProject(row);
 }

@@ -79,7 +79,6 @@ export const repositoryController = createRPCController({
       result = await project.fetch();
     }
 
-
     if (!result.success) return err(result.error);
 
     if (workspaceId) {

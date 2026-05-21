@@ -85,6 +85,20 @@
       "when": 1778682711721,
       "tag": "0011_chunky_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1779399844350,
+      "tag": "0012_add_notebooks",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1779400856876,
+      "tag": "0013_notebook_title",
+      "breakpoints": true
     }
   ]
 }

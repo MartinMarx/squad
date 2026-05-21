@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { ShowHide } from '@renderer/lib/ui/show-hide';
 import { ConversationsPanel } from '../conversations/conversations-panel';
 import { DiffView } from '../diff-view/main-panel/diff-view';
+import { NotebookPanel } from '../notebook/notebook-panel';
 import { useTabGroupContext } from '../tabs/tab-group-context';
 import { PaneEmptyState } from './pane-empty-state';
 import { resolvePaneRenderer } from './pane-renderer';
@@ -31,6 +32,9 @@ export const PaneContent = observer(function PaneContent() {
         )}
         <ShowHide visible={paneRenderer.kind === 'pty-agent'}>
           <ConversationsPanel />
+        </ShowHide>
+        <ShowHide visible={paneRenderer.kind === 'notebook'}>
+          <NotebookPanel />
         </ShowHide>
         {paneRenderer.kind === 'file' && <FileRenderer tab={paneRenderer.tab} />}
         {paneRenderer.kind === 'file-diff' && <DiffView tab={paneRenderer.tab} />}

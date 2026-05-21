@@ -87,7 +87,6 @@ export function useSkills() {
       });
     },
     onSuccess: () => {
-
       toast({ title: 'Skill removed', description: 'Skill has been uninstalled' });
       void queryClient.invalidateQueries({ queryKey: CATALOG_QUERY_KEY });
     },

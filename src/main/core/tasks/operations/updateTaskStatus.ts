@@ -16,5 +16,4 @@ export async function updateTaskStatus(taskId: string, status: TaskLifecycleStat
       statusChangedAt: sql`CURRENT_TIMESTAMP`,
     })
     .where(eq(tasks.id, taskId));
-
 }

@@ -1,11 +1,4 @@
-import {
-  ChevronRight,
-  FolderClosed,
-  Loader2,
-  Plus,
-  Trash2,
-  TriangleAlert,
-} from 'lucide-react';
+import { ChevronRight, FolderClosed, Loader2, Plus, Trash2, TriangleAlert } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect } from 'react';
 import {

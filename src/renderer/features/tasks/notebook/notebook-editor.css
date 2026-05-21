@@ -1,0 +1,559 @@
+.notebook-page {
+  color: var(--foreground);
+}
+
+.notebook-page-title {
+  caret-color: var(--foreground);
+}
+
+.notebook-editor {
+  position: relative;
+}
+
+.notebook-editor-content {
+  min-height: 12rem;
+}
+
+.notebook-editor-content > * + * {
+  margin-top: 0.125rem;
+}
+
+.notebook-editor-content p {
+  line-height: 1.6;
+  min-height: 1.6em;
+  padding: 3px 0;
+}
+
+.notebook-editor-content h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 1.25rem;
+  padding: 3px 0;
+}
+
+.notebook-editor-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-top: 1rem;
+  padding: 3px 0;
+}
+
+.notebook-editor-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 0.75rem;
+  padding: 3px 0;
+}
+
+.notebook-editor-content ul:not([data-type='taskList']),
+.notebook-editor-content ol {
+  padding-left: 1.5rem;
+}
+
+.notebook-editor-content ul:not([data-type='taskList']) {
+  list-style: disc;
+}
+
+.notebook-editor-content ol {
+  list-style: decimal;
+}
+
+.notebook-editor-content blockquote {
+  border-left: 3px solid color-mix(in srgb, currentColor 18%, transparent);
+  padding-left: 0.875rem;
+  color: color-mix(in srgb, currentColor 72%, transparent);
+}
+
+.notebook-editor-content pre,
+.notebook-editor-content pre.notebook-code-block {
+  overflow-x: auto;
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  padding: 0.875rem 1rem;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  tab-size: 2;
+  caret-color: var(--foreground);
+}
+
+.notebook-code-block-wrapper {
+  position: relative;
+  overflow: clip;
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.notebook-code-block-toolbar {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.625rem;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.notebook-code-block-wrapper:hover .notebook-code-block-toolbar,
+.notebook-code-block-wrapper:focus-within .notebook-code-block-toolbar,
+.notebook-code-block-toolbar.is-open,
+.notebook-editor-content .ProseMirror-selectednode .notebook-code-block-toolbar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notebook-code-block-language-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: color-mix(in srgb, currentColor 45%, transparent);
+  cursor: pointer;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  padding: 0.125rem 0.375rem;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.notebook-code-block-language-trigger:hover,
+.notebook-code-block-toolbar.is-open .notebook-code-block-language-trigger {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: color-mix(in srgb, currentColor 78%, transparent);
+}
+
+.notebook-code-block-language-chevron {
+  font-size: 0.625rem;
+  opacity: 0.7;
+  transform: translateY(-0.5px);
+}
+
+.notebook-code-language-menu-host {
+  position: absolute;
+  z-index: 50;
+}
+
+.notebook-code-language-menu {
+  width: 16rem;
+  max-height: 18rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  background: var(--background-secondary, #fff);
+  box-shadow:
+    0 10px 30px color-mix(in srgb, #000 12%, transparent),
+    0 2px 6px color-mix(in srgb, #000 8%, transparent);
+}
+
+.notebook-code-language-search {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  padding: 0.625rem 0.75rem;
+  outline: none;
+}
+
+.notebook-code-language-search::placeholder {
+  color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.notebook-code-language-list {
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+
+.notebook-code-language-option {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  padding: 0.4375rem 0.625rem;
+  text-align: left;
+}
+
+.notebook-code-language-option:hover,
+.notebook-code-language-option-active {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.notebook-code-language-option:focus-visible,
+.notebook-code-language-search:focus-visible {
+  outline: none;
+}
+
+.notebook-code-language-empty {
+  padding: 0.75rem;
+  font-size: 0.8125rem;
+  color: color-mix(in srgb, currentColor 45%, transparent);
+}
+
+.notebook-code-block-wrapper pre.notebook-code-block {
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+  padding-top: 1.75rem;
+}
+
+.notebook-editor-content pre code,
+.notebook-code-block-wrapper pre code {
+  display: block;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: transparent;
+  padding: 0;
+}
+
+.notebook-editor-content .ProseMirror-selectednode .notebook-code-block-wrapper {
+  outline: 2px solid color-mix(in srgb, currentColor 15%, transparent);
+  border-radius: 0.375rem;
+}
+
+.notebook-editor-content .hljs-comment,
+.notebook-editor-content .hljs-quote {
+  color: color-mix(in srgb, currentColor 45%, transparent);
+}
+
+.notebook-editor-content .hljs-keyword,
+.notebook-editor-content .hljs-selector-tag {
+  color: #c678dd;
+}
+
+.notebook-editor-content .hljs-string,
+.notebook-editor-content .hljs-number {
+  color: #98c379;
+}
+
+.notebook-editor-content .hljs-title,
+.notebook-editor-content .hljs-section {
+  color: #61afef;
+}
+
+.notebook-editor-content hr {
+  border: none;
+  border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  margin: 0.75rem 0;
+}
+
+.notebook-editor-content ul[data-type='taskList'] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.notebook-editor-content li[data-type='taskItem'] {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 0.375rem;
+  list-style: none;
+  padding: 2px 0;
+}
+
+.notebook-task-item-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 0.375rem;
+  list-style: none;
+  padding: 2px 0;
+}
+
+.notebook-task-item-checkbox {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0.35rem;
+  flex: 0 0 auto;
+}
+
+.notebook-task-item-row > label,
+.notebook-editor-content li[data-type='taskItem'] > label {
+  margin-top: 0.35rem;
+  flex: 0 0 auto;
+}
+
+.notebook-task-item-row > label input,
+.notebook-editor-content li[data-type='taskItem'] > label input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--foreground);
+}
+
+.notebook-task-item-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notebook-task-item-content p {
+  margin: 0;
+}
+
+.notebook-task-item-row > div:first-of-type {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notebook-task-item-row > div:first-of-type p {
+  margin: 0;
+}
+
+.notebook-task-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.15rem;
+  flex: 0 0 auto;
+}
+
+.notebook-task-status-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0.5rem;
+  min-height: 0.5rem;
+}
+
+.notebook-task-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: color-mix(in srgb, currentColor 55%, transparent);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 120ms ease,
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.notebook-task-item-row:hover .notebook-task-play,
+.notebook-task-item-row:focus-within .notebook-task-play,
+.notebook-editor-content li[data-type='taskItem']:hover .notebook-task-play,
+.notebook-editor-content li[data-type='taskItem']:focus-within .notebook-task-play {
+  opacity: 1;
+}
+
+.notebook-task-play:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  color: var(--foreground);
+}
+
+.notebook-task-status {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+}
+
+.notebook-task-status-working {
+  background: transparent;
+  border: 1.5px solid color-mix(in srgb, currentColor 45%, transparent);
+  border-top-color: var(--foreground);
+  animation: notebook-spin 0.8s linear infinite;
+}
+
+.notebook-task-status-awaiting {
+  background: var(--foreground-info, #3b82f6);
+}
+
+.notebook-task-status-error {
+  background: var(--foreground-error, #ef4444);
+}
+
+.notebook-task-status-completed {
+  background: var(--foreground-success, #22c55e);
+}
+
+@keyframes notebook-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.notebook-editor-content [data-type='details'].notebook-details {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.5rem 0.5rem;
+}
+
+.notebook-editor-content [data-type='details'] > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notebook-details-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.1rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: color-mix(in srgb, currentColor 70%, transparent);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.notebook-details-toggle:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  color: var(--foreground);
+}
+
+.notebook-editor-content [data-type='details'] summary {
+  cursor: text;
+  font-weight: 500;
+  list-style: none;
+  display: block;
+  min-height: 1.5rem;
+  padding-top: 0.15rem;
+  margin: 0;
+}
+
+.notebook-editor-content [data-type='details'] summary::marker {
+  content: '';
+}
+
+.notebook-editor-content [data-type='details'] summary::-webkit-details-marker {
+  display: none;
+}
+
+.notebook-editor-content [data-type='details'] [data-type='detailsContent'] {
+  margin-top: 0.25rem;
+}
+
+.notebook-editor-content [data-type='details'] [data-type='detailsContent'][hidden] {
+  display: none;
+}
+
+.notebook-editor-content [data-type='details'] [data-type='detailsContent'] > *:first-child {
+  margin-top: 0;
+}
+
+.notebook-editor-content .ProseMirror-selectednode {
+  outline: 2px solid color-mix(in srgb, currentColor 15%, transparent);
+  border-radius: 0.25rem;
+}
+
+.notebook-editor-content p.is-editor-empty:first-child::before {
+  color: color-mix(in srgb, currentColor 35%, transparent);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.notebook-drag-handle-host {
+  z-index: 5;
+  display: flex;
+  width: 1.5rem;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0.125rem 0;
+  border-radius: 0.25rem;
+  cursor: grab;
+  touch-action: none;
+}
+
+.notebook-drag-handle-host[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.notebook-drag-handle-host:hover {
+  background: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+.notebook-drag-handle-host .notebook-drag-handle {
+  opacity: 0.55;
+  transition: opacity 120ms ease;
+}
+
+.notebook-drag-handle-host:hover .notebook-drag-handle,
+.notebook-drag-handle-host[data-dragging='true'] .notebook-drag-handle {
+  opacity: 1;
+}
+
+.notebook-slash-menu-host {
+  position: fixed;
+  z-index: 50;
+}
+
+.notebook-slash-menu {
+  width: 18rem;
+  max-height: 20rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  background: var(--background-secondary, #fff);
+  box-shadow:
+    0 10px 30px color-mix(in srgb, #000 12%, transparent),
+    0 2px 6px color-mix(in srgb, #000 8%, transparent);
+  padding-bottom: 0.25rem;
+}
+
+.notebook-slash-item {
+  display: flex;
+  width: calc(100% - 0.5rem);
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0.25rem;
+  padding: 0.375rem 0.5rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.notebook-slash-item:hover,
+.notebook-slash-item-active {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.notebook-slash-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  color: color-mix(in srgb, currentColor 70%, transparent);
+  flex-shrink: 0;
+}
