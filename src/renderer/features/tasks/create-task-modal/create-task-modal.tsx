@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { ChevronRight, FolderOpen } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import { nextDefaultConversationTitle } from '@renderer/features/tasks/conversat
 import { ProjectSelector } from '@renderer/features/tasks/create-task-modal/project-selector';
 import { useAgentAutoApproveDefaults } from '@renderer/features/tasks/hooks/useAgentAutoApproveDefaults';
 import { useFeatureFlag } from '@renderer/lib/hooks/useFeatureFlag';
+import { rpc } from '@renderer/lib/ipc';
 import { useNavigate } from '@renderer/lib/layout/navigation-provider';
 import { type BaseModalProps } from '@renderer/lib/modal/modal-provider';
 import { appState } from '@renderer/lib/stores/app-state';
@@ -93,6 +95,7 @@ export const CreateTaskModal = observer(function CreateTaskModal({
   const isUnborn = repo?.isUnborn ?? false;
   const currentBranch = repo?.currentBranch ?? null;
   const { navigate } = useNavigate();
+  const queryClient = useQueryClient();
 
   const repositoryUrl = selectedProjectId
     ? (getRepositoryStore(selectedProjectId)?.repositoryUrl ?? undefined)
@@ -101,6 +104,36 @@ export const CreateTaskModal = observer(function CreateTaskModal({
   const fromBranch = useFromBranchMode(selectedProjectId, defaultBranch, isUnborn, currentBranch);
   const fromIssue = useFromIssueMode(selectedProjectId, defaultBranch, isUnborn, currentBranch);
   const fromPR = useFromPullRequestMode(selectedProjectId, defaultBranch, isUnborn, initialPR);
+
+  useEffect(() => {
+    if (!selectedProjectId) return;
+
+    void queryClient.prefetchQuery({
+      queryKey: [
+        'issues:initial',
+        'linear',
+        selectedProjectId,
+        projectData?.path ?? '',
+        repositoryUrl ?? '',
+        50,
+      ],
+      queryFn: async () => {
+        const result = await rpc.issues.listIssues('linear', {
+          limit: 50,
+          projectId: selectedProjectId,
+          projectPath: projectData?.path,
+          repositoryUrl,
+        });
+
+        if (!result?.success) {
+          throw new Error(result?.error ?? 'Failed to load issues.');
+        }
+
+        return result.issues ?? [];
+      },
+      staleTime: 120_000,
+    });
+  }, [projectData?.path, queryClient, repositoryUrl, selectedProjectId]);
   const fromPrUnavailable = selectedStrategy === 'from-pull-request' && !repositoryUrl;
 
   const activeMode = {

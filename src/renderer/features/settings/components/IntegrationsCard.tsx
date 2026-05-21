@@ -68,6 +68,7 @@ const IntegrationsCard: React.FC = () => {
 
   const showIntegrationSetup = useShowModal('integrationSetupModal');
   const showGithubConnect = useShowModal('githubConnectModal');
+  const showLinearConnect = useShowModal('linearConnectModal');
   const showConfirmDisconnect = useShowModal('confirmActionModal');
 
   const isGithubCliConnected = authenticated && tokenSource === 'cli';
@@ -176,17 +177,15 @@ const IntegrationsCard: React.FC = () => {
     {
       id: 'linear',
       name: 'Linear',
-      description:
-        isLinearConnected && connectionStatus.linear.displayName
-          ? connectionStatus.linear.displayName
-          : 'Work on Linear tickets',
+      description: isLinearConnected
+        ? (connectionStatus.linear.displayName ?? 'Connected to Linear')
+        : 'Work on Linear tickets',
       connected: !!isLinearConnected,
       loading: isLinearLoading,
-      onConnect: () => showIntegrationSetup({ integration: 'linear' }),
+      onConnect: () => showLinearConnect({}),
       onDisconnect: () =>
         confirmDisconnect({
           name: 'Linear',
-          credential: 'API key',
           onDisconnect: disconnectLinear,
         }),
     },

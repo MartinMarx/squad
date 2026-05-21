@@ -85,8 +85,9 @@ export function useIssues(
 
       return result.issues ?? [];
     },
-    staleTime: 60_000,
+    staleTime: provider === 'linear' ? 120_000 : 60_000,
     enabled: isReady,
+    placeholderData: keepPreviousData,
   });
 
   const minSearchLength = getSearchMinLength(provider);

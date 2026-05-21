@@ -43,10 +43,9 @@ function validateInstanceCredentials(input: { instanceUrl: string; token: string
 
 const PROVIDER_CONNECTION_CONFIG = {
   linear: {
-    connectMutationFn: (apiKey: string) => rpc.linear.saveToken(apiKey),
+    connectMutationFn: () => rpc.linear.connectOAuth(),
     disconnectMutationFn: () => rpc.linear.clearToken(),
     fallbackError: DEFAULT_CONNECT_ERROR,
-    validateInput: validateTokenInput,
   },
   jira: {
     connectMutationFn: (credentials: { siteUrl: string; email: string; token: string }) =>
@@ -110,7 +109,7 @@ type IntegrationsContextValue = {
   isForgejoLoading: boolean;
   isFeaturebaseLoading: boolean;
   isAsanaLoading: boolean;
-  connectLinear: (apiKey: string) => Promise<void>;
+  connectLinear: () => Promise<void>;
   disconnectLinear: () => Promise<void>;
   connectJira: (credentials: { siteUrl: string; email: string; token: string }) => Promise<void>;
   disconnectJira: () => Promise<void>;
@@ -157,7 +156,7 @@ export function IntegrationsProvider({ children }: { children: React.ReactNode }
     void queryClient.invalidateQueries({ queryKey: ISSUE_CONNECTION_STATUS_QUERY_KEY });
   }, [queryClient]);
 
-  const linearConnection = useProviderConnection({
+  const linearConnection = useProviderConnection<void>({
     ...PROVIDER_CONNECTION_CONFIG.linear,
     invalidate: invalidateStatuses,
   });
@@ -207,7 +206,7 @@ export function IntegrationsProvider({ children }: { children: React.ReactNode }
         isForgejoLoading: isInitialConnectionCheck || forgejoConnection.isLoading,
         isFeaturebaseLoading: isInitialConnectionCheck || featurebaseConnection.isLoading,
         isAsanaLoading: isInitialConnectionCheck || asanaConnection.isLoading,
-        connectLinear: linearConnection.connect,
+        connectLinear: () => linearConnection.connect(),
         disconnectLinear: linearConnection.disconnect,
         connectJira: jiraConnection.connect,
         disconnectJira: jiraConnection.disconnect,

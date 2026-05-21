@@ -17,10 +17,9 @@ import ForgejoSetupForm from './ForgejoSetupForm';
 import GitLabSetupForm from './GitLabSetupForm';
 import { useIntegrationsContext } from './integrations-provider';
 import JiraSetupForm from './JiraSetupForm';
-import LinearSetupForm from './LinearSetupForm';
 import PlainSetupForm from './PlainSetupForm';
 
-type IntegrationType = 'linear' | 'jira' | 'gitlab' | 'plain' | 'forgejo' | 'featurebase' | 'asana';
+type IntegrationType = 'jira' | 'gitlab' | 'plain' | 'forgejo' | 'featurebase' | 'asana';
 
 type IntegrationSetupModalArgs = {
   integration: IntegrationType;
@@ -29,10 +28,6 @@ type IntegrationSetupModalArgs = {
 type Props = BaseModalProps<void> & IntegrationSetupModalArgs;
 
 const descriptions: Record<IntegrationType, { title: string; subtitle: string }> = {
-  linear: {
-    title: 'Connect Linear',
-    subtitle: 'Enter your Linear API key to connect your workspace.',
-  },
   jira: {
     title: 'Connect Jira',
     subtitle: 'Enter your Jira site URL, email, and API token to connect.',
@@ -61,14 +56,12 @@ const descriptions: Record<IntegrationType, { title: string; subtitle: string }>
 
 export function IntegrationSetupModal({ integration, onSuccess, onClose }: Props) {
   const {
-    connectLinear,
     connectJira,
     connectGitlab,
     connectPlain,
     connectForgejo,
     connectFeaturebase,
     connectAsana,
-    isLinearLoading,
     isJiraLoading,
     isGitlabLoading,
     isPlainLoading,
@@ -78,35 +71,25 @@ export function IntegrationSetupModal({ integration, onSuccess, onClose }: Props
   } = useIntegrationsContext();
   const { toast } = useToast();
 
-  // Linear state
-  const [linearKey, setLinearKey] = useState('');
-
-  // Jira state
   const [jiraSite, setJiraSite] = useState('');
   const [jiraEmail, setJiraEmail] = useState('');
   const [jiraToken, setJiraToken] = useState('');
 
-  // GitLab state
   const [gitlabInstanceUrl, setGitlabInstanceUrl] = useState('');
   const [gitlabToken, setGitlabToken] = useState('');
 
-  // Plain state
   const [plainKey, setPlainKey] = useState('');
 
-  // Forgejo state
   const [forgejoInstanceUrl, setForgejoInstanceUrl] = useState('');
   const [forgejoToken, setForgejoToken] = useState('');
 
-  // Featurebase state
   const [featurebaseKey, setFeaturebaseKey] = useState('');
 
-  // Asana state
   const [asanaKey, setAsanaKey] = useState('');
 
   const [error, setError] = useState<string | null>(null);
 
   const isLoading =
-    (integration === 'linear' && isLinearLoading) ||
     (integration === 'jira' && isJiraLoading) ||
     (integration === 'gitlab' && isGitlabLoading) ||
     (integration === 'plain' && isPlainLoading) ||
@@ -115,7 +98,6 @@ export function IntegrationSetupModal({ integration, onSuccess, onClose }: Props
     (integration === 'asana' && isAsanaLoading);
 
   const canSubmit =
-    (integration === 'linear' && !!linearKey.trim()) ||
     (integration === 'jira' && !!(jiraSite.trim() && jiraEmail.trim() && jiraToken.trim())) ||
     (integration === 'gitlab' && !!(gitlabInstanceUrl.trim() && gitlabToken.trim())) ||
     (integration === 'plain' && !!plainKey.trim()) ||
@@ -127,9 +109,6 @@ export function IntegrationSetupModal({ integration, onSuccess, onClose }: Props
     setError(null);
     try {
       switch (integration) {
-        case 'linear':
-          await connectLinear(linearKey.trim());
-          break;
         case 'jira':
           await connectJira({
             siteUrl: jiraSite.trim(),
@@ -169,7 +148,6 @@ export function IntegrationSetupModal({ integration, onSuccess, onClose }: Props
     }
   }, [
     integration,
-    linearKey,
     jiraSite,
     jiraEmail,
     jiraToken,
@@ -180,7 +158,6 @@ export function IntegrationSetupModal({ integration, onSuccess, onClose }: Props
     forgejoToken,
     featurebaseKey,
     asanaKey,
-    connectLinear,
     connectJira,
     connectGitlab,
     connectPlain,
@@ -200,9 +177,6 @@ export function IntegrationSetupModal({ integration, onSuccess, onClose }: Props
         <DialogDescription className="text-xs">{subtitle}</DialogDescription>
       </DialogHeader>
       <DialogContentArea className="pt-1">
-        {integration === 'linear' && (
-          <LinearSetupForm apiKey={linearKey} onChange={setLinearKey} error={error} />
-        )}
         {integration === 'jira' && (
           <JiraSetupForm
             site={jiraSite}

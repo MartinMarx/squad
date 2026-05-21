@@ -1,13 +1,11 @@
 import { Check, Loader2 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  ISSUE_PROVIDER_META,
-  ISSUE_PROVIDER_ORDER,
-} from '@renderer/features/integrations/issue-provider-meta';
+import { ISSUE_PROVIDER_META } from '@renderer/features/integrations/issue-provider-meta';
+import { useNavigate } from '@renderer/lib/layout/navigation-provider';
+import { Button } from '@renderer/lib/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@renderer/lib/ui/input-group';
 import { Kbd } from '@renderer/lib/ui/kbd';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@renderer/lib/ui/select';
 import { cn } from '@renderer/utils/utils';
 import type { Issue } from '@shared/tasks';
 import { ConnectIssueIntegrationPlaceholder, IssueRow, ProviderLogo } from './issue-selector';
@@ -21,8 +19,40 @@ export interface InlineIssueSelectorProps {
   repositoryUrl?: string;
   projectPath?: string;
   disabled?: boolean;
+  fixedProvider?: Issue['provider'];
   /** Skip "already linked" indicator for this task — useful when re-selecting the same task's issue. */
   excludeTaskId?: string;
+}
+
+function IssueListSkeleton() {
+  return (
+    <div className="flex flex-col gap-2 p-2">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="bg-muted/60 h-7 w-full animate-pulse rounded-sm" />
+      ))}
+    </div>
+  );
+}
+
+function LinearIntegrationPlaceholder() {
+  const { navigate } = useNavigate();
+
+  return (
+    <div className="flex w-full flex-col items-center justify-center gap-5 rounded-md border border-dashed border-border p-8">
+      <ProviderLogo provider="linear" className="size-8" />
+      <p className="text-center text-sm text-foreground-muted">
+        Connect Linear to pick an issue for this worktree.
+      </p>
+      <Button
+        variant="outline"
+        size="xs"
+        className="w-fit"
+        onClick={() => navigate('settings', { tab: 'integrations' })}
+      >
+        Connect Linear
+      </Button>
+    </div>
+  );
 }
 
 export const InlineIssueSelector = observer(function InlineIssueSelector({
@@ -32,26 +62,18 @@ export const InlineIssueSelector = observer(function InlineIssueSelector({
   repositoryUrl = '',
   projectPath = '',
   disabled,
+  fixedProvider,
   excludeTaskId,
 }: InlineIssueSelectorProps) {
   const linkedIssueMap = getLinkedIssueMap(projectId, excludeTaskId);
-  const {
-    issues,
-    issueProvider,
-    hasAnyIntegration,
-    isProviderLoading,
-    isProviderDisabled,
-    connectedProviderCount,
-    handleSetSearchTerm,
-    setSelectedIssueProvider,
-  } = useIssueSearch(repositoryUrl, projectPath, projectId);
+  const { issues, issueProvider, hasAnyIntegration, isProviderLoading, handleSetSearchTerm } =
+    useIssueSearch(repositoryUrl, projectPath, projectId, { fixedProvider });
 
   const [query, setQuery] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Scroll highlighted item into view whenever it changes
   useEffect(() => {
     const list = listRef.current;
     if (!list) return;
@@ -67,18 +89,6 @@ export const InlineIssueSelector = observer(function InlineIssueSelector({
       setHighlightedIndex(0);
     },
     [handleSetSearchTerm]
-  );
-
-  const handleProviderChange = useCallback(
-    (provider: Issue['provider']) => {
-      setSelectedIssueProvider(provider);
-      if (value?.provider !== provider) {
-        onValueChange(null);
-      }
-      setHighlightedIndex(0);
-      requestAnimationFrame(() => inputRef.current?.focus());
-    },
-    [setSelectedIssueProvider, value, onValueChange]
   );
 
   const handleKeyDown = useCallback(
@@ -113,38 +123,15 @@ export const InlineIssueSelector = observer(function InlineIssueSelector({
     [issues, highlightedIndex, value, query, onValueChange, handleSetSearchTerm]
   );
 
-  const providerAddon = issueProvider ? (
-    isProviderLoading ? (
-      <Loader2 className="h-3.5 w-3.5 animate-spin text-foreground/60" />
-    ) : connectedProviderCount > 1 ? (
-      <Select
-        value={issueProvider}
-        onValueChange={(v) => v && handleProviderChange(v as Issue['provider'])}
-      >
-        <SelectTrigger
-          aria-label="Select issue provider"
-          className="h-6 gap-1 border-none bg-transparent px-1.5 shadow-none focus:ring-0"
-        >
-          <ProviderLogo provider={issueProvider} className="h-3.5 w-3.5" />
-        </SelectTrigger>
-        <SelectContent>
-          {ISSUE_PROVIDER_ORDER.map((p) => (
-            <SelectItem key={p} value={p} disabled={isProviderDisabled(p)}>
-              <ProviderLogo provider={p} className="h-3.5 w-3.5" />
-              <span>{ISSUE_PROVIDER_META[p].displayName}</span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    ) : (
-      <span className="mx-1.5 flex items-center">
-        <ProviderLogo provider={issueProvider} className="h-3.5 w-3.5" />
-      </span>
-    )
-  ) : null;
+  const providerLabel = issueProvider ? ISSUE_PROVIDER_META[issueProvider].displayName : 'issues';
+  const showInitialLoading = isProviderLoading && issues.length === 0 && !query;
 
   if (!hasAnyIntegration) {
-    return <ConnectIssueIntegrationPlaceholder />;
+    return fixedProvider === 'linear' ? (
+      <LinearIntegrationPlaceholder />
+    ) : (
+      <ConnectIssueIntegrationPlaceholder />
+    );
   }
 
   return (
@@ -154,24 +141,34 @@ export const InlineIssueSelector = observer(function InlineIssueSelector({
         disabled && 'pointer-events-none'
       )}
     >
-      {/* Search row */}
       <InputGroup className="border-input has-[[data-slot=input-group-control]:focus-visible]:border-input rounded-none border-0 border-b shadow-none has-[[data-slot=input-group-control]:focus-visible]:ring-0">
-        {providerAddon && <InputGroupAddon align="inline-start">{providerAddon}</InputGroupAddon>}
+        {issueProvider ? (
+          <InputGroupAddon align="inline-start">
+            {isProviderLoading ? (
+              <Loader2 className="mx-1.5 h-3.5 w-3.5 animate-spin text-foreground/60" />
+            ) : (
+              <span className="mx-1.5 flex items-center">
+                <ProviderLogo provider={issueProvider} className="h-3.5 w-3.5" />
+              </span>
+            )}
+          </InputGroupAddon>
+        ) : null}
         <InputGroupInput
           ref={inputRef}
           value={query}
           onChange={handleQueryChange}
           onKeyDown={handleKeyDown}
-          placeholder={`Search ${issueProvider ?? 'issues'}…`}
+          placeholder={`Search ${providerLabel} issues…`}
           autoFocus
         />
       </InputGroup>
 
-      {/* Issue list */}
       <div ref={listRef} className="h-52 overflow-x-hidden overflow-y-auto p-1">
-        {issues.length === 0 ? (
+        {showInitialLoading ? (
+          <IssueListSkeleton />
+        ) : issues.length === 0 ? (
           <div className="flex h-full items-center justify-center text-center text-sm text-foreground-passive">
-            {query ? 'No issues found' : `No ${issueProvider} issues to show`}
+            {query ? 'No issues found' : `No ${providerLabel} issues to show`}
           </div>
         ) : (
           issues.map((issue, index) => {
@@ -191,9 +188,9 @@ export const InlineIssueSelector = observer(function InlineIssueSelector({
                 onClick={() => onValueChange(isSelected ? null : issue)}
               >
                 <IssueRow issue={issue} linkedTo={linkedTo} />
-                {isSelected && (
+                {isSelected ? (
                   <Check className="absolute right-2 size-3.5 shrink-0 text-foreground-muted" />
-                )}
+                ) : null}
               </button>
             );
           })

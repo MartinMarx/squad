@@ -110,7 +110,7 @@ Emdash allows you to pass issues, tickets, and support threads straight to your 
 
 | Tool | Status | Authentication |
 | ----------- | ------ | ----------- |
-| [Linear](https://linear.app) | ✅ Supported | Connect with a Linear API key. |
+| [Linear](https://linear.app) | ✅ Supported | Connect with Linear OAuth via the official MCP server. |
 | [Jira](https://www.atlassian.com/software/jira) | ✅ Supported | Provide your site URL, email, and Atlassian API token. |
 | [GitHub Issues](https://docs.github.com/en/issues) | ✅ Supported | Connect your GitHub account or authenticate via GitHub CLI (`gh auth login`). |
 | [GitLab Issues](https://docs.gitlab.com/user/project/issues/) | ✅ Supported | Provide your GitLab instance URL and a personal access token with `read_api` scope. |

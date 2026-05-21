@@ -47,6 +47,7 @@ export function FromIssueContent({
           repositoryUrl={repositoryUrl}
           projectPath={projectPath}
           disabled={disabled}
+          fixedProvider="linear"
         />
       ) : (
         <div className="flex flex-col gap-2 overflow-hidden rounded-md border border-border">

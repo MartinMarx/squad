@@ -17,9 +17,15 @@ function isProviderUsable(
   return true;
 }
 
-export function useIssueSearch(repositoryUrl: string, projectPath = '', projectId?: string) {
-  const { connectionStatus, isCheckingConnections } = useIntegrationsContext();
+export function useIssueSearch(
+  repositoryUrl: string,
+  projectPath = '',
+  projectId?: string,
+  options?: { fixedProvider?: Issue['provider'] }
+) {
+  const { connectionStatus } = useIntegrationsContext();
   const context = useMemo(() => ({ projectPath, repositoryUrl }), [projectPath, repositoryUrl]);
+  const fixedProvider = options?.fixedProvider;
 
   const [selectedIssueProvider, setSelectedIssueProvider] = useState<Issue['provider'] | null>(
     null
@@ -33,9 +39,15 @@ export function useIssueSearch(repositoryUrl: string, projectPath = '', projectI
     [connectionStatus, context]
   );
 
-  const hasAnyIntegration = connectedProviders.length > 0;
+  const hasAnyIntegration = fixedProvider
+    ? isProviderUsable(connectionStatus[fixedProvider], context)
+    : connectedProviders.length > 0;
 
   const issueProvider = useMemo(() => {
+    if (fixedProvider) {
+      return isProviderUsable(connectionStatus[fixedProvider], context) ? fixedProvider : null;
+    }
+
     if (
       selectedIssueProvider &&
       isProviderUsable(connectionStatus[selectedIssueProvider], context)
@@ -44,7 +56,7 @@ export function useIssueSearch(repositoryUrl: string, projectPath = '', projectI
     }
 
     return connectedProviders[0] ?? null;
-  }, [connectedProviders, connectionStatus, context, selectedIssueProvider]);
+  }, [connectedProviders, connectionStatus, context, fixedProvider, selectedIssueProvider]);
 
   const issuesHook = useIssues(issueProvider, {
     projectId,
@@ -66,8 +78,7 @@ export function useIssueSearch(repositoryUrl: string, projectPath = '', projectI
     [connectionStatus, context]
   );
 
-  const isProviderLoading =
-    (!!issueProvider && (issuesHook.isLoading || issuesHook.isSearching)) || isCheckingConnections;
+  const isProviderLoading = !!issueProvider && (issuesHook.isLoading || issuesHook.isSearching);
 
   return {
     issues: issuesHook.issues,
@@ -75,8 +86,9 @@ export function useIssueSearch(repositoryUrl: string, projectPath = '', projectI
     hasAnyIntegration,
     isProviderLoading,
     isProviderDisabled,
-    connectedProviderCount: connectedProviders.length,
+    connectedProviderCount: fixedProvider ? 1 : connectedProviders.length,
     handleSetSearchTerm,
     setSelectedIssueProvider,
+    fixedProvider,
   };
 }

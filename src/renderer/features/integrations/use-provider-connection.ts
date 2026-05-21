@@ -29,13 +29,13 @@ export function useProviderConnection<TInput>({
   });
 
   const connect = useCallback(
-    async (input: TInput) => {
-      const validationError = validateInput?.(input);
+    async (input?: TInput) => {
+      const validationError = validateInput?.(input as TInput);
       if (validationError) {
         throw new Error(validationError);
       }
 
-      const result = await connectMutation.mutateAsync(input);
+      const result = await connectMutation.mutateAsync(input as TInput);
       if (!result?.success) {
         throw new Error(result?.error || fallbackError);
       }
