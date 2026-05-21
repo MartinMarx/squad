@@ -1,4 +1,4 @@
-import { FolderInput, Library, Settings } from 'lucide-react';
+import { Columns3, FolderInput, Library, Settings } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import {
@@ -63,6 +63,17 @@ export const LeftSidebar: React.FC = observer(function LeftSidebar() {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarSearchTrigger />
+            <SidebarMenuButton
+              isActive={isCurrentView(currentView, 'kanban')}
+              onClick={() => navigate('kanban')}
+              aria-label="Kanban"
+              className="w-full justify-start"
+            >
+              <span className="flex items-center gap-2">
+                <Columns3 className="h-5 w-5 sm:h-4 sm:w-4" />
+                Kanban
+              </span>
+            </SidebarMenuButton>
             <SidebarMenuButton
               isActive={
                 isCurrentView(currentView, 'library') ||
