@@ -8,6 +8,7 @@ import { DEFAULT_REMOTE_NAME } from '@shared/git-utils';
 import { err, ok, type Result } from '@shared/result';
 import { getEffectiveTaskSettings } from '../settings/effective-task-settings';
 import type { ProjectSettingsProvider } from '../settings/provider';
+import { markWorktreeAsCursorTrusted } from './cursor-workspace-trust';
 import type { WorktreeHost } from './hosts/worktree-host';
 
 export type ServeWorktreeError =
@@ -207,6 +208,10 @@ export class WorktreeService {
       });
     });
 
+    if (this.ctx.supportsLocalSpawn) {
+      await markWorktreeAsCursorTrusted(targetPath);
+    }
+
     return ok(targetPath);
   }
 
@@ -279,6 +284,10 @@ export class WorktreeService {
         error: String(e),
       });
     });
+
+    if (this.ctx.supportsLocalSpawn) {
+      await markWorktreeAsCursorTrusted(targetPath);
+    }
 
     return ok(targetPath);
   }
