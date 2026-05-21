@@ -12,19 +12,23 @@ export function createCursorClassifier() {
       };
     }
 
-    // Idle/ready prompts
-    if (/Add a follow-up/i.test(tail)) {
-      return {
-        type: 'notification',
-        notificationType: 'idle_prompt',
-      };
-    }
-
-    if (/Auto\s*[\r\n]+\s*\/\s*commands/i.test(tail)) {
-      return {
-        type: 'notification',
-        notificationType: 'idle_prompt',
-      };
+    // Idle/ready prompts. Cursor's TUI uses cursor positioning to redraw lines,
+    // so old "ctrl+c to stop" content and the bottom status bar both linger in
+    // the buffer's byte stream. The input prompt line ("→ Add a follow-up") is
+    // rarely in the last 500 chars (the bottom status bar gets redrawn more
+    // often), so we look in the full buffer for the *last* occurrence and
+    // check whether that line still carries "ctrl+c to stop" (= still working).
+    const followupIdx = text.lastIndexOf('Add a follow-up');
+    if (followupIdx !== -1) {
+      const endOfLine = text.indexOf('\n', followupIdx);
+      const restOfLine =
+        endOfLine === -1 ? text.slice(followupIdx) : text.slice(followupIdx, endOfLine);
+      if (!/ctrl\+c to stop/i.test(restOfLine)) {
+        return {
+          type: 'notification',
+          notificationType: 'idle_prompt',
+        };
+      }
     }
 
     // Auth success
