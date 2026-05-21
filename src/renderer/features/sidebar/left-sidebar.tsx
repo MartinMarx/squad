@@ -74,7 +74,7 @@ export const LeftSidebar: React.FC = observer(function LeftSidebar() {
               className="w-full justify-start"
             >
               <span className="flex items-center gap-2">
-                <Library className="h-5 w-5 sm:h-4 sm:w-4" />
+                <Library className="h-5 w-5 text-foreground-tertiary-muted sm:h-4 sm:w-4" />
                 Library
               </span>
             </SidebarMenuButton>
@@ -85,7 +85,7 @@ export const LeftSidebar: React.FC = observer(function LeftSidebar() {
               className="w-full justify-between"
             >
               <span className="flex items-center gap-2">
-                <Settings className="h-5 w-5 sm:h-4 sm:w-4" />
+                <Settings className="h-5 w-5 text-foreground-tertiary-muted sm:h-4 sm:w-4" />
                 Settings
               </span>
               <BoundShortcut settingsKey="settings" />

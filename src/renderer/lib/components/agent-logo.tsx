@@ -21,21 +21,18 @@ const AgentLogo: React.FC<AgentLogoProps> = ({
 }) => {
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'emdark';
-
   const resolvedIsSvg = isSvg ?? logo.trimStart().startsWith('<svg');
 
   if (resolvedIsSvg) {
     const processed = isDark
-      ? logo
-          .replace(/\bfill="[^"]*"/g, 'fill="currentColor"')
-          .replace(/\bstroke="[^"]*"/g, 'stroke="currentColor"')
+      ? logo.replace(/fill="#26241E"/gi, 'fill="#f4f4f5"')
       : logo;
 
     return (
       <span
         role="img"
         aria-label={alt}
-        className={`inline-flex shrink-0 items-center justify-center [&_svg]:h-full [&_svg]:w-full [&_svg]:shrink-0 ${isDark ? 'text-primary' : ''} ${grayscale ? 'grayscale' : ''} ${className}`}
+        className={`inline-flex shrink-0 items-center justify-center [&_svg]:h-full [&_svg]:w-full [&_svg]:shrink-0 ${grayscale ? 'grayscale' : ''} ${className}`}
         dangerouslySetInnerHTML={{ __html: processed }}
       />
     );

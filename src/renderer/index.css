@@ -64,6 +64,9 @@
   --color-primary-button-foreground: var(--primary-button-foreground);
   --color-primary-button-border: var(--primary-button-border);
 
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
   --color-foreground-diff-added: var(--foreground-diff-added);
   --color-foreground-diff-modified: var(--foreground-diff-modified);
   --color-foreground-diff-deleted: var(--foreground-diff-deleted);
@@ -291,6 +294,33 @@
     --violet-11: color(display-p3 0.383 0.317 0.702);
     --violet-12: color(display-p3 0.179 0.15 0.359);
 
+    /* Stoik */
+    --stoik-blue-1: color-mix(in srgb, #1362dd 8%, white);
+    --stoik-blue-2: color-mix(in srgb, #1362dd 14%, white);
+    --stoik-blue-3: color-mix(in srgb, #1362dd 22%, white);
+    --stoik-blue-4: color-mix(in srgb, #1362dd 32%, white);
+    --stoik-blue-5: color-mix(in srgb, #1362dd 44%, white);
+    --stoik-blue-6: color-mix(in srgb, #1362dd 56%, white);
+    --stoik-blue-7: color-mix(in srgb, #1362dd 68%, white);
+    --stoik-blue-8: color-mix(in srgb, #1362dd 82%, white);
+    --stoik-blue-9: #1362dd;
+    --stoik-blue-10: color-mix(in srgb, #1362dd 90%, black);
+    --stoik-blue-11: color-mix(in srgb, #1362dd 78%, black);
+    --stoik-blue-12: color-mix(in srgb, #1362dd 40%, black);
+
+    --stoik-violin-1: color-mix(in srgb, #320a37 5%, white);
+    --stoik-violin-2: color-mix(in srgb, #320a37 9%, white);
+    --stoik-violin-3: color-mix(in srgb, #320a37 14%, white);
+    --stoik-violin-4: color-mix(in srgb, #320a37 20%, white);
+    --stoik-violin-5: color-mix(in srgb, #320a37 28%, white);
+    --stoik-violin-6: color-mix(in srgb, #320a37 38%, white);
+    --stoik-violin-7: color-mix(in srgb, #320a37 50%, white);
+    --stoik-violin-8: color-mix(in srgb, #320a37 66%, white);
+    --stoik-violin-9: #320a37;
+    --stoik-violin-10: color-mix(in srgb, #320a37 92%, black);
+    --stoik-violin-11: color-mix(in srgb, #320a37 82%, black);
+    --stoik-violin-12: color-mix(in srgb, #320a37 55%, black);
+
     /* Jade */
     --jade-1: color(display-p3 0.986 0.996 0.992);
     --jade-2: color(display-p3 0.962 0.983 0.969);
@@ -344,22 +374,25 @@
     --background-neutral: var(--neutral-12);
     --foreground-neutral: var(--neutral-1);
 
-    --primary-button-background: var(--jade-12);
-    --primary-button-background-hover: var(--jade-11);
-    --primary-button-foreground: var(--jade-2);
+    --primary-button-background: var(--stoik-blue-9);
+    --primary-button-background-hover: var(--stoik-blue-10);
+    --primary-button-foreground: white;
     --primary-button-border: transparent;
+
+    --accent: var(--stoik-violin-2);
+    --accent-foreground: var(--stoik-violin-9);
 
     --border: var(--neutral-5);
     --border-1: var(--neutral-8);
     --border-2: var(--neutral-9);
     --border-destructive: var(--red-8);
-    --border-primary: var(--neutral-9);
+    --border-primary: var(--stoik-blue-9);
 
     --ring: hsl(0 0% 3.9%);
     --radius: 0.5rem;
 
-    --selection: var(--blue-6);
-    --selection-foreground: var(--blue-12);
+    --selection: var(--stoik-blue-5);
+    --selection-foreground: var(--stoik-blue-12);
 
     --status-in-progress: var(--amber-11);
     --status-in-review: var(--green-10);
@@ -390,8 +423,8 @@
     --xterm-fg: var(--foreground);
     --xterm-cursor: var(--foreground);
     --xterm-cursor-accent: var(--foreground-inverse);
-    --xterm-selection-bg: color(display-p3 0.004 0.502 0.984 / 0.212);
-    --xterm-selection-fg: var(--blue-12);
+    --xterm-selection-bg: color-mix(in srgb, var(--stoik-blue-9) 22%, transparent);
+    --xterm-selection-fg: var(--stoik-blue-12);
 
     --foreground-diff-added: var(--green-9);
     --foreground-diff-modified: var(--amber-9);
@@ -412,13 +445,13 @@
     --background-warning-hover: var(--amber-4);
     --border-warning: var(--amber-7);
 
-    --foreground-info: var(--blue-9);
-    --background-info: var(--blue-3);
-    --background-info-hover: var(--blue-4);
-    --border-info: var(--blue-7);
+    --foreground-info: var(--stoik-blue-9);
+    --background-info: var(--stoik-blue-2);
+    --background-info-hover: var(--stoik-blue-3);
+    --border-info: var(--stoik-blue-6);
 
     --foreground-conflict: var(--orange-9);
-    --foreground-merged: var(--purple-9);
+    --foreground-merged: var(--stoik-violin-9);
   }
 
   .emdark {
@@ -564,6 +597,33 @@
     --violet-11: color(display-p3 0.72 0.65 1);
     --violet-12: color(display-p3 0.883 0.867 0.986);
 
+    /* Stoik */
+    --stoik-blue-1: color-mix(in srgb, #1362dd 18%, black);
+    --stoik-blue-2: color-mix(in srgb, #1362dd 24%, black);
+    --stoik-blue-3: color-mix(in srgb, #1362dd 34%, black);
+    --stoik-blue-4: color-mix(in srgb, #1362dd 44%, black);
+    --stoik-blue-5: color-mix(in srgb, #1362dd 54%, black);
+    --stoik-blue-6: color-mix(in srgb, #1362dd 64%, black);
+    --stoik-blue-7: color-mix(in srgb, #1362dd 76%, black);
+    --stoik-blue-8: color-mix(in srgb, #1362dd 88%, black);
+    --stoik-blue-9: #1362dd;
+    --stoik-blue-10: color-mix(in srgb, #1362dd 86%, white);
+    --stoik-blue-11: color-mix(in srgb, #1362dd 68%, white);
+    --stoik-blue-12: color-mix(in srgb, #1362dd 28%, white);
+
+    --stoik-violin-1: color-mix(in srgb, #320a37 40%, black);
+    --stoik-violin-2: color-mix(in srgb, #320a37 52%, black);
+    --stoik-violin-3: color-mix(in srgb, #320a37 64%, black);
+    --stoik-violin-4: color-mix(in srgb, #320a37 76%, black);
+    --stoik-violin-5: color-mix(in srgb, #320a37 88%, black);
+    --stoik-violin-6: #320a37;
+    --stoik-violin-7: color-mix(in srgb, #320a37 88%, white);
+    --stoik-violin-8: color-mix(in srgb, #320a37 76%, white);
+    --stoik-violin-9: color-mix(in srgb, #320a37 62%, white);
+    --stoik-violin-10: color-mix(in srgb, #320a37 52%, white);
+    --stoik-violin-11: color-mix(in srgb, #320a37 36%, white);
+    --stoik-violin-12: color-mix(in srgb, #320a37 18%, white);
+
     /* Jade */
     --jade-1: color(display-p3 0.059 0.083 0.071);
     --jade-2: color(display-p3 0.078 0.11 0.094);
@@ -619,22 +679,25 @@
     --background-neutral: var(--neutral-12);
     --foreground-neutral: var(--neutral-1);
 
-    --primary-button-background: var(--jade-4);
-    --primary-button-background-hover: var(--jade-5);
-    --primary-button-foreground: var(--jade-12);
-    --primary-button-border: var(--jade-7);
+    --primary-button-background: var(--stoik-blue-9);
+    --primary-button-background-hover: var(--stoik-blue-8);
+    --primary-button-foreground: white;
+    --primary-button-border: var(--stoik-blue-7);
+
+    --accent: var(--stoik-violin-3);
+    --accent-foreground: var(--stoik-violin-12);
 
     --border: var(--neutral-6);
     --border-1: var(--neutral-7);
     --border-2: var(--neutral-8);
     --border-destructive: var(--red-8);
-    --border-primary: var(--neutral-10);
+    --border-primary: var(--stoik-blue-9);
 
     --ring: hsl(0 0% 3.9%);
     --radius: 0.5rem;
 
-    --selection: var(--blue-9);
-    --selection-foreground: var(--blue-12);
+    --selection: var(--stoik-blue-9);
+    --selection-foreground: var(--stoik-blue-12);
 
     --status-in-progress: var(--amber-11);
     --status-in-review: var(--green-10);
@@ -659,8 +722,8 @@
     --monaco-unchanged-region-bg: color(display-p3 0.165 0.165 0.165);
     --monaco-diff-border: color(display-p3 0.227 0.227 0.227);
     --monaco-diff-diagonal-fill: color(display-p3 0.165 0.165 0.165);
-    --monaco-selection-bg: color(display-p3 0 0.2 0.384);
-    --monaco-selection-fg: color(display-p3 0.439 0.722 1);
+    --monaco-selection-bg: color-mix(in srgb, var(--stoik-blue-9) 45%, transparent);
+    --monaco-selection-fg: var(--stoik-blue-12);
     --monaco-inactive-selection-bg: color(display-p3 1 1 1 / 0.133);
 
     /* xterm terminals */
@@ -668,8 +731,8 @@
     --xterm-fg: var(--foreground);
     --xterm-cursor: var(--foreground);
     --xterm-cursor-accent: var(--foreground-inverse);
-    --xterm-selection-bg: color(display-p3 0.224 0.557 1 / 0.475);
-    --xterm-selection-fg: var(--blue-11);
+    --xterm-selection-bg: color-mix(in srgb, var(--stoik-blue-9) 48%, transparent);
+    --xterm-selection-fg: var(--stoik-blue-12);
 
     --foreground-diff-added: var(--green-10);
     --foreground-diff-modified: var(--amber-9);
@@ -690,13 +753,13 @@
     --background-warning-hover: var(--amber-4);
     --border-warning: var(--amber-7);
 
-    --foreground-info: var(--blue-9);
-    --background-info: var(--blue-3);
-    --background-info-hover: var(--blue-4);
-    --border-info: var(--blue-7);
+    --foreground-info: var(--stoik-blue-10);
+    --background-info: var(--stoik-blue-3);
+    --background-info-hover: var(--stoik-blue-4);
+    --border-info: var(--stoik-blue-7);
 
     --foreground-conflict: var(--orange-9);
-    --foreground-merged: var(--purple-9);
+    --foreground-merged: var(--stoik-violin-11);
   }
 }
 
