@@ -4,17 +4,20 @@ import type {
   ResolvedConversationTab,
   ResolvedDiffTab,
   ResolvedFileTab,
+  ResolvedNotebookTab,
   ResolvedTab,
 } from '../../tabs/tab-manager-store';
 import { useWorkspaceViewModel } from '../../task-view-context';
 import { ConversationTabDragPreview } from './conversation-tab-item';
 import { DiffTabDragPreview } from './diff-tab-item';
 import { FileTabDragPreview } from './file-tab-item';
+import { NotebookTabDragPreview } from './notebook-tab-item';
 
 const dragPreviewRenderers = {
   conversation: (tab: ResolvedConversationTab): ReactNode => (
     <ConversationTabDragPreview tab={tab} />
   ),
+  notebook: (tab: ResolvedNotebookTab): ReactNode => <NotebookTabDragPreview tab={tab} />,
   file: (tab: ResolvedFileTab): ReactNode => <FileTabDragPreview tab={tab} />,
   diff: (tab: ResolvedDiffTab): ReactNode => <DiffTabDragPreview tab={tab} />,
 } satisfies { [K in ResolvedTab['kind']]: (tab: Extract<ResolvedTab, { kind: K }>) => ReactNode };

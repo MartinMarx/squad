@@ -41,12 +41,8 @@ const IntegrationsCard: React.FC = () => {
   const { authenticated, user, isLoading, logout, tokenSource, checkStatus } = useGithubContext();
   const { toast } = useToast();
   const [githubCliRefreshing, setGithubCliRefreshing] = useState(false);
-  const {
-    connectionStatus,
-    isLinearConnected,
-    isLinearLoading,
-    disconnectLinear,
-  } = useIntegrationsContext();
+  const { connectionStatus, isLinearConnected, isLinearLoading, disconnectLinear } =
+    useIntegrationsContext();
 
   const showGithubConnect = useShowModal('githubConnectModal');
   const showLinearConnect = useShowModal('linearConnectModal');

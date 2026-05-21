@@ -272,6 +272,23 @@ export const pullRequestChecks = sqliteTable(
   })
 );
 
+export const notebooks = sqliteTable(
+  'notebooks',
+  {
+    taskId: text('task_id')
+      .primaryKey()
+      .references(() => tasks.id, { onDelete: 'cascade' }),
+    title: text('title').notNull().default(''),
+    content: text('content').notNull(),
+    updatedAt: text('updated_at')
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => ({
+    taskIdIdx: index('idx_notebooks_task_id').on(table.taskId),
+  })
+);
+
 export const conversations = sqliteTable(
   'conversations',
   {
@@ -417,6 +434,17 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
     references: [projects.id],
   }),
   conversations: many(conversations),
+  notebook: one(notebooks, {
+    fields: [tasks.id],
+    references: [notebooks.taskId],
+  }),
+}));
+
+export const notebooksRelations = relations(notebooks, ({ one }) => ({
+  task: one(tasks, {
+    fields: [notebooks.taskId],
+    references: [tasks.id],
+  }),
 }));
 
 export const conversationsRelations = relations(conversations, ({ one, many }) => ({

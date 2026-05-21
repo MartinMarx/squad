@@ -8,11 +8,7 @@ import { ProjectSettingsStore } from './project-settings-store';
 import { ProjectViewStore } from './project-view';
 import { RepositoryStore } from './repository-store';
 
-export type UnregisteredProjectPhase =
-  | 'creating-repo'
-  | 'cloning'
-  | 'registering'
-  | 'error';
+export type UnregisteredProjectPhase = 'creating-repo' | 'cloning' | 'registering' | 'error';
 
 export type UnmountedProjectPhase = 'opening' | 'error' | 'closing' | 'idle';
 

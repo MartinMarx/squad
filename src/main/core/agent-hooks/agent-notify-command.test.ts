@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  makeClaudeHookCommand,
-  makeCodexHookCommand,
-} from './agent-notify-command';
+import { makeClaudeHookCommand, makeCodexHookCommand } from './agent-notify-command';
 
 function decodeWindowsHookCommand(command: string): string {
   const encodedScript = command.match(/-EncodedCommand ([^"]+)/)?.[1];

@@ -1,0 +1,1 @@
+ALTER TABLE `notebooks` ADD `title` text DEFAULT '' NOT NULL;

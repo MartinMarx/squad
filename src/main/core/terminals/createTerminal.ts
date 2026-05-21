@@ -41,6 +41,5 @@ export async function createTerminal(params: CreateTerminalParams): Promise<Term
     },
   });
 
-
   return terminal;
 }

@@ -72,14 +72,12 @@ export function useSidebarDrop() {
             }
 
             const name = basenameFromAnyPath(filePath);
-            return await projectManager.createProject(
-              {
-                mode: 'pick',
-                name,
-                path: filePath,
-                initGitRepository: false,
-              }
-            );
+            return await projectManager.createProject({
+              mode: 'pick',
+              name,
+              path: filePath,
+              initGitRepository: false,
+            });
           } catch (err) {
             log.error('Failed to add dropped project:', err);
             toast({

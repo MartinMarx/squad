@@ -11,12 +11,14 @@ import type {
   ResolvedConversationTab,
   ResolvedDiffTab,
   ResolvedFileTab,
+  ResolvedNotebookTab,
   ResolvedTab,
 } from '../tabs/tab-manager-store';
 import { ConversationTabItem } from './tab-bar/conversation-tab-item';
 import { DiffTabItem } from './tab-bar/diff-tab-item';
 import { PaneDropZone } from './tab-bar/draggable-tab';
 import { FileTabItem } from './tab-bar/file-tab-item';
+import { NotebookTabItem } from './tab-bar/notebook-tab-item';
 import { TabBarActions } from './tab-bar/tab-bar-actions';
 
 function makeTabRenderers(
@@ -32,6 +34,14 @@ function makeTabRenderers(
         onPin={() => tabManager.openConversation(tab.conversationId)}
         onClose={() => tabManager.closeTab(tab.tabId)}
         onRenameSubmit={(name) => void conversations.renameConversation(tab.conversationId, name)}
+      />
+    ),
+    notebook: (tab: ResolvedNotebookTab): ReactNode => (
+      <NotebookTabItem
+        key={tab.tabId}
+        tab={tab}
+        onSelect={() => tabManager.setActiveTab(tab.tabId)}
+        onClose={() => tabManager.closeTab(tab.tabId)}
       />
     ),
     diff: (tab: ResolvedDiffTab): ReactNode => (

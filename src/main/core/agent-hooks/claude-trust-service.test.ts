@@ -192,5 +192,4 @@ describe('ClaudeTrustService', () => {
       hasCompletedProjectOnboarding: true,
     });
   });
-
 });

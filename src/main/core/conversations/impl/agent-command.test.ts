@@ -102,26 +102,27 @@ describe('buildAgentCommand', () => {
     providerId: AgentProviderId;
     freshArgs: string[];
     resumeArgs: string[];
-  }>([
-    { providerId: 'cursor', freshArgs: ['Fix the bug'], resumeArgs: ['--resume'] },
-  ])('builds fresh and resume args for $providerId', ({ providerId, freshArgs, resumeArgs }) => {
-    const fresh = buildAgentCommand({
-      providerId,
-      providerConfig: providerConfigDefaults[providerId],
-      initialPrompt: 'Fix the bug',
-      sessionId: 'conv-1',
-    });
+  }>([{ providerId: 'cursor', freshArgs: ['Fix the bug'], resumeArgs: ['--resume'] }])(
+    'builds fresh and resume args for $providerId',
+    ({ providerId, freshArgs, resumeArgs }) => {
+      const fresh = buildAgentCommand({
+        providerId,
+        providerConfig: providerConfigDefaults[providerId],
+        initialPrompt: 'Fix the bug',
+        sessionId: 'conv-1',
+      });
 
-    const resume = buildAgentCommand({
-      providerId,
-      providerConfig: providerConfigDefaults[providerId],
-      sessionId: 'conv-1',
-      isResuming: true,
-    });
+      const resume = buildAgentCommand({
+        providerId,
+        providerConfig: providerConfigDefaults[providerId],
+        sessionId: 'conv-1',
+        isResuming: true,
+      });
 
-    expect(fresh.args).toEqual(freshArgs);
-    expect(resume.args).toEqual(resumeArgs);
-  });
+      expect(fresh.args).toEqual(freshArgs);
+      expect(resume.args).toEqual(resumeArgs);
+    }
+  );
 
   it('appends extra args', () => {
     const result = buildAgentCommand({

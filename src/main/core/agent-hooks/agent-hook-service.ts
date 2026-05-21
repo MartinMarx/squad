@@ -35,7 +35,6 @@ class AgentHookService implements IInitializable, IDisposable {
         };
         events.emit(agentEventChannel, { event: agentEvent, appFocused: isAppFocused() });
 
-
         const now = new Date().toISOString();
         void touchConversation(conversationId, now).then(() => {
           events.emit(conversationChangedChannel, {

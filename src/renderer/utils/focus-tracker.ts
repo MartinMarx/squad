@@ -1,11 +1,4 @@
-export type FocusView =
-  | 'home'
-  | 'library'
-  | 'project'
-  | 'task'
-  | 'settings'
-  | 'skills'
-  | 'mcp';
+export type FocusView = 'home' | 'library' | 'project' | 'task' | 'settings' | 'skills' | 'mcp';
 
 export type FocusMainPanel = 'agents' | 'editor' | 'diff' | 'terminal' | 'browser' | 'files';
 export type FocusedRegion = 'main' | 'bottom' | 'sidebar' | 'right';

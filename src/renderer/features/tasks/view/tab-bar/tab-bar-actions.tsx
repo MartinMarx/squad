@@ -1,5 +1,5 @@
 import { useHotkey } from '@tanstack/react-hotkeys';
-import { Columns2, FileSearch, MessageSquarePlus } from 'lucide-react';
+import { BookOpen, Columns2, FileSearch, MessageSquarePlus } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useAppSettingsKey } from '@renderer/features/settings/use-app-settings-key';
 import {
@@ -38,6 +38,18 @@ export const TabBarActions = observer(function TabBarActions() {
     }
   );
 
+  useHotkey(
+    getHotkeyRegistration('openNotebook', keyboard),
+    (e) => {
+      e.preventDefault();
+      tabGroupManager.openNotebook();
+    },
+    {
+      enabled: isFocusedPane && getEffectiveHotkey('openNotebook', keyboard) !== null,
+      conflictBehavior: 'allow',
+    }
+  );
+
   return (
     <div className="flex h-full shrink-0 items-center px-2">
       <Tooltip>
@@ -58,6 +70,21 @@ export const TabBarActions = observer(function TabBarActions() {
         </TooltipTrigger>
         <TooltipContent>
           New Conversations <BoundShortcut settingsKey="newConversation" variant="badge" />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            onClick={() => tabGroupManager.openNotebook()}
+            aria-label="Open notebook"
+          >
+            <BookOpen className="size-3.5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          Notebook <BoundShortcut settingsKey="openNotebook" variant="badge" />
         </TooltipContent>
       </Tooltip>
       <Tooltip>

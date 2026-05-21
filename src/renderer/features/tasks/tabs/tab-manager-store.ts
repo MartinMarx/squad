@@ -46,7 +46,26 @@ export class ConversationTabEntry {
   }
 }
 
-export type TabEntry = FileTabStore | DiffTabStore | ConversationTabEntry;
+export class NotebookTabEntry {
+  readonly kind = 'notebook' as const;
+  readonly tabId: string;
+  isPreview: boolean;
+
+  constructor(isPreview: boolean, tabId?: string) {
+    this.tabId = tabId ?? crypto.randomUUID();
+    this.isPreview = isPreview;
+    makeObservable(this, {
+      isPreview: observable,
+      pin: action,
+    });
+  }
+
+  pin(): void {
+    this.isPreview = false;
+  }
+}
+
+export type TabEntry = FileTabStore | DiffTabStore | ConversationTabEntry | NotebookTabEntry;
 
 // ---------------------------------------------------------------------------
 // Resolved tabs — enriched with live store references and derived state
@@ -57,6 +76,13 @@ export type ResolvedConversationTab = {
   tabId: string;
   conversationId: string;
   store: ConversationStore;
+  isPreview: boolean;
+  isActive: boolean;
+};
+
+export type ResolvedNotebookTab = {
+  kind: 'notebook';
+  tabId: string;
   isPreview: boolean;
   isActive: boolean;
 };
@@ -84,7 +110,11 @@ export type ResolvedDiffTab = {
   isActive: boolean;
 };
 
-export type ResolvedTab = ResolvedConversationTab | ResolvedFileTab | ResolvedDiffTab;
+export type ResolvedTab =
+  | ResolvedConversationTab
+  | ResolvedNotebookTab
+  | ResolvedFileTab
+  | ResolvedDiffTab;
 
 // ---------------------------------------------------------------------------
 // TabManagerStore
@@ -136,6 +166,7 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
       snapshot: computed,
       openConversation: action,
       openConversationPreview: action,
+      openNotebook: action,
       openFile: action,
       openFilePreview: action,
       openDiff: action,
@@ -186,7 +217,6 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
         }
       })
     );
-
   }
 
   // ---------------------------------------------------------------------------
@@ -284,6 +314,13 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
           isPreview: entry.isPreview,
           isActive: effectiveActiveId === entry.tabId,
         });
+      } else if (entry.kind === 'notebook') {
+        result.push({
+          kind: 'notebook',
+          tabId: entry.tabId,
+          isPreview: entry.isPreview,
+          isActive: effectiveActiveId === entry.tabId,
+        });
       } else if (entry.kind === 'diff') {
         result.push({
           kind: 'diff',
@@ -323,6 +360,12 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
           kind: 'conversation',
           tabId: entry.tabId,
           conversationId: entry.conversationId,
+          isPreview: entry.isPreview,
+        });
+      } else if (entry.kind === 'notebook') {
+        tabs.push({
+          kind: 'notebook',
+          tabId: entry.tabId,
           isPreview: entry.isPreview,
         });
       } else if (entry.kind === 'diff') {
@@ -381,6 +424,19 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
       return;
     }
     const entry = new ConversationTabEntry(conversationId, true);
+    this.entries.set(entry.tabId, entry);
+    addTabId(this, entry.tabId);
+    this.activeTabId = entry.tabId;
+  }
+
+  openNotebook(): void {
+    const existing = this._findNotebookEntry();
+    if (existing) {
+      existing.isPreview = false;
+      this.activeTabId = existing.tabId;
+      return;
+    }
+    const entry = new NotebookTabEntry(false);
     this.entries.set(entry.tabId, entry);
     addTabId(this, entry.tabId);
     this.activeTabId = entry.tabId;
@@ -608,6 +664,10 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
           const entry = new ConversationTabEntry(t.conversationId, t.isPreview, t.tabId);
           this.entries.set(entry.tabId, entry);
           this.tabOrder.push(entry.tabId);
+        } else if (t.kind === 'notebook') {
+          const entry = new NotebookTabEntry(t.isPreview, t.tabId);
+          this.entries.set(entry.tabId, entry);
+          this.tabOrder.push(entry.tabId);
         } else if (t.kind === 'diff') {
           const tab = new DiffTabStore(
             {
@@ -667,6 +727,14 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
     for (const id of this.tabOrder) {
       const entry = this.entries.get(id);
       if (entry?.kind === 'conversation' && entry.isPreview) return entry;
+    }
+    return undefined;
+  }
+
+  private _findNotebookEntry(): NotebookTabEntry | undefined {
+    for (const id of this.tabOrder) {
+      const entry = this.entries.get(id);
+      if (entry?.kind === 'notebook') return entry;
     }
     return undefined;
   }

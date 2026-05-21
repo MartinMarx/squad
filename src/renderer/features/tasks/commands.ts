@@ -38,6 +38,7 @@ export function createTaskCommandProvider(projectId: string, taskId: string): Co
       const taskData = getRegisteredTaskData(projectId, taskId);
 
       const newConversationDef = taskDef('task.newConversation');
+      const openNotebookDef = taskDef('task.openNotebook');
       const sidebarChangesDef = taskDef('task.sidebarChanges');
       const sidebarConversationsDef = taskDef('task.sidebarConversations');
       const sidebarFilesDef = taskDef('task.sidebarFiles');
@@ -69,6 +70,18 @@ export function createTaskCommandProvider(projectId: string, taskId: string): Co
                 taskView?.setFocusedRegion('main');
               },
             });
+          },
+        },
+
+        {
+          id: openNotebookDef.id,
+          label: openNotebookDef.label,
+          description: openNotebookDef.description,
+          shortcutKey: openNotebookDef.shortcutKey,
+          group: openNotebookDef.group,
+          execute() {
+            taskView?.tabGroupManager.openNotebook();
+            taskView?.setFocusedRegion('main');
           },
         },
 
