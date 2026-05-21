@@ -65,6 +65,9 @@ export const ContextBar = observer(function ContextBar({ conversationId }: Conte
 
     if (opts?.andSend) {
       await rpc.pty.sendInput(activeSessionId, '\r');
+      if (activeConversationStore) {
+        void conversations.maybeAutoRenameFromPrompt(activeConversationStore.data.id, text);
+      }
     }
 
     activeSession?.pty?.terminal.focus();

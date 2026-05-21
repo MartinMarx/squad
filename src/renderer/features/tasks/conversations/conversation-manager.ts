@@ -1,5 +1,6 @@
 import { action, computed, makeObservable, observable, reaction, runInAction } from 'mobx';
 import { events, rpc } from '@renderer/lib/ipc';
+import { isRealTaskInput } from '@renderer/lib/pty/pty-input-buffer';
 import { PtySession } from '@renderer/lib/pty/pty-session';
 import type { IDisposable } from '@renderer/lib/stores/lifecycle';
 import { Resource } from '@renderer/lib/stores/resource';
@@ -14,6 +15,7 @@ import {
 } from '@shared/events/agentEvents';
 import { conversationChangedChannel } from '@shared/events/conversationEvents';
 import { makePtySessionId } from '@shared/ptySessionId';
+import { isDefaultConversationTitle } from './conversation-title-utils';
 
 export type AgentStatus = 'idle' | 'working' | 'awaiting-input' | 'error' | 'completed';
 
@@ -22,6 +24,7 @@ export class ConversationManagerStore implements IDisposable {
   private offSessionExited: (() => void) | null = null;
   private offConversationChanges: (() => void) | null = null;
   private readonly _disposeReaction: () => void;
+  private readonly autoTitleAttempted = new Set<string>();
 
   /** Data layer: plain Conversation records loaded from the main process. */
   readonly list: Resource<Conversation[]>;
@@ -182,7 +185,35 @@ export class ConversationManagerStore implements IDisposable {
         this.conversations.get(conversation.id)?.setWorking();
       }
     });
+    if (params.initialPrompt?.trim()) {
+      void this.maybeAutoRenameFromPrompt(conversation.id, params.initialPrompt);
+    }
     return conversation;
+  }
+
+  async maybeAutoRenameFromPrompt(conversationId: string, prompt: string): Promise<void> {
+    if (this.autoTitleAttempted.has(conversationId)) return;
+
+    const store = this.conversations.get(conversationId);
+    if (!store) return;
+    if (!isDefaultConversationTitle(store.data.providerId, store.data.title)) return;
+    if (!isRealTaskInput(prompt)) return;
+
+    this.autoTitleAttempted.add(conversationId);
+
+    try {
+      const title = await rpc.conversations.generateConversationTitle(
+        store.data.providerId,
+        prompt
+      );
+      if (!title) return;
+      await this.renameConversation(conversationId, title);
+    } catch (err) {
+      log.warn('ConversationManagerStore: failed to generate conversation title', {
+        conversationId,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
   }
 
   async markConversationWorking(conversationId: string): Promise<void> {
@@ -212,6 +243,7 @@ export class ConversationManagerStore implements IDisposable {
       this.conversations.delete(conversationId);
       this.sessions.delete(conversationId);
     });
+    this.autoTitleAttempted.delete(conversationId);
 
     try {
       await rpc.conversations.deleteConversation(this.projectId, this.taskId, conversationId);

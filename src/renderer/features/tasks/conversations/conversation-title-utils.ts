@@ -20,6 +20,10 @@ function parseDefaultTitleIndex(title: string, providerId: AgentProviderId): num
   return index;
 }
 
+export function isDefaultConversationTitle(providerId: AgentProviderId, title: string): boolean {
+  return parseDefaultTitleIndex(title, providerId) !== null;
+}
+
 export function formatConversationTitleForDisplay(
   providerId: AgentProviderId,
   title: string
