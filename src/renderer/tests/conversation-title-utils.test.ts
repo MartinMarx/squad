@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatConversationTitleForDisplay,
+  isDefaultConversationTitle,
   nextDefaultConversationTitle,
 } from '@renderer/features/tasks/conversations/conversation-title-utils';
 
@@ -41,5 +42,12 @@ describe('nextDefaultConversationTitle', () => {
 
   it('leaves custom conversation titles unchanged', () => {
     expect(formatConversationTitleForDisplay('codex', 'release-triage')).toBe('release-triage');
+  });
+});
+
+describe('isDefaultConversationTitle', () => {
+  it('detects provider default titles regardless of casing', () => {
+    expect(isDefaultConversationTitle('codex', 'Codex (2)')).toBe(true);
+    expect(isDefaultConversationTitle('codex', 'release-triage')).toBe(false);
   });
 });

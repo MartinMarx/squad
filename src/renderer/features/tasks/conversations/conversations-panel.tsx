@@ -77,6 +77,11 @@ export const ConversationsPanel = observer(function ConversationsPanel() {
   }, [sessionStatus]);
 
   const onInterruptPress = activeConversation ? () => activeConversation.clearWorking() : undefined;
+  const onEnterPress = activeConversation
+    ? (message: string) => {
+        void conversations.maybeAutoRenameFromPrompt(activeConversation.data.id, message);
+      }
+    : undefined;
 
   return (
     <div className="flex h-full flex-col">
@@ -113,6 +118,7 @@ export const ConversationsPanel = observer(function ConversationsPanel() {
                     sessionId={activeSessionId}
                     pty={activeSession.pty}
                     className="h-full w-full"
+                    onEnterPress={onEnterPress}
                     onInterruptPress={onInterruptPress}
                     mapShiftEnterToCtrlJ
                   />

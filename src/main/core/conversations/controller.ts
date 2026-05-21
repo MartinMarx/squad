@@ -3,6 +3,7 @@ import { createConversation } from './createConversation';
 import { deleteConversation } from './deleteConversation';
 import { getConversations } from './getConversations';
 import { getConversationsForTask } from './getConversationsForTask';
+import { generateConversationTitle } from './name-generation/generateConversationTitle';
 import { renameConversation } from './renameConversation';
 
 export const conversationController = createRPCController({
@@ -11,4 +12,5 @@ export const conversationController = createRPCController({
   deleteConversation,
   renameConversation,
   getConversationsForTask,
+  generateConversationTitle,
 });
