@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { getRepositoryStore } from '@renderer/features/projects/stores/project-selectors';
 import { useAppSettingsKey } from '@renderer/features/settings/use-app-settings-key';
+import { resolvePhilosopherCatalogSlug } from '@shared/philosophers/resolvePhilosopherCatalogSlug';
 import { resolveTaskBranchName } from '@shared/resolveTaskBranchName';
 import type { Issue } from '@shared/tasks';
 
@@ -15,9 +16,10 @@ export function useBranchName(opts: {
   taskName: string;
   linkedIssue?: Issue | null;
   projectId?: string;
+  fixedBranchName?: string;
   resetKey?: unknown;
 }): BranchNameState {
-  const { taskName, linkedIssue, projectId, resetKey } = opts;
+  const { taskName, linkedIssue, projectId, fixedBranchName, resetKey } = opts;
 
   const { value: project } = useAppSettingsKey('project');
   const branchPrefix = project?.branchPrefix ?? '';
@@ -27,14 +29,17 @@ export function useBranchName(opts: {
   const suffix = useMemo(() => Math.random().toString(36).slice(2, 7), []);
 
   const derive = useCallback(
-    (name: string) =>
-      resolveTaskBranchName({
+    (name: string) => {
+      const disableRandomSuffix = resolvePhilosopherCatalogSlug(name) !== undefined;
+      return resolveTaskBranchName({
         rawBranch: name,
         branchPrefix,
         suffix,
-        appendRandomSuffix,
+        appendRandomSuffix: disableRandomSuffix ? false : appendRandomSuffix,
+        disableRandomSuffix,
         linkedIssue: linkedIssue ?? undefined,
-      }),
+      });
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [branchPrefix, appendRandomSuffix, suffix, linkedIssue]
   );
@@ -59,7 +64,7 @@ export function useBranchName(opts: {
     setIsUserModified(false);
   }
 
-  const branchName = userValue !== undefined ? userValue : derive(taskName);
+  const branchName = userValue !== undefined ? userValue : (fixedBranchName ?? derive(taskName));
 
   const setBranchName = useCallback((value: string) => {
     setUserValue(value);

@@ -57,6 +57,9 @@ export const SETTINGS_DEFAULTS = {
   resourceMonitor: {
     enabled: false,
   },
+  philosophers: {
+    unlocked: [],
+  },
 } satisfies SettingsDefaultsMap;
 
 export function getDefaultForKey<K extends AppSettingsKey>(key: K): AppSettings[K] {

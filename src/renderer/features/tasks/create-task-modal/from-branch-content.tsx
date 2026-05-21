@@ -25,12 +25,11 @@ export function FromBranchContent({
     <div className="flex flex-col gap-4">
       <BranchPickerField
         state={state}
-        branchNameState={state}
         projectId={projectId}
         currentBranch={currentBranch}
         isUnborn={isUnborn}
       />
-      <TaskNameField state={state} />
+      {!state.usesAutoAssignedName && <TaskNameField state={state} />}
       <InitialConversationField state={initialConversation} />
     </div>
   );

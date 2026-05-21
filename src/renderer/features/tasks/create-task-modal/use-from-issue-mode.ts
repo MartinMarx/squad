@@ -73,5 +73,6 @@ export function useFromIssueMode(
     linkedIssue,
     setLinkedIssue,
     isValid,
+    usesAutoAssignedName: branchSelection.createBranchAndWorktree,
   };
 }

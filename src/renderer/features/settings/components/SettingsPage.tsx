@@ -10,6 +10,7 @@ import HiddenToolsSettingsCard from './HiddenToolsSettingsCard';
 import IntegrationsCard from './IntegrationsCard';
 import KeyboardSettingsCard from './KeyboardSettingsCard';
 import NotificationSettingsCard from './NotificationSettingsCard';
+import { PhilosophersSettingsCard } from './PhilosophersSettingsCard';
 import RepositorySettingsCard from './RepositorySettingsCard';
 import ResourceMonitorSettingsCard from './ResourceMonitorSettingsCard';
 import { SshConnectionsSettingsCard } from './SshConnectionsSettingsCard';
@@ -31,6 +32,7 @@ export type SettingsPageTab =
   | 'integrations'
   | 'connections'
   | 'repository'
+  | 'philosophers'
   | 'interface'
   | 'docs';
 
@@ -62,6 +64,7 @@ export function SettingsPage({
     { id: 'integrations', label: 'Integrations' },
     { id: 'connections', label: 'Connections' },
     { id: 'repository', label: 'Repository' },
+    { id: 'philosophers', label: 'Philosophers' },
     { id: 'interface', label: 'Interface' },
     { id: 'docs', label: 'Docs', isExternal: true },
   ];
@@ -131,6 +134,11 @@ export function SettingsPage({
       title: 'Repository',
       description: 'Configure repository and branch settings.',
       sections: [{ title: 'Branch prefix', component: <RepositorySettingsCard /> }],
+    },
+    philosophers: {
+      title: 'Philosophers',
+      description: 'Collect philosopher names by creating worktree tasks.',
+      sections: [{ component: <PhilosophersSettingsCard /> }],
     },
     interface: {
       title: 'Interface',

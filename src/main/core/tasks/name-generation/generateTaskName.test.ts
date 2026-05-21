@@ -34,19 +34,9 @@ describe('generateTaskName', () => {
     });
   });
 
-  describe('random generation (no title)', () => {
-    it('generates a random friendly name when no input provided', () => {
-      const result = generateTaskName({});
-      expect(result).toBeTruthy();
-      expect(result).toMatch(/^[a-z0-9-]+$/);
-    });
-
-    it('generates different names on subsequent calls', () => {
-      const results = new Set<string>();
-      for (let i = 0; i < 5; i++) {
-        results.add(generateTaskName({}));
-      }
-      expect(results.size).toBeGreaterThanOrEqual(2);
+  describe('without title', () => {
+    it('requires pickPhilosopherName instead of generating a random slug', () => {
+      expect(() => generateTaskName({})).toThrow(/pickPhilosopherName/i);
     });
   });
 });

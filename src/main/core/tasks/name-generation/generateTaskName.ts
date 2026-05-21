@@ -1,4 +1,3 @@
-import { humanId } from 'human-id';
 import { generateBranchName } from 'nbranch';
 
 const MAX_TASK_NAME_LENGTH = 64;
@@ -10,10 +9,6 @@ function sanitize(raw: string): string {
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, MAX_TASK_NAME_LENGTH);
-}
-
-function generateRandom(): string {
-  return sanitize(humanId({ separator: '-', capitalize: false }));
 }
 
 function generateFromInput(title: string, description?: string): string {
@@ -31,5 +26,5 @@ export function generateTaskName(params: { title?: string; description?: string 
   if (title && title.trim().length > 0) {
     return generateFromInput(title.trim(), description?.trim());
   }
-  return generateRandom();
+  throw new Error('Task name generation requires a title; use pickPhilosopherName for worktrees.');
 }

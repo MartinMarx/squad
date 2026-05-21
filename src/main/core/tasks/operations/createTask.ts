@@ -14,6 +14,7 @@ import type {
 } from '@shared/tasks';
 import { prQueryService } from '../../pull-requests/pr-query-service';
 import { appSettingsService } from '../../settings/settings-service';
+import { unlockPhilosopherFromTaskName } from '../name-generation/unlockPhilosopher';
 import { toStoredBranch } from '../stored-branch';
 import { mapTaskRowToTask } from '../utils/utils';
 
@@ -196,6 +197,10 @@ export async function createTask(
   }
 
   const task = mapTaskRowToTask(taskRow, prs);
+
+  if (taskBranch && (strategy.kind === 'new-branch' || strategy.kind === 'from-pull-request')) {
+    await unlockPhilosopherFromTaskName(params.name);
+  }
 
   const workspaceType = ((): 'local' | 'project-ssh' | 'byoi' => {
     if (params.workspaceProvider === 'byoi') return 'byoi';

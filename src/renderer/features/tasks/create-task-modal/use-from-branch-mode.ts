@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
 import { useTaskSettings } from '@renderer/features/tasks/hooks/useTaskSettings';
 import { rpc } from '@renderer/lib/ipc';
 import { type Branch } from '@shared/git';
@@ -15,46 +14,62 @@ export function useFromBranchMode(
   isUnborn: boolean,
   currentBranchName?: string | null
 ) {
-  const { autoGenerateName, createBranchAndWorktree } = useTaskSettings();
+  const { createBranchAndWorktree: createBranchAndWorktreeByDefault } = useTaskSettings();
   const branchSelection = useBranchSelection(
     selectedProjectId,
     defaultBranch,
     isUnborn,
     currentBranchName,
-    createBranchAndWorktree
+    createBranchAndWorktreeByDefault
   );
+  const { createBranchAndWorktree } = branchSelection;
 
-  const stableKey = useMemo(() => crypto.randomUUID(), []);
-
-  const { data: generatedName, isPending: isGenerating } = useQuery({
-    queryKey: ['generateTaskName', 'random', stableKey],
-    queryFn: () => rpc.tasks.generateTaskName({}),
-    enabled: autoGenerateName,
+  const {
+    data: pickedPhilosopher,
+    isPending: isPickingPhilosopher,
+    isError: pickPhilosopherFailed,
+  } = useQuery({
+    queryKey: ['pickPhilosopherName', selectedProjectId, createBranchAndWorktree],
+    queryFn: async () => {
+      const result = await rpc.tasks.pickPhilosopherName({ projectId: selectedProjectId! });
+      if ('type' in result) {
+        throw new Error(
+          result.type === 'project-not-found'
+            ? 'Project not found'
+            : 'No philosopher names are available for this repository'
+        );
+      }
+      return result;
+    },
+    enabled: createBranchAndWorktree && !!selectedProjectId,
     refetchOnWindowFocus: false,
   });
 
   const taskName = useTaskName({
-    generatedName: autoGenerateName ? generatedName : undefined,
-    isPending: autoGenerateName && isGenerating,
-    resetKey: selectedProjectId,
+    generatedName: createBranchAndWorktree ? pickedPhilosopher?.slug : undefined,
+    isPending: createBranchAndWorktree && isPickingPhilosopher,
+    resetKey: `${selectedProjectId}:${createBranchAndWorktree}`,
   });
 
   const branchNameState = useBranchName({
     taskName: taskName.taskName,
+    fixedBranchName: createBranchAndWorktree ? pickedPhilosopher?.branchName : undefined,
     projectId: selectedProjectId,
-    resetKey: selectedProjectId,
+    resetKey: `${selectedProjectId}:${createBranchAndWorktree}:${pickedPhilosopher?.slug ?? ''}`,
   });
 
   const isValid =
     taskName.taskName.trim().length > 0 &&
     branchNameState.branchName.trim().length > 0 &&
     branchSelection.selectedBranch !== undefined &&
-    !taskName.isPending;
+    !taskName.isPending &&
+    !(createBranchAndWorktree && pickPhilosopherFailed);
 
   return {
     ...branchSelection,
     ...taskName,
     ...branchNameState,
     isValid,
+    usesAutoAssignedName: createBranchAndWorktree,
   };
 }

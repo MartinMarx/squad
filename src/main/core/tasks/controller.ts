@@ -6,6 +6,7 @@ import type {
   TaskLifecycleStatus,
 } from '@shared/tasks';
 import { generateTaskName } from './name-generation/generateTaskName';
+import { pickPhilosopherName } from './name-generation/pickPhilosopherName';
 import { formatProvisionTaskError } from './provision-task-error';
 import { taskService } from './task-service';
 
@@ -54,4 +55,5 @@ export const taskController = createRPCController({
     return taskService.teardown(taskId, 'terminate');
   },
   generateTaskName,
+  pickPhilosopherName,
 });

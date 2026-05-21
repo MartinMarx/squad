@@ -66,12 +66,11 @@ export function FromIssueContent({
 
       <BranchPickerField
         state={state}
-        branchNameState={state}
         projectId={projectId}
         currentBranch={currentBranch}
         isUnborn={isUnborn}
       />
-      <TaskNameField state={state} />
+      {!state.usesAutoAssignedName && <TaskNameField state={state} />}
       <InitialConversationField
         state={initialConversation}
         linkedIssue={state.linkedIssue ?? undefined}

@@ -5,8 +5,10 @@ import {
   type interfaceSettingsSchema,
   type localProjectSettingsSchema,
   type notificationSettingsSchema,
+  type philosophersSettingsSchema,
   type projectSettingsSchema,
   type providerCustomConfigEntrySchema,
+  type resourceMonitorSettingsSchema,
   type taskSettingsSchema,
   type terminalSettingsSchema,
   type themeSchema,
@@ -19,6 +21,9 @@ export type TaskSettings = z.infer<typeof taskSettingsSchema>;
 export type AgentAutoApproveDefaults = z.infer<typeof agentAutoApproveDefaultsSchema>;
 export type TerminalSettings = z.infer<typeof terminalSettingsSchema>;
 export type Theme = z.infer<typeof themeSchema>;
+
+export type ResourceMonitorSettings = z.infer<typeof resourceMonitorSettingsSchema>;
+export type PhilosophersSettings = z.infer<typeof philosophersSettingsSchema>;
 
 export type InterfaceSettings = z.infer<typeof interfaceSettingsSchema>;
 export type ProviderCustomConfig = z.infer<typeof providerCustomConfigEntrySchema>;

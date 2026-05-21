@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useAppSettingsKey } from '@renderer/features/settings/use-app-settings-key';
 import { useTaskSettings } from '@renderer/features/tasks/hooks/useTaskSettings';
 import { rpc } from '@renderer/lib/ipc';
 import { type Branch } from '@shared/git';
 import type { PullRequest } from '@shared/pull-requests';
+import { resolveTaskBranchName } from '@shared/resolveTaskBranchName';
 import { useBranchSelection } from './use-branch-selection';
 import { useTaskName } from './use-task-name';
 
@@ -27,6 +29,8 @@ export function useFromPullRequestMode(
   }
   const branchSelection = useBranchSelection(selectedProjectId, defaultBranch, isUnborn);
   const { autoGenerateName } = useTaskSettings();
+  const { value: projectSettings } = useAppSettingsKey('project');
+  const usesAutoAssignedName = checkoutMode === 'new-branch';
 
   const shouldGenerate = autoGenerateName && linkedPR !== null;
 
@@ -49,6 +53,16 @@ export function useFromPullRequestMode(
 
   const isValid = taskName.taskName.trim().length > 0 && linkedPR !== null && !taskName.isPending;
 
+  const branchName =
+    usesAutoAssignedName && taskName.taskName.trim().length > 0
+      ? resolveTaskBranchName({
+          rawBranch: taskName.taskName,
+          branchPrefix: projectSettings?.branchPrefix ?? '',
+          suffix: '',
+          appendRandomSuffix: projectSettings?.appendRandomBranchSuffix ?? true,
+        })
+      : undefined;
+
   return {
     ...taskName,
     linkedPR,
@@ -56,6 +70,8 @@ export function useFromPullRequestMode(
     checkoutMode,
     setCheckoutMode,
     branchSelection,
+    branchName,
+    usesAutoAssignedName,
     isValid,
   };
 }

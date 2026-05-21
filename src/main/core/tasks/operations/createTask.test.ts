@@ -7,11 +7,13 @@ const mocks = vi.hoisted(() => ({
   update: vi.fn(),
   getProject: vi.fn(),
   getAppSetting: vi.fn(),
+  updateAppSetting: vi.fn(),
   getProjectRemoteInfo: vi.fn(),
   getTaskPullRequests: vi.fn(),
   findBranchAnywhere: vi.fn(),
   fetchPrForReview: vi.fn(),
   getConfiguredRemotes: vi.fn(),
+  createBranch: vi.fn(),
 }));
 
 vi.mock('@main/db/client', () => ({
@@ -30,6 +32,7 @@ vi.mock('@main/core/projects/project-manager', () => ({
 vi.mock('../../settings/settings-service', () => ({
   appSettingsService: {
     get: mocks.getAppSetting,
+    update: mocks.updateAppSetting,
   },
 }));
 
@@ -69,8 +72,12 @@ describe('createTask', () => {
       if (key === 'project') {
         return Promise.resolve({ branchPrefix: 'emdash', appendRandomBranchSuffix: true });
       }
+      if (key === 'philosophers') {
+        return Promise.resolve({ unlocked: [] });
+      }
       return Promise.resolve(undefined);
     });
+    mocks.updateAppSetting.mockResolvedValue(undefined);
 
     mocks.findBranchAnywhere.mockResolvedValue('/external/worktrees/pr-branch');
     mocks.fetchPrForReview.mockResolvedValue({ success: true });
@@ -83,6 +90,9 @@ describe('createTask', () => {
       repository: {
         getConfiguredRemotes: mocks.getConfiguredRemotes,
         fetchPrForReview: mocks.fetchPrForReview,
+        createBranch: mocks.createBranch,
+        getRepositoryInfo: vi.fn().mockResolvedValue({ isUnborn: false, currentBranch: 'main' }),
+        publishBranch: vi.fn().mockResolvedValue({ success: true }),
       },
     });
     mocks.getProjectRemoteInfo.mockResolvedValue({ status: 'unavailable' });
@@ -175,5 +185,30 @@ describe('createTask', () => {
         sourceBranch: { type: 'local', branch: 'claude/add-french-translations-ud2fs' },
       })
     );
+  });
+
+  it('unlocks a philosopher when creating a worktree task with a philosopher slug', async () => {
+    mocks.createBranch.mockResolvedValue({ success: true });
+
+    const insertTaskValues = vi.fn((values: Partial<TaskRow>) => ({
+      returning: vi.fn().mockResolvedValue([makeTaskRow(values)]),
+    }));
+    const insertWorkspaceValues = vi.fn().mockResolvedValue(undefined);
+    mocks.insert
+      .mockReturnValueOnce({ values: insertTaskValues })
+      .mockReturnValueOnce({ values: insertWorkspaceValues });
+
+    const result = await createTask({
+      id: 'task-1',
+      projectId: 'project-1',
+      name: 'plato',
+      sourceBranch: { type: 'local', branch: 'main' },
+      strategy: { kind: 'new-branch', taskBranch: 'emdash/plato', pushBranch: false },
+    });
+
+    expect(result.success).toBe(true);
+    expect(mocks.updateAppSetting).toHaveBeenCalledWith('philosophers', {
+      unlocked: ['plato'],
+    });
   });
 });

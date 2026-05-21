@@ -37,7 +37,7 @@ export function FromPrContent({
         onPushBranchChange={state.branchSelection.setPushBranch}
         disabled={disabled}
       />
-      <TaskNameField state={state} />
+      {!state.usesAutoAssignedName && <TaskNameField state={state} />}
       <InitialConversationField state={initialConversation} />
     </div>
   );
