@@ -1,4 +1,4 @@
-import { FolderInput, Library, MessageSquareShare, Settings } from 'lucide-react';
+import { FolderInput, Library, Settings } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import {
@@ -6,7 +6,6 @@ import {
   useNavigate,
   useWorkspaceSlots,
 } from '@renderer/lib/layout/navigation-provider';
-import { useShowModal } from '@renderer/lib/modal/modal-provider';
 import { BoundShortcut } from '@renderer/lib/ui/shortcut';
 import { cn } from '@renderer/utils/utils';
 import { SidebarPinnedTaskList } from './pinned-task-list';
@@ -23,14 +22,12 @@ import {
 import { SidebarSearchTrigger } from './sidebar-search-trigger';
 import { SidebarSpace } from './sidebar-space';
 import { SidebarVirtualList } from './sidebar-virtual-list';
-import { UpdateSection } from './update-section';
 import { useSidebarDrop } from './use-sidebar-drop';
 
 export const LeftSidebar: React.FC = observer(function LeftSidebar() {
   const { navigate } = useNavigate();
   const { currentView } = useWorkspaceSlots();
 
-  const showFeedbackModal = useShowModal('feedbackModal');
   const { isDragOver, onDragOver, onDragEnter, onDragLeave, onDrop } = useSidebarDrop();
 
   return (
@@ -95,17 +92,6 @@ export const LeftSidebar: React.FC = observer(function LeftSidebar() {
             </SidebarMenuButton>
           </SidebarMenu>
         </SidebarFooter>
-        <div className="flex items-center justify-between gap-2 border-t border-border px-3 py-2">
-          <button
-            type="button"
-            className="flex h-6 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm text-foreground-muted focus:outline-none focus-visible:outline-none"
-            onClick={() => showFeedbackModal({})}
-          >
-            <MessageSquareShare className="size-4 shrink-0" />
-            <span className="truncate">Give feedback</span>
-          </button>
-          <UpdateSection />
-        </div>
       </SidebarContainer>
     </div>
   );

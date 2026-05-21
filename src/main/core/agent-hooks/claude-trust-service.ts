@@ -1,20 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import type { IExecutionContext } from '@main/core/execution-context/types';
-import {
-  FileSystemError,
-  FileSystemErrorCodes,
-  type FileSystemProvider,
-} from '@main/core/fs/types';
 import { appSettingsService } from '@main/core/settings/settings-service';
-import { resolveRemoteHome } from '@main/core/ssh/utils';
 import { log } from '@main/lib/logger';
 import type { AgentProviderId } from '@shared/agent-provider-registry';
 
 const CLAUDE_PROVIDER_ID: AgentProviderId = 'claude';
 const CLAUDE_CONFIG_NAME = '.claude.json';
-const CLAUDE_CONFIG_MAX_BYTES = 2 * 1024 * 1024;
 
 export class ClaudeTrustService {
   private readonly configLocks = new Map<string, Promise<void>>();
@@ -42,32 +34,6 @@ export class ClaudeTrustService {
       this.ensureTrusted(normalizedPath, {
         readConfig: () => readLocalConfig(configPath),
         writeConfig: (content) => writeLocalConfigAtomic(configPath, content),
-      })
-    );
-  }
-
-  async maybeAutoTrustSsh({
-    providerId,
-    cwd,
-    ctx,
-    remoteFs,
-  }: {
-    providerId: AgentProviderId;
-    cwd?: string;
-    ctx: IExecutionContext;
-    remoteFs: Pick<FileSystemProvider, 'realPath' | 'read' | 'write'>;
-  }): Promise<void> {
-    if (!cwd) return;
-    if (!(await this.shouldAutoTrust(providerId))) return;
-
-    const normalizedPath = await remoteFs.realPath(cwd).catch(() => path.posix.resolve('/', cwd));
-    const homeDir = await resolveRemoteHome(ctx);
-    const configPath = path.posix.join(homeDir, CLAUDE_CONFIG_NAME);
-
-    await this.withLock(configPath, () =>
-      this.ensureTrusted(normalizedPath, {
-        readConfig: () => readRemoteConfig(remoteFs, configPath),
-        writeConfig: (content) => writeRemoteConfigAtomic(remoteFs, ctx, configPath, content),
       })
     );
   }
@@ -175,43 +141,8 @@ async function writeLocalConfigAtomic(configPath: string, content: string): Prom
   }
 }
 
-async function readRemoteConfig(
-  remoteFs: Pick<FileSystemProvider, 'read'>,
-  configPath: string
-): Promise<string | null> {
-  try {
-    const result = await remoteFs.read(configPath, CLAUDE_CONFIG_MAX_BYTES);
-    return result.content;
-  } catch (error: unknown) {
-    if (isFsNotFound(error)) return null;
-    throw error;
-  }
-}
-
-async function writeRemoteConfigAtomic(
-  remoteFs: Pick<FileSystemProvider, 'write'>,
-  ctx: IExecutionContext,
-  configPath: string,
-  content: string
-): Promise<void> {
-  const tmpPath = `${configPath}.${randomUUID()}.tmp`;
-  try {
-    await remoteFs.write(tmpPath, content);
-    await ctx.exec('mv', [tmpPath, configPath]);
-  } catch (error: unknown) {
-    try {
-      await ctx.exec('rm', ['-f', tmpPath]);
-    } catch {}
-    throw error;
-  }
-}
-
 function isNodeNotFound(error: unknown): boolean {
   return (error as NodeJS.ErrnoException)?.code === 'ENOENT';
-}
-
-function isFsNotFound(error: unknown): boolean {
-  return error instanceof FileSystemError && error.code === FileSystemErrorCodes.NOT_FOUND;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

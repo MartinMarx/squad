@@ -5,7 +5,6 @@ import { viewStateService } from '@main/core/view-state/view-state-service';
 import { db } from '@main/db/client';
 import { tasks, workspaces } from '@main/db/schema';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import type { DeleteTaskOptions } from '@shared/tasks';
 import { removeWorktreeIfUnused } from './task-lifecycle-utils';
 
@@ -44,7 +43,6 @@ export async function deleteTask(
 
   await db.delete(tasks).where(eq(tasks.id, taskId));
   void viewStateService.del(`task:${taskId}`);
-  telemetryService.capture('task_deleted', { project_id: projectId, task_id: taskId });
 
   if (project && deleteWorktree) {
     const worktreeRemoved = await removeWorktreeIfUnused(task, project, false);

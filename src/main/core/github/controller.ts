@@ -3,16 +3,12 @@ import * as path from 'node:path';
 import { ACCOUNT_CONFIG } from '@main/core/account/config';
 import { GitHubAuthExecutionContext } from '@main/core/execution-context/github-auth-execution-context';
 import { LocalExecutionContext } from '@main/core/execution-context/local-execution-context';
-import { SshExecutionContext } from '@main/core/execution-context/ssh-execution-context';
 import { LocalFileSystem } from '@main/core/fs/impl/local-fs';
-import { SshFileSystem } from '@main/core/fs/impl/ssh-fs';
 import type { FileSystemProvider } from '@main/core/fs/types';
 import { cloneRepository, initializeNewProject } from '@main/core/git/impl/git-repo-utils';
 import { githubConnectionService } from '@main/core/github/services/github-connection-service';
 import { repoService } from '@main/core/github/services/repo-service';
-import { sshConnectionManager } from '@main/core/ssh/ssh-connection-manager';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import type {
   GitHubAuthResponse,
   GitHubConnectResponse,
@@ -34,9 +30,6 @@ export const githubController = createRPCController({
   auth: async (): Promise<GitHubAuthResponse> => {
     try {
       const result = await githubConnectionService.startDeviceFlowAuth();
-      if (result.success) {
-        telemetryService.capture('integration_connected', { provider: 'github' });
-      }
       return result;
     } catch (error) {
       log.error('GitHub authentication failed:', error);
@@ -48,9 +41,6 @@ export const githubController = createRPCController({
     try {
       const { baseUrl } = ACCOUNT_CONFIG.authServer;
       const result = await githubConnectionService.startOAuthFlow(baseUrl);
-      if (result.success) {
-        telemetryService.capture('integration_connected', { provider: 'github' });
-      }
       return result;
     } catch (error) {
       log.error('GitHub OAuth connect failed:', error);
@@ -80,7 +70,6 @@ export const githubController = createRPCController({
   logout: async () => {
     try {
       await githubConnectionService.logout();
-      telemetryService.capture('integration_disconnected', { provider: 'github' });
       return { success: true };
     } catch (error) {
       log.error('GitHub logout failed:', error);
@@ -225,25 +214,13 @@ export const githubController = createRPCController({
     }
   },
 
-  cloneRepository: async (repoUrl: string, targetPath: string, connectionId?: string) => {
+  cloneRepository: async (repoUrl: string, targetPath: string) => {
     try {
-      let ctx;
-      let parentFs: FileSystemProvider;
-
-      if (connectionId) {
-        const proxy = await sshConnectionManager.connect(connectionId);
-        ctx = new GitHubAuthExecutionContext(
-          new SshExecutionContext(proxy, { root: path.posix.dirname(targetPath) }),
-          () => githubConnectionService.getToken()
-        );
-        parentFs = new SshFileSystem(proxy, path.posix.dirname(targetPath));
-      } else {
-        ctx = new GitHubAuthExecutionContext(
-          new LocalExecutionContext({ root: path.dirname(targetPath) }),
-          () => githubConnectionService.getToken()
-        );
-        parentFs = new LocalFileSystem(path.dirname(targetPath));
-      }
+      const ctx = new GitHubAuthExecutionContext(
+        new LocalExecutionContext({ root: path.dirname(targetPath) }),
+        () => githubConnectionService.getToken()
+      );
+      const parentFs: FileSystemProvider = new LocalFileSystem(path.dirname(targetPath));
 
       await parentFs.mkdir('.', { recursive: true });
       return await cloneRepository(repoUrl, targetPath, ctx);
@@ -260,26 +237,13 @@ export const githubController = createRPCController({
     targetPath: string;
     name: string;
     description?: string;
-    connectionId?: string;
   }) => {
     try {
-      let ctx;
-      let projectFs: FileSystemProvider;
-
-      if (params.connectionId) {
-        const proxy = await sshConnectionManager.connect(params.connectionId);
-        ctx = new GitHubAuthExecutionContext(
-          new SshExecutionContext(proxy, { root: params.targetPath }),
-          () => githubConnectionService.getToken()
-        );
-        projectFs = new SshFileSystem(proxy, params.targetPath);
-      } else {
-        ctx = new GitHubAuthExecutionContext(
-          new LocalExecutionContext({ root: params.targetPath }),
-          () => githubConnectionService.getToken()
-        );
-        projectFs = new LocalFileSystem(params.targetPath);
-      }
+      const ctx = new GitHubAuthExecutionContext(
+        new LocalExecutionContext({ root: params.targetPath }),
+        () => githubConnectionService.getToken()
+      );
+      const projectFs: FileSystemProvider = new LocalFileSystem(params.targetPath);
 
       await initializeNewProject(
         {

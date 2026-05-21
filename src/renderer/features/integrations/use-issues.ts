@@ -8,10 +8,6 @@ const INITIAL_FETCH_LIMIT = 50;
 const SEARCH_LIMIT = 20;
 const SEARCH_DEBOUNCE_MS = 300;
 
-const SEARCH_MIN_LENGTH_BY_PROVIDER: Partial<Record<IssueProviderType, number>> = {
-  plain: 2,
-};
-
 export interface UseIssuesResult {
   issues: Issue[];
   isLoading: boolean;
@@ -28,11 +24,6 @@ interface UseIssuesOptions {
   enabled?: boolean;
   initialLimit?: number;
   searchLimit?: number;
-}
-
-function getSearchMinLength(provider: IssueProviderType | null): number {
-  if (!provider) return 1;
-  return SEARCH_MIN_LENGTH_BY_PROVIDER[provider] ?? 1;
 }
 
 export function useIssues(
@@ -90,7 +81,7 @@ export function useIssues(
     placeholderData: keepPreviousData,
   });
 
-  const minSearchLength = getSearchMinLength(provider);
+  const minSearchLength = 1;
   const isActiveSearch = debouncedTerm.trim().length >= minSearchLength;
 
   const { data: searchIssues, isFetching: isSearching } = useQuery({

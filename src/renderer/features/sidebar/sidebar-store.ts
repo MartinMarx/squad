@@ -10,7 +10,7 @@ import {
   type TaskStore,
 } from '@renderer/features/tasks/stores/task-store';
 import type { Snapshottable } from '@renderer/lib/stores/snapshottable';
-import { type LocalProject, type SshProject } from '@shared/projects';
+import { type LocalProject } from '@shared/projects';
 import type { SidebarSnapshot, SidebarTaskSortBy } from '@shared/view-state';
 
 function parseSidebarTaskSortBy(value: unknown): SidebarTaskSortBy | undefined {
@@ -79,7 +79,7 @@ export class SidebarStore implements Snapshottable<SidebarSnapshot> {
 
     const unregistered = all.filter((p): p is UnregisteredProject => p.state === 'unregistered');
     const real = all.filter(
-      (p): p is ProjectStore & { data: LocalProject | SshProject } => p.state !== 'unregistered'
+      (p): p is ProjectStore & { data: LocalProject } => p.state !== 'unregistered'
     );
 
     const sorted = [...real].sort((a, b) => {

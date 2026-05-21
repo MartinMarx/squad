@@ -2,20 +2,12 @@ import { exec } from 'node:child_process';
 import { readFile, realpath, stat } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { extname, resolve, sep } from 'node:path';
-import { eq } from 'drizzle-orm';
 import { app, clipboard, dialog, shell } from 'electron';
 import { getMainWindow } from '@main/app/window';
-import { db } from '@main/db/client';
-import { sshConnections } from '@main/db/schema';
 import { events } from '@main/lib/events';
 import type { IDisposable, IInitializable } from '@main/lib/lifecycle';
 import { log } from '@main/lib/logger';
 import { buildExternalToolEnv } from '@main/utils/childProcessEnv';
-import {
-  buildRemoteEditorUrl,
-  buildRemoteSshCommand,
-  buildRemoteTerminalExecArgs,
-} from '@main/utils/remoteOpenIn';
 import { appPasteChannel, appRedoChannel, appUndoChannel } from '@shared/events/appEvents';
 import {
   getAppById,
@@ -30,8 +22,6 @@ import {
   checkMacApp,
   checkMacAppByName,
   checkMacMdfindQuery,
-  escapeAppleScriptString,
-  execFileCommand,
   listInstalledFontsAll,
   resolveAppVersion,
 } from './utils';
@@ -49,11 +39,6 @@ const AUDIO_MIME_TYPES: Record<string, string> = {
   '.opus': 'audio/ogg',
   '.wav': 'audio/wav',
   '.webm': 'audio/webm',
-};
-
-type RemoteTerminalLaunchAttempt = {
-  file: string;
-  args: string[];
 };
 
 class AppService implements IInitializable, IDisposable {
@@ -196,13 +181,8 @@ class AppService implements IInitializable, IDisposable {
     app.quit();
   }
 
-  async openIn(args: {
-    app: OpenInAppId;
-    path: string;
-    isRemote?: boolean;
-    sshConnectionId?: string | null;
-  }): Promise<void> {
-    const { path: target, app: appId, isRemote = false, sshConnectionId } = args;
+  async openIn(args: { app: OpenInAppId; path: string }): Promise<void> {
+    const { path: target, app: appId } = args;
 
     if (!target || typeof target !== 'string' || !appId) {
       throw new Error('Invalid arguments');
@@ -219,170 +199,7 @@ class AppService implements IInitializable, IDisposable {
       throw new Error(`${label} is not available on this platform.`);
     }
 
-    if (isRemote && sshConnectionId) {
-      await this.openInRemote({ appId, appConfig, label, target, platform, sshConnectionId });
-      return;
-    }
-
     await this.openInLocal({ label, target, platformConfig });
-  }
-
-  private async openInRemote(args: {
-    appId: OpenInAppId;
-    appConfig: ReturnType<typeof getAppById>;
-    label: string;
-    target: string;
-    platform: PlatformKey;
-    sshConnectionId: string;
-  }): Promise<void> {
-    const { appId, appConfig, label, target, platform, sshConnectionId } = args;
-
-    const [connection] = await db
-      .select()
-      .from(sshConnections)
-      .where(eq(sshConnections.id, sshConnectionId))
-      .limit(1);
-
-    if (!connection) throw new Error('SSH connection not found');
-
-    const { host, username, port } = connection;
-
-    if (appId === 'vscode' || appId === 'vscodium' || appId === 'cursor' || appId === 'zed') {
-      await shell.openExternal(buildRemoteEditorUrl(appId, host, username, target));
-      return;
-    }
-
-    if ((appId === 'terminal' || appId === 'iterm2') && platform === 'darwin') {
-      const sshCommand = buildRemoteSshCommand({ host, username, port, targetPath: target });
-      const escapedCommand = escapeAppleScriptString(sshCommand);
-      const appName = appId === 'terminal' ? 'Terminal' : 'iTerm';
-      const script =
-        appId === 'terminal'
-          ? `tell application "${appName}" to do script "${escapedCommand}"`
-          : `tell application "${appName}" to create window with default profile command "${escapedCommand}"`;
-      await execFileCommand('osascript', [
-        '-e',
-        script,
-        '-e',
-        `tell application "${appName}" to activate`,
-      ]);
-      return;
-    }
-
-    if (appId === 'warp' && platform === 'darwin') {
-      const sshCommand = buildRemoteSshCommand({ host, username, port, targetPath: target });
-      await shell.openExternal(`warp://action/new_window?cmd=${encodeURIComponent(sshCommand)}`);
-      return;
-    }
-
-    if (appId === 'ghostty') {
-      const remoteExecArgs = buildRemoteTerminalExecArgs({
-        host,
-        username,
-        port,
-        targetPath: target,
-      });
-      const attempts =
-        platform === 'darwin'
-          ? [
-              {
-                file: 'open',
-                args: ['-n', '-b', 'com.mitchellh.ghostty', '--args', '-e', ...remoteExecArgs],
-              },
-              { file: 'open', args: ['-na', 'Ghostty', '--args', '-e', ...remoteExecArgs] },
-              { file: 'ghostty', args: ['-e', ...remoteExecArgs] },
-            ]
-          : [{ file: 'ghostty', args: ['-e', ...remoteExecArgs] }];
-
-      await this.launchRemoteTerminal('Ghostty', attempts);
-      return;
-    }
-
-    if (appId === 'kitty') {
-      const remoteExecArgs = buildRemoteTerminalExecArgs({
-        host,
-        username,
-        port,
-        targetPath: target,
-      });
-      const attempts =
-        platform === 'darwin'
-          ? [
-              {
-                file: 'open',
-                args: ['-n', '-b', 'net.kovidgoyal.kitty', '--args', ...remoteExecArgs],
-              },
-              { file: 'open', args: ['-na', 'kitty', '--args', ...remoteExecArgs] },
-              { file: 'kitty', args: remoteExecArgs },
-            ]
-          : [{ file: 'kitty', args: remoteExecArgs }];
-
-      await this.launchRemoteTerminal('Kitty', attempts);
-      return;
-    }
-
-    if (appId === 'alacritty') {
-      const remoteExecArgs = buildRemoteTerminalExecArgs({
-        host,
-        username,
-        port,
-        targetPath: target,
-      });
-      const attempts =
-        platform === 'darwin'
-          ? [
-              {
-                file: 'open',
-                args: ['-n', '-b', 'org.alacritty', '--args', '-e', ...remoteExecArgs],
-              },
-              { file: 'open', args: ['-na', 'Alacritty', '--args', '-e', ...remoteExecArgs] },
-              { file: 'alacritty', args: ['-e', ...remoteExecArgs] },
-            ]
-          : [{ file: 'alacritty', args: ['-e', ...remoteExecArgs] }];
-
-      await this.launchRemoteTerminal('Alacritty', attempts);
-      return;
-    }
-
-    if (appId === 'kaku') {
-      const remoteExecArgs = buildRemoteTerminalExecArgs({
-        host,
-        username,
-        port,
-        targetPath: target,
-      });
-      const attempts =
-        platform === 'darwin'
-          ? [
-              { file: 'open', args: ['-na', 'Kaku', '--args', 'start', '--', ...remoteExecArgs] },
-              { file: 'kaku', args: ['start', '--', ...remoteExecArgs] },
-            ]
-          : [{ file: 'kaku', args: ['start', '--', ...remoteExecArgs] }];
-
-      await this.launchRemoteTerminal('Kaku', attempts);
-      return;
-    }
-
-    if (appConfig?.supportsRemote) {
-      throw new Error(`Remote SSH not yet implemented for ${label}`);
-    }
-  }
-
-  private async launchRemoteTerminal(
-    label: string,
-    attempts: RemoteTerminalLaunchAttempt[]
-  ): Promise<void> {
-    let lastError: unknown = null;
-    for (const attempt of attempts) {
-      try {
-        await execFileCommand(attempt.file, attempt.args);
-        return;
-      } catch (error) {
-        lastError = error;
-      }
-    }
-    if (lastError instanceof Error) throw lastError;
-    throw new Error(`Unable to launch ${label}`);
   }
 
   private async openInLocal(args: {

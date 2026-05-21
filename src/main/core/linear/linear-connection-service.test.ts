@@ -31,10 +31,6 @@ vi.mock('./linear-mcp-issue-service', () => ({
     mockInvalidateLinearIssueListCache(...args),
 }));
 
-vi.mock('@main/lib/telemetry', () => ({
-  telemetryService: { capture: vi.fn() },
-}));
-
 describe('LinearConnectionService', () => {
   beforeEach(() => {
     vi.clearAllMocks();

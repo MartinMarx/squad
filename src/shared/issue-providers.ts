@@ -16,30 +16,6 @@ export const ISSUE_PROVIDER_CAPABILITIES: Record<IssueProviderType, IssueProvide
     requiresProjectPath: false,
     requiresRepositoryUrl: true,
   },
-  jira: {
-    requiresProjectPath: false,
-    requiresRepositoryUrl: false,
-  },
-  gitlab: {
-    requiresProjectPath: true,
-    requiresRepositoryUrl: false,
-  },
-  forgejo: {
-    requiresProjectPath: true,
-    requiresRepositoryUrl: false,
-  },
-  featurebase: {
-    requiresProjectPath: false,
-    requiresRepositoryUrl: false,
-  },
-  plain: {
-    requiresProjectPath: false,
-    requiresRepositoryUrl: false,
-  },
-  asana: {
-    requiresProjectPath: false,
-    requiresRepositoryUrl: false,
-  },
 };
 
 export type ConnectionStatus = {

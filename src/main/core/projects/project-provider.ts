@@ -26,7 +26,6 @@ export type ProvisionResult = {
   persistData: {
     workspaceId: string;
     workspaceProviderData?: WorkspaceProviderData;
-    sshConnectionId?: string;
     worktreeGitDir?: string;
   };
 };
@@ -41,7 +40,7 @@ export interface TaskProvider {
 }
 
 /**
- * Transport-specific dependencies: the only things that differ between local and SSH.
+ * Transport-specific dependencies for local projects.
  * Pure data — no lifecycle methods.
  */
 export type ProjectProviderTransport = {

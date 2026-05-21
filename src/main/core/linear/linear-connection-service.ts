@@ -1,5 +1,4 @@
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { ISSUE_PROVIDER_CAPABILITIES, type ConnectionStatus } from '@shared/issue-providers';
 import {
   getLinearWorkspaceName,
@@ -24,8 +23,6 @@ export class LinearConnectionService {
       const workspaceName = await getLinearWorkspaceName().catch(() => undefined);
       await setStoredLinearWorkspaceName(workspaceName);
 
-      telemetryService.capture('integration_connected', { provider: 'linear' });
-
       return {
         success: true,
         workspaceName,
@@ -46,7 +43,6 @@ export class LinearConnectionService {
       this.cancelOAuth();
       invalidateLinearIssueListCache();
       await clearLinearMcpOAuthCredentials();
-      telemetryService.capture('integration_disconnected', { provider: 'linear' });
       return { success: true };
     } catch (error) {
       log.error('Failed to clear Linear OAuth credentials:', error);

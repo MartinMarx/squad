@@ -46,27 +46,8 @@ const IntegrationsCard: React.FC = () => {
     isLinearConnected,
     isLinearLoading,
     disconnectLinear,
-    isJiraConnected,
-    isJiraLoading,
-    disconnectJira,
-    isGitlabConnected,
-    isGitlabLoading,
-    disconnectGitlab,
-    isPlainConnected,
-    isPlainLoading,
-    disconnectPlain,
-    isForgejoConnected,
-    isForgejoLoading,
-    disconnectForgejo,
-    isFeaturebaseConnected,
-    isFeaturebaseLoading,
-    disconnectFeaturebase,
-    isAsanaConnected,
-    isAsanaLoading,
-    disconnectAsana,
   } = useIntegrationsContext();
 
-  const showIntegrationSetup = useShowModal('integrationSetupModal');
   const showGithubConnect = useShowModal('githubConnectModal');
   const showLinearConnect = useShowModal('linearConnectModal');
   const showConfirmDisconnect = useShowModal('confirmActionModal');
@@ -187,97 +168,6 @@ const IntegrationsCard: React.FC = () => {
         confirmDisconnect({
           name: 'Linear',
           onDisconnect: disconnectLinear,
-        }),
-    },
-    {
-      id: 'jira',
-      name: 'Jira',
-      description:
-        isJiraConnected && connectionStatus.jira.displayName
-          ? connectionStatus.jira.displayName
-          : 'Work on Jira tickets',
-      connected: !!isJiraConnected,
-      loading: isJiraLoading,
-      onConnect: () => showIntegrationSetup({ integration: 'jira' }),
-      onDisconnect: () =>
-        confirmDisconnect({
-          name: 'Jira',
-          credential: 'credentials',
-          onDisconnect: disconnectJira,
-        }),
-    },
-    {
-      id: 'gitlab',
-      name: 'GitLab',
-      description:
-        isGitlabConnected && connectionStatus.gitlab.displayName
-          ? connectionStatus.gitlab.displayName
-          : 'Work on GitLab issues',
-      connected: !!isGitlabConnected,
-      loading: isGitlabLoading,
-      onConnect: () => showIntegrationSetup({ integration: 'gitlab' }),
-      onDisconnect: () =>
-        confirmDisconnect({
-          name: 'GitLab',
-          credential: 'credentials',
-          onDisconnect: disconnectGitlab,
-        }),
-    },
-    {
-      id: 'plain',
-      name: 'Plain',
-      description: 'Work on Plain threads',
-      connected: !!isPlainConnected,
-      loading: isPlainLoading,
-      onConnect: () => showIntegrationSetup({ integration: 'plain' }),
-      onDisconnect: () =>
-        confirmDisconnect({
-          name: 'Plain',
-          credential: 'API key',
-          onDisconnect: disconnectPlain,
-        }),
-    },
-    {
-      id: 'forgejo',
-      name: 'Forgejo',
-      description:
-        isForgejoConnected && connectionStatus.forgejo.displayName
-          ? connectionStatus.forgejo.displayName
-          : 'Work on Forgejo issues',
-      connected: !!isForgejoConnected,
-      loading: isForgejoLoading,
-      onConnect: () => showIntegrationSetup({ integration: 'forgejo' }),
-      onDisconnect: () =>
-        confirmDisconnect({
-          name: 'Forgejo',
-          credential: 'credentials',
-          onDisconnect: disconnectForgejo,
-        }),
-    },
-    {
-      id: 'featurebase',
-      name: 'Featurebase',
-      description: 'Work on Featurebase posts',
-      connected: !!isFeaturebaseConnected,
-      loading: isFeaturebaseLoading,
-      onConnect: () => showIntegrationSetup({ integration: 'featurebase' }),
-      onDisconnect: disconnectFeaturebase,
-    },
-    {
-      id: 'asana',
-      name: 'Asana',
-      description:
-        isAsanaConnected && connectionStatus.asana.displayName
-          ? connectionStatus.asana.displayName
-          : 'Work on Asana tasks',
-      connected: !!isAsanaConnected,
-      loading: isAsanaLoading,
-      onConnect: () => showIntegrationSetup({ integration: 'asana' }),
-      onDisconnect: () =>
-        confirmDisconnect({
-          name: 'Asana',
-          credential: 'access token',
-          onDisconnect: disconnectAsana,
         }),
     },
   ];

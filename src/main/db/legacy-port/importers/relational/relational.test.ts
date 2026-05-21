@@ -252,63 +252,30 @@ describe('legacy-port table passes', () => {
       mergedLegacyTaskIds: taskResult.mergedLegacyTaskIds,
     });
 
-    expect(sshSummary.considered).toBe(1);
-    expect(sshSummary.skippedDedup).toBe(1);
-    expect(remap.sshConnectionId.get('ssh-legacy-1')).toBe('ssh-beta');
+    expect(sshSummary.considered).toBe(0);
 
     expect(projectsSummary.considered).toBe(3);
     expect(projectsSummary.skippedDedup).toBe(1);
-    expect(projectsSummary.skippedInvalid).toBe(1);
+    expect(projectsSummary.skippedInvalid).toBe(2);
     expect(remap.projectId.get('proj-legacy-local')).toBe('proj-beta-local');
-
-    const mappedSshProjectId = remap.projectId.get('proj-legacy-ssh');
-    expect(mappedSshProjectId).toBeTruthy();
+    expect(remap.projectId.get('proj-legacy-ssh')).toBeUndefined();
 
     expect(taskResult.summary.considered).toBe(2);
     expect(taskResult.summary.skippedDedup).toBe(1);
+    expect(taskResult.summary.skippedError).toBe(1);
     expect(remap.taskId.get('task-legacy-merged')).toBe('task-beta-existing');
     expect(taskResult.mergedLegacyTaskIds.has('task-legacy-merged')).toBe(true);
-
-    const insertedTaskId = remap.taskId.get('task-legacy-new');
-    expect(insertedTaskId).toBeTruthy();
-
-    const insertedTask = appSqlite
-      .prepare(
-        `SELECT project_id, status, source_branch, task_branch, status_changed_at, last_interacted_at, is_pinned FROM tasks WHERE id = ?`
-      )
-      .get(insertedTaskId) as {
-      project_id: string;
-      status: string;
-      source_branch: string | null;
-      task_branch: string;
-      status_changed_at: string | null;
-      last_interacted_at: string | null;
-      is_pinned: number;
-    };
-
-    expect(insertedTask.project_id).toBe(mappedSshProjectId);
-    expect(insertedTask.status).toBe('in_progress');
-    expect(insertedTask.source_branch).toBeNull();
-    expect(insertedTask.task_branch).toBe('feature/new-legacy');
-    expect(insertedTask.status_changed_at).toBe('2026-01-02T12:00:00.000Z');
-    expect(insertedTask.last_interacted_at).toBe('2026-01-02T12:00:00.000Z');
-    expect(insertedTask.is_pinned).toBe(0);
+    expect(remap.taskId.get('task-legacy-new')).toBeUndefined();
 
     expect(conversationsSummary.considered).toBe(2);
     expect(conversationsSummary.skippedDedup).toBe(1);
+    expect(conversationsSummary.skippedError).toBe(1);
 
     const conversations = appSqlite
       .prepare(`SELECT id, task_id, project_id, title FROM conversations ORDER BY id ASC`)
       .all() as Array<{ id: string; task_id: string; project_id: string; title: string }>;
 
-    expect(conversations).toEqual([
-      {
-        id: 'conv-legacy-new',
-        task_id: insertedTaskId!,
-        project_id: mappedSshProjectId!,
-        title: 'New conversation',
-      },
-    ]);
+    expect(conversations).toEqual([]);
   });
 
   it('imports direct legacy tasks as source-branch-only when use_worktree is false', async () => {

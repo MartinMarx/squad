@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   makeClaudeHookCommand,
   makeCodexHookCommand,
-  makeOpenCodePluginContent,
 } from './agent-notify-command';
 
 function decodeWindowsHookCommand(command: string): string {
@@ -58,16 +57,5 @@ describe('makeCodexHookCommand', () => {
     expect(script).toContain('X-Emdash-Pty-Id');
     expect(script).toContain('$payload = \'{"notification_type":"permission_prompt"}\'');
     expect(script).toContain("'X-Emdash-Event-Type' = 'notification'");
-  });
-});
-
-describe('makeOpenCodePluginContent', () => {
-  it('posts OpenCode session events to the Emdash hook server', () => {
-    const content = makeOpenCodePluginContent();
-
-    expect(content).toContain('EMDASH_HOOK_PORT');
-    expect(content).toContain("event.type === 'session.idle'");
-    expect(content).toContain("event.type === 'session.error'");
-    expect(content).toContain("'X-Emdash-Event-Type': payload.type");
   });
 });

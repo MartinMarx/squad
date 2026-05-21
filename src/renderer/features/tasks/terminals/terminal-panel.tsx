@@ -29,7 +29,6 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
   const terminalTabView = taskView.terminalTabs;
   const lifecycleScriptsMgr = workspace.lifecycleScripts ?? null;
   const isActive = useIsActiveTask(taskId);
-  const remoteConnectionId = workspace.sshConnectionId;
   const [isPanelFocused, setIsPanelFocused] = useState(false);
 
   const autoFocus =
@@ -138,7 +137,6 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
           paneId="terminal-drawer"
           autoFocus={autoFocus}
           emptyState={emptyState}
-          remoteConnectionId={remoteConnectionId}
         />
       </ResizablePanel>
       <ResizableHandle

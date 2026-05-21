@@ -1,7 +1,6 @@
-import { Loader2, TriangleAlert, Unplug } from 'lucide-react';
+import { Loader2, TriangleAlert } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from '@renderer/lib/layout/navigation-provider';
-import { appState } from '@renderer/lib/stores/app-state';
 import { isUnregisteredProject } from '../../stores/project';
 import {
   getProjectManagerStore,
@@ -29,11 +28,6 @@ export const ProjectMainPanel = observer(function ProjectMainPanel() {
 
   if (kind === 'path_not_found') {
     return <ProjectPathNotFoundPanel path={store?.error ?? ''} projectId={projectId} />;
-  }
-
-  if (kind === 'ssh_disconnected') {
-    const connectionId = store?.error ?? '';
-    return <ProjectSshDisconnectedPanel connectionId={connectionId} projectId={projectId} />;
   }
 
   if (kind === 'mount_error') {
@@ -64,40 +58,6 @@ function ProjectBootstrapErrorPanel({ message }: { message: string }) {
           Failed to set up project
         </p>
         <p className="font-mono text-xs text-foreground-passive">{message}</p>
-      </div>
-    </div>
-  );
-}
-
-function ProjectSshDisconnectedPanel({
-  connectionId,
-  projectId,
-}: {
-  connectionId: string;
-  projectId: string;
-}) {
-  const handleReconnect = () => {
-    void appState.sshConnections
-      .connect(connectionId)
-      .then(() => getProjectManagerStore().mountProject(projectId))
-      .catch(() => {});
-  };
-
-  return (
-    <div className="flex h-full w-full flex-col items-center justify-center p-8">
-      <div className="flex max-w-sm flex-col items-center gap-3 text-center">
-        <Unplug className="h-6 w-6 text-foreground-passive" />
-        <p className="font-mono text-sm font-medium text-foreground">SSH not connected</p>
-        <p className="text-xs text-foreground-passive">
-          The SSH connection for this project is unavailable.
-        </p>
-        <button
-          type="button"
-          className="mt-2 text-xs text-foreground underline underline-offset-2 transition-colors hover:text-foreground/80"
-          onClick={handleReconnect}
-        >
-          Reconnect
-        </button>
       </div>
     </div>
   );

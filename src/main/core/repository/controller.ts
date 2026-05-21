@@ -1,5 +1,4 @@
 import { events } from '@main/lib/events';
-import { telemetryService } from '@main/lib/telemetry';
 import { gitRefChangedChannel } from '@shared/events/gitEvents';
 import type { BranchesPayload, LocalBranchesPayload, RemoteBranchesPayload } from '@shared/git';
 import { createRPCController } from '@shared/ipc/rpc';
@@ -80,11 +79,6 @@ export const repositoryController = createRPCController({
       result = await project.fetch();
     }
 
-    telemetryService.capture('vcs_fetch', {
-      success: result.success,
-      project_id: projectId,
-      ...(result.success ? {} : { error_type: result.error.type }),
-    });
 
     if (!result.success) return err(result.error);
 

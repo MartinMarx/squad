@@ -95,18 +95,10 @@ export class TaskStore {
     path: string,
     workspaceId: string,
     settingsStore: ProjectSettingsStore,
-    baseRef: string,
-    sshConnectionId?: string
+    baseRef: string
   ): void {
     this.data = data;
-    workspaceRegistry.acquire(
-      data.projectId,
-      workspaceId,
-      path,
-      settingsStore,
-      baseRef,
-      sshConnectionId
-    );
+    workspaceRegistry.acquire(data.projectId, workspaceId, path, settingsStore, baseRef);
     this.workspaceId = workspaceId;
     this.state = 'provisioned';
     this.phase = null;

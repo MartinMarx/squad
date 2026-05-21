@@ -9,12 +9,6 @@ vi.mock('@main/lib/events', () => ({
   },
 }));
 
-vi.mock('../ssh/ssh-connection-manager', () => ({
-  sshConnectionManager: {
-    connect: vi.fn(),
-  },
-}));
-
 function makeCtx(
   handler: (command: string, args: string[]) => Promise<{ stdout: string; stderr: string }>,
   options: {
@@ -46,8 +40,6 @@ const availableCtx = makeCtx(async (command, args = []) => {
   }
   throw new Error('missing');
 });
-
-const { events } = await import('@main/lib/events');
 
 describe('DependencyManager install', () => {
   it('runs dependency install commands through the configured runner before probing', async () => {
@@ -147,22 +139,5 @@ describe('DependencyManager install', () => {
 
     expect(result.success).toBe(true);
     expect(ctx.refreshShellEnv).toHaveBeenCalled();
-  });
-
-  it('emits dependency updates with the SSH connection id', async () => {
-    const manager = new DependencyManager(availableCtx, {
-      connectionId: 'ssh-1',
-    });
-
-    await manager.probe('codex');
-
-    expect(events.emit).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        id: 'codex',
-        connectionId: 'ssh-1',
-        state: expect.objectContaining({ id: 'codex', status: 'available' }),
-      })
-    );
   });
 });

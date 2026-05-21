@@ -1,7 +1,7 @@
 import { makeAutoObservable, observable } from 'mobx';
 import { TaskManagerStore } from '@renderer/features/tasks/stores/task-manager';
 import { snapshotRegistry } from '@renderer/lib/stores/snapshot-registry';
-import type { LocalProject, SshProject } from '@shared/projects';
+import type { LocalProject } from '@shared/projects';
 import type { ProjectViewSnapshot } from '@shared/view-state';
 import { PrSyncStore } from './pr-sync-store';
 import { ProjectSettingsStore } from './project-settings-store';
@@ -9,26 +9,22 @@ import { ProjectViewStore } from './project-view';
 import { RepositoryStore } from './repository-store';
 
 export type UnregisteredProjectPhase =
-  | 'creating-repo' // gh api — new mode only
-  | 'cloning' // git clone
-  | 'registering' // db insert
+  | 'creating-repo'
+  | 'cloning'
+  | 'registering'
   | 'error';
 
 export type UnmountedProjectPhase = 'opening' | 'error' | 'closing' | 'idle';
 
 export type ProjectMode = 'pick' | 'clone' | 'new';
 
-/**
- * Holds all mounted-only state for a project. Created atomically by
- * ProjectStore.transitionToMounted and disposed on unmount or deletion.
- */
 export class MountedProject {
   readonly taskManager: TaskManagerStore;
   readonly view: ProjectViewStore;
   readonly settings: ProjectSettingsStore;
   readonly repository: RepositoryStore;
   readonly prSync: PrSyncStore;
-  readonly data: LocalProject | SshProject;
+  readonly data: LocalProject;
 
   private _snapshotDisposer: (() => void) | null = null;
 
@@ -39,7 +35,7 @@ export class MountedProject {
     };
   }
 
-  constructor(data: LocalProject | SshProject, savedSnapshot?: ProjectViewSnapshot) {
+  constructor(data: LocalProject, savedSnapshot?: ProjectViewSnapshot) {
     this.data = data;
     this.view = new ProjectViewStore();
     this.settings = new ProjectSettingsStore(data.id);
@@ -69,19 +65,14 @@ export class MountedProject {
   }
 }
 
-/**
- * Container class — holds a stable reference in the ObservableMap across all
- * lifecycle transitions. Transitioning replaces `mountedProject` atomically
- * rather than nulling out individual fields.
- */
 export class ProjectStore {
   state: 'unregistered' | 'unmounted' | 'mounted';
   id: string;
   name: string | null;
-  data: LocalProject | SshProject | null;
+  data: LocalProject | null;
   phase: UnregisteredProjectPhase | UnmountedProjectPhase | null;
   error: string | undefined = undefined;
-  errorCode: 'path-not-found' | 'ssh-disconnected' | undefined = undefined;
+  errorCode: 'path-not-found' | undefined = undefined;
   mode: ProjectMode | null;
   mountedProject: MountedProject | null = null;
 
@@ -89,7 +80,7 @@ export class ProjectStore {
     state: ProjectStore['state'],
     id: string,
     name: string | null,
-    data: LocalProject | SshProject | null,
+    data: LocalProject | null,
     phase: UnregisteredProjectPhase | UnmountedProjectPhase | null,
     mode: ProjectMode | null = null
   ) {
@@ -102,7 +93,7 @@ export class ProjectStore {
     makeAutoObservable(this, { mountedProject: observable.ref });
   }
 
-  transitionToMounted(data: LocalProject | SshProject, savedSnapshot?: ProjectViewSnapshot): void {
+  transitionToMounted(data: LocalProject, savedSnapshot?: ProjectViewSnapshot): void {
     this.mountedProject = new MountedProject(data, savedSnapshot);
     this.data = data;
     this.id = data.id;
@@ -113,10 +104,7 @@ export class ProjectStore {
     this.errorCode = undefined;
   }
 
-  transitionToUnmounted(
-    data: LocalProject | SshProject,
-    phase: UnmountedProjectPhase = 'opening'
-  ): void {
+  transitionToUnmounted(data: LocalProject, phase: UnmountedProjectPhase = 'opening'): void {
     this.mountedProject?.dispose();
     this.mountedProject = null;
     this.data = data;
@@ -157,10 +145,10 @@ export type UnregisteredProject = ProjectStore & {
 
 export type UnmountedProject = ProjectStore & {
   state: 'unmounted';
-  data: LocalProject | SshProject;
+  data: LocalProject;
   phase: UnmountedProjectPhase;
   error: string | undefined;
-  errorCode: 'path-not-found' | 'ssh-disconnected' | undefined;
+  errorCode: 'path-not-found' | undefined;
 };
 
 export function isUnregisteredProject(p: ProjectStore): p is UnregisteredProject {
@@ -174,7 +162,7 @@ export function isUnmountedProject(p: ProjectStore): p is UnmountedProject {
 export function isMountedProject(p: ProjectStore): p is ProjectStore & {
   state: 'mounted';
   mountedProject: MountedProject;
-  data: LocalProject | SshProject;
+  data: LocalProject;
 } {
   return p.state === 'mounted';
 }
@@ -189,7 +177,7 @@ export function createUnregisteredProject(
 }
 
 export function createUnmountedProject(
-  data: LocalProject | SshProject,
+  data: LocalProject,
   phase: UnmountedProjectPhase = 'opening'
 ): ProjectStore {
   return new ProjectStore('unmounted', data.id, data.name, data, phase);

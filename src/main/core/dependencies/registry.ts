@@ -43,14 +43,6 @@ const CORE_DEPENDENCIES: DependencyDescriptor[] = [
     installHint: 'Run: brew install tmux',
   },
   {
-    id: 'ssh',
-    name: 'SSH',
-    category: 'core',
-    commands: ['ssh'],
-    versionArgs: ['-V'],
-    docUrl: 'https://www.openssh.com',
-  },
-  {
     id: 'node',
     name: 'Node.js',
     category: 'core',

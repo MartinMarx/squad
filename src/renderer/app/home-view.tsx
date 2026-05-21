@@ -1,4 +1,4 @@
-import { FolderOpen, Github, Plus, Server, type LucideIcon } from 'lucide-react';
+import { FolderOpen, Github, Plus, type LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Titlebar } from '@renderer/lib/components/titlebar/Titlebar';
 import { EmdashShimmerLogo } from '@renderer/lib/emdash-shimmer-logo';
@@ -12,25 +12,19 @@ const PROJECT_ACTIONS = [
     label: 'Open project',
     description: 'Create a project from an existing local directory',
     icon: FolderOpen,
-    modalArgs: { strategy: 'local', mode: 'pick' },
+    modalArgs: { mode: 'pick' as const },
   },
   {
     label: 'Create repository',
     description: 'Create a project by creating a new repository on GitHub',
     icon: Plus,
-    modalArgs: { strategy: 'local', mode: 'new' },
+    modalArgs: { mode: 'new' as const },
   },
   {
     label: 'Clone from GitHub',
     description: 'Clone a GitHub repository to work on locally',
     icon: Github,
-    modalArgs: { strategy: 'local', mode: 'clone' },
-  },
-  {
-    label: 'Add remote project',
-    description: 'Create a project on a remote SSH server',
-    icon: Server,
-    modalArgs: { strategy: 'ssh', mode: 'pick' },
+    modalArgs: { mode: 'clone' as const },
   },
 ] as const;
 

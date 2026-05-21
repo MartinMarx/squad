@@ -4,7 +4,6 @@ import { taskManager } from '@main/core/tasks/task-manager';
 import { db } from '@main/db/client';
 import { tasks } from '@main/db/schema';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { deleteIndexIfUnused, removeWorktreeIfUnused } from './task-lifecycle-utils';
 
 export async function archiveTask(projectId: string, taskId: string): Promise<void> {
@@ -22,7 +21,6 @@ export async function archiveTask(projectId: string, taskId: string): Promise<vo
       statusChangedAt: sql`CURRENT_TIMESTAMP`,
     })
     .where(eq(tasks.id, taskId));
-  telemetryService.capture('task_archived', { project_id: projectId, task_id: taskId });
 
   if (!project) return;
 

@@ -18,7 +18,7 @@ describe('resolveConversationProviderSelection', () => {
     const selection = resolveConversationProviderSelection({
       defaultProviderId: 'claude',
       providerOverride: null,
-      installedProviderIds: ['codex', 'qwen'],
+      installedProviderIds: ['codex', 'cursor'],
       availabilityKnown: true,
     });
 

@@ -64,10 +64,9 @@ const TASK_SUGGESTED = [
   'task.sidebarConversations',
   'task.toggleTerminalDrawer',
   'resource-monitor',
-  'app.giveFeedback',
 ];
-const PROJECT_SUGGESTED = ['app.newTask', 'app.settings', 'resource-monitor', 'app.giveFeedback'];
-const APP_SUGGESTED = ['app.newProject', 'app.settings', 'resource-monitor', 'app.giveFeedback'];
+const PROJECT_SUGGESTED = ['app.newTask', 'app.settings', 'resource-monitor'];
+const APP_SUGGESTED = ['app.newProject', 'app.settings', 'resource-monitor'];
 
 function PaletteItem({
   value,

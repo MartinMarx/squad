@@ -3,7 +3,6 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createLocalProject } from './create-local-project';
-import { createSshProject, getSshProjectPathStatus } from './create-ssh-project';
 
 const mocks = vi.hoisted(() => ({
   detectInfoMock: vi.fn(),
@@ -15,8 +14,6 @@ const mocks = vi.hoisted(() => ({
   insertMock: vi.fn(),
   valuesMock: vi.fn(),
   returningMock: vi.fn(),
-  sshConnectMock: vi.fn(),
-  sshStatMock: vi.fn(),
 }));
 
 vi.mock('@main/core/git/impl/git-service', () => ({
@@ -28,20 +25,6 @@ vi.mock('@main/core/git/impl/git-service', () => ({
       initRepository: mocks.initRepositoryMock,
     };
   }),
-}));
-
-vi.mock('@main/core/fs/impl/ssh-fs', () => ({
-  SshFileSystem: vi.fn(function MockSshFileSystem() {
-    return {
-      stat: mocks.sshStatMock,
-    };
-  }),
-}));
-
-vi.mock('@main/core/ssh/ssh-connection-manager', () => ({
-  sshConnectionManager: {
-    connect: mocks.sshConnectMock,
-  },
 }));
 
 vi.mock('@main/core/projects/project-manager', () => ({
@@ -67,8 +50,6 @@ beforeEach(() => {
   mocks.getBranchesMock.mockResolvedValue([]);
   mocks.getDefaultBranchMock.mockResolvedValue('main');
   mocks.initRepositoryMock.mockResolvedValue(undefined);
-  mocks.sshConnectMock.mockResolvedValue({ id: 'ssh-proxy' });
-  mocks.sshStatMock.mockResolvedValue({ path: '', type: 'dir' });
 });
 
 describe('createLocalProject', () => {
@@ -256,155 +237,5 @@ describe('createLocalProject', () => {
       expect.objectContaining({ baseRef: 'origin/feature/current' })
     );
     expect(created.baseRef).toBe('origin/feature/current');
-  });
-});
-
-describe('createSshProject', () => {
-  const projectPath = '/remote/worktree';
-  const row = {
-    id: 'project-id',
-    name: 'Project',
-    path: '/remote/repo-root',
-    baseRef: 'main',
-    createdAt: '2026-04-16T00:00:00.000Z',
-    updatedAt: '2026-04-16T00:00:00.000Z',
-    sshConnectionId: 'connection-id',
-  };
-
-  it('initializes git when the selected remote folder is not yet a repository', async () => {
-    mocks.detectInfoMock
-      .mockResolvedValueOnce({
-        isGitRepo: false,
-        baseRef: 'main',
-        rootPath: projectPath,
-      })
-      .mockResolvedValueOnce({
-        isGitRepo: true,
-        baseRef: 'main',
-        rootPath: row.path,
-      });
-    mocks.returningMock.mockResolvedValue([row]);
-
-    const created = await createSshProject({
-      id: 'project-id',
-      name: 'Project',
-      path: projectPath,
-      connectionId: 'connection-id',
-      initGitRepository: true,
-    });
-
-    expect(mocks.sshStatMock).toHaveBeenCalledWith('');
-    expect(mocks.initRepositoryMock).toHaveBeenCalledTimes(1);
-    expect(mocks.detectInfoMock).toHaveBeenCalledTimes(2);
-    expect(created).toMatchObject({
-      id: 'project-id',
-      name: 'Project',
-      path: row.path,
-      baseRef: 'main',
-      type: 'ssh',
-      connectionId: 'connection-id',
-    });
-    expect(mocks.openProjectMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: 'project-id',
-        type: 'ssh',
-      })
-    );
-  });
-
-  it('rejects non-git remote directories unless initialization is explicitly enabled', async () => {
-    mocks.detectInfoMock.mockResolvedValue({
-      isGitRepo: false,
-      baseRef: 'main',
-      rootPath: projectPath,
-    });
-
-    await expect(
-      createSshProject({
-        id: 'project-id',
-        name: 'Project',
-        path: projectPath,
-        connectionId: 'connection-id',
-      })
-    ).rejects.toThrow('Directory is not a git repository');
-
-    expect(mocks.initRepositoryMock).not.toHaveBeenCalled();
-    expect(mocks.detectInfoMock).toHaveBeenCalledTimes(1);
-  });
-
-  it('rejects invalid remote directories', async () => {
-    mocks.sshStatMock.mockResolvedValueOnce(null);
-
-    await expect(
-      createSshProject({
-        id: 'project-id',
-        name: 'Project',
-        path: projectPath,
-        connectionId: 'connection-id',
-      })
-    ).rejects.toThrow('Invalid directory');
-
-    expect(mocks.detectInfoMock).not.toHaveBeenCalled();
-    expect(mocks.initRepositoryMock).not.toHaveBeenCalled();
-  });
-
-  it('stores the git remote default branch as the SSH project baseRef', async () => {
-    const rowWithDefault = {
-      ...row,
-      baseRef: 'origin/main',
-    };
-
-    mocks.detectInfoMock.mockResolvedValue({
-      isGitRepo: true,
-      baseRef: 'origin/feature/current',
-      rootPath: row.path,
-    });
-    mocks.getDefaultBranchMock.mockResolvedValue('main');
-    mocks.getBranchesMock.mockResolvedValue([
-      {
-        type: 'remote',
-        branch: 'main',
-        remote: { name: 'origin', url: 'git@github.com:example/repo.git' },
-      },
-    ]);
-    mocks.returningMock.mockResolvedValue([rowWithDefault]);
-
-    const created = await createSshProject({
-      id: 'project-id',
-      name: 'Project',
-      path: projectPath,
-      connectionId: 'connection-id',
-    });
-
-    expect(mocks.valuesMock).toHaveBeenCalledWith(
-      expect.objectContaining({ baseRef: 'origin/main' })
-    );
-    expect(created.baseRef).toBe('origin/main');
-  });
-});
-
-describe('getSshProjectPathStatus', () => {
-  const projectPath = '/remote/worktree';
-
-  it('returns invalid status when remote directory does not exist', async () => {
-    mocks.sshStatMock.mockResolvedValueOnce(null);
-
-    const status = await getSshProjectPathStatus(projectPath, 'connection-id');
-
-    expect(status).toEqual({ isDirectory: false, isGitRepo: false });
-    expect(mocks.detectInfoMock).not.toHaveBeenCalled();
-  });
-
-  it('returns git status for existing remote directories', async () => {
-    mocks.detectInfoMock.mockResolvedValueOnce({
-      isGitRepo: true,
-      baseRef: 'origin/main',
-      rootPath: '/remote/repo-root',
-    });
-
-    const status = await getSshProjectPathStatus(projectPath, 'connection-id');
-
-    expect(status).toEqual({ isDirectory: true, isGitRepo: true });
-    expect(mocks.detectInfoMock).toHaveBeenCalledTimes(1);
   });
 });

@@ -16,7 +16,7 @@ describe('providerTokenRegistry', () => {
   });
 
   it('is a no-op when no handler is registered for the provider', async () => {
-    await expect(providerTokenRegistry.dispatch('gitlab', 'token')).resolves.not.toThrow();
+    await expect(providerTokenRegistry.dispatch('linear', 'token')).resolves.not.toThrow();
   });
 
   it('propagates handler errors', async () => {

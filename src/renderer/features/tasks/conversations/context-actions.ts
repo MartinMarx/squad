@@ -35,12 +35,6 @@ export type ContextAction = IssueContextAction | DraftCommentsContextAction | Pr
 const PROVIDER_LABELS: Record<Issue['provider'], string> = {
   github: 'GitHub',
   linear: 'Linear',
-  jira: 'Jira',
-  gitlab: 'GitLab',
-  plain: 'Plain',
-  forgejo: 'Forgejo',
-  featurebase: 'Featurebase',
-  asana: 'Asana',
 };
 
 export function buildIssueContextText(issue: Issue): string {

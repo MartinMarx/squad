@@ -27,7 +27,6 @@ function createAppCommandProvider(): CommandProvider {
 
       const settingsDef = appDef('app.settings');
       const newProjectDef = appDef('app.newProject');
-      const giveFeedbackDef = appDef('app.giveFeedback');
       const toggleThemeDef = appDef('app.toggleTheme');
       const navigateBackDef = appDef('app.navigateBack');
       const navigateForwardDef = appDef('app.navigateForward');
@@ -54,21 +53,10 @@ function createAppCommandProvider(): CommandProvider {
           shortcutKey: newProjectDef.shortcutKey,
           group: newProjectDef.group,
           execute() {
-            showModal('addProjectModal', { strategy: 'local', mode: 'pick' });
+            showModal('addProjectModal', { mode: 'pick' });
           },
         },
       ];
-
-      commands.push({
-        id: giveFeedbackDef.id,
-        label: giveFeedbackDef.label,
-        description: giveFeedbackDef.description,
-        shortcutKey: giveFeedbackDef.shortcutKey,
-        group: giveFeedbackDef.group,
-        execute() {
-          showModal('feedbackModal', {});
-        },
-      });
 
       commands.push({
         id: toggleThemeDef.id,

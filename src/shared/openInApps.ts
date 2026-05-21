@@ -54,8 +54,6 @@ const ICON_PATHS = {
   pycharm: 'pycharm.svg',
   rubymine: 'rubymine.svg',
   rustrover: 'rustrover.svg',
-  kiro: 'kiro.png',
-  antigravity: 'antigravity.png',
 } as const;
 
 const _OPEN_IN_APPS = {
@@ -378,55 +376,6 @@ const _OPEN_IN_APPS = {
       win32: {
         openCommands: ['zed {{path}}'],
         checkCommands: ['zed'],
-      },
-    },
-  },
-  kiro: {
-    id: 'kiro',
-    label: 'Kiro',
-    iconPath: ICON_PATHS.kiro,
-    autoInstall: true,
-    platforms: {
-      darwin: {
-        openCommands: [
-          'command -v kiro >/dev/null 2>&1 && kiro {{path}}',
-          'open -a "Kiro" {{path}}',
-        ],
-        checkCommands: ['kiro'],
-        bundleIds: ['dev.kiro.desktop'],
-        appNames: ['Kiro'],
-      },
-      win32: {
-        openCommands: ['kiro {{path}}'],
-        checkCommands: ['kiro'],
-      },
-      linux: {
-        openCommands: ['kiro {{path}}'],
-        checkCommands: ['kiro'],
-      },
-    },
-  },
-  antigravity: {
-    id: 'antigravity',
-    label: 'Antigravity',
-    iconPath: ICON_PATHS.antigravity,
-    autoInstall: true,
-    platforms: {
-      darwin: {
-        openCommands: [
-          'command -v antigravity >/dev/null 2>&1 && antigravity {{path}}',
-          'open -a "Antigravity" {{path}}',
-        ],
-        checkCommands: ['antigravity'],
-        appNames: ['Antigravity'],
-      },
-      win32: {
-        openCommands: ['antigravity {{path}}'],
-        checkCommands: ['antigravity'],
-      },
-      linux: {
-        openCommands: ['antigravity {{path}}'],
-        checkCommands: ['antigravity'],
       },
     },
   },

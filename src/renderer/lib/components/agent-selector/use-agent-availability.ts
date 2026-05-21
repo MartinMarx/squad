@@ -6,17 +6,8 @@ import type { AgentProviderId } from '@shared/agent-provider-registry';
 import { getAgentInstallErrorMessage } from './agent-install';
 import { buildAgentGroups, getAssumedInstalledAgents } from './agent-selector-options';
 
-export function useAgentAvailability({
-  connectionId,
-  value,
-}: {
-  connectionId?: string;
-  value: AgentProviderId | null;
-}) {
-  const dependencyResource = connectionId
-    ? appState.dependencies.getRemote(connectionId)
-    : appState.dependencies.local;
-  const dependencyData = dependencyResource.data;
+export function useAgentAvailability({ value }: { value: AgentProviderId | null }) {
+  const dependencyData = appState.dependencies.local.data;
   const { toast } = useToast();
 
   const installedAgents = useMemo(
@@ -36,15 +27,15 @@ export function useAgentAvailability({
 
   const installingAgents = new Set<AgentProviderId>();
   for (const id of Object.keys(agentConfig) as AgentProviderId[]) {
-    if (appState.dependencies.isInstalling(id, connectionId)) {
+    if (appState.dependencies.isInstalling(id)) {
       installingAgents.add(id);
     }
   }
   const groups = buildAgentGroups(installedAgents, assumedInstalledAgents, installingAgents);
 
   async function installAgent(agentId: AgentProviderId): Promise<void> {
-    if (appState.dependencies.isInstalling(agentId, connectionId)) return;
-    const result = await appState.dependencies.install(agentId, connectionId);
+    if (appState.dependencies.isInstalling(agentId)) return;
+    const result = await appState.dependencies.install(agentId);
     if (!result.success) {
       toast({
         title: 'Install failed',

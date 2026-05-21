@@ -14,7 +14,7 @@ export type EffectiveProvider = {
   createDisabled: boolean;
 };
 
-export function useEffectiveProvider(connectionId?: string): EffectiveProvider {
+export function useEffectiveProvider(): EffectiveProvider {
   const [providerOverride, setProviderOverride] = useState<AgentProviderId | null>(null);
 
   const { value: defaultAgentValue } = useAppSettingsKey('defaultAgent');
@@ -22,9 +22,7 @@ export function useEffectiveProvider(connectionId?: string): EffectiveProvider {
     ? defaultAgentValue
     : 'claude';
 
-  const dependencyResource = connectionId
-    ? appState.dependencies.getRemote(connectionId)
-    : appState.dependencies.local;
+  const dependencyResource = appState.dependencies.local;
   const availabilityKnown = dependencyResource.data !== null;
   const installedProviderIds = AGENT_PROVIDER_IDS.filter(
     (id) => dependencyResource.data?.[id]?.status === 'available'

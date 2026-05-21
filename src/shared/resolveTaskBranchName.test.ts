@@ -44,7 +44,7 @@ describe('resolveTaskBranchName', () => {
       suffix: 'xyz99',
       appendRandomSuffix: true,
       linkedIssue: {
-        provider: 'jira',
+        provider: 'github',
         url: 'https://example.atlassian.net/browse/APP-42',
         title: 'Fix login bug',
         identifier: 'APP-42',

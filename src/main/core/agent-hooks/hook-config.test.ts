@@ -26,46 +26,10 @@ function makeWriter(fs: MemoryFs, userFs = new MemoryFs()): HookConfigWriter {
 describe('HookConfigWriter', () => {
   beforeEach(() => {
     mockResolveCommandPath.mockReset();
-    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/pi');
-  });
-
-  it('writes the Pi lifecycle extension and ignores it in git', async () => {
-    const fs = new MemoryFs();
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('pi');
-
-    expect(fs.files.get('.pi/extensions/emdash-hook.ts')).toContain("pi.on('agent_end'");
-    expect(fs.files.get('.pi/extensions/emdash-hook.ts')).toContain(
-      "process.once('uncaughtException'"
-    );
-    expect(fs.files.get('.pi/extensions/emdash-hook.ts')).toContain("'X-Emdash-Event-Type'");
-    expect(fs.files.get('.gitignore')).toBe('.pi/extensions/emdash-hook.ts\n');
-  });
-
-  it('does not duplicate the Pi gitignore entry', async () => {
-    const fs = new MemoryFs();
-    fs.files.set('.gitignore', '.pi/extensions/emdash-hook.ts\n');
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('pi');
-
-    expect(fs.files.get('.gitignore')).toBe('.pi/extensions/emdash-hook.ts\n');
-  });
-
-  it('skips the Pi extension when pi is unavailable', async () => {
-    mockResolveCommandPath.mockResolvedValue(undefined);
-    const fs = new MemoryFs();
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('pi');
-
-    expect(fs.files.has('.pi/extensions/emdash-hook.ts')).toBe(false);
-    expect(fs.files.has('.gitignore')).toBe(false);
+    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/codex');
   });
 
   it('writes Codex hooks to the global user config and does not update gitignore', async () => {
-    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/codex');
     const fs = new MemoryFs();
     const userFs = new MemoryFs();
     const writer = makeWriter(fs, userFs);
@@ -86,7 +50,6 @@ describe('HookConfigWriter', () => {
   });
 
   it('preserves unrelated Codex hooks while replacing Emdash-managed entries', async () => {
-    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/codex');
     const fs = new MemoryFs();
     const userFs = new MemoryFs();
     userFs.files.set(
@@ -111,7 +74,6 @@ describe('HookConfigWriter', () => {
   });
 
   it('removes only the legacy Emdash Codex notify key from project-local config', async () => {
-    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/codex');
     const fs = new MemoryFs();
     const userFs = new MemoryFs();
     fs.files.set(
@@ -139,66 +101,6 @@ describe('HookConfigWriter', () => {
     const config = toml.parse(fs.files.get('.codex/config.toml')!) as Record<string, unknown>;
     expect(config.model).toBe('gpt-5.2');
     expect(config.notify).toBeUndefined();
-  });
-
-  it('writes Droid notification and stop hooks and ignores the settings file in git', async () => {
-    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/droid');
-    const fs = new MemoryFs();
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('droid');
-
-    const config = JSON.parse(fs.files.get('.factory/settings.json')!);
-    expect(config.hooks.Notification[0].hooks[0].command).toContain(
-      'X-Emdash-Event-Type: notification'
-    );
-    expect(config.hooks.Stop[0].hooks[0].command).toContain('X-Emdash-Event-Type: stop');
-    expect(config.hooks.Stop[0].hooks[0].command).toContain('X-Emdash-Pty-Id');
-    expect(fs.files.get('.gitignore')).toBe('.factory/settings.json\n');
-  });
-
-  it('preserves unrelated Droid hooks while replacing Emdash-managed entries', async () => {
-    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/droid');
-    const fs = new MemoryFs();
-    fs.files.set(
-      '.factory/settings.json',
-      JSON.stringify({
-        hooks: {
-          Notification: [
-            { hooks: [{ type: 'command', command: 'echo user notification hook' }] },
-            { hooks: [{ type: 'command', command: 'echo $EMDASH_HOOK_PORT' }] },
-          ],
-          Stop: [
-            { hooks: [{ type: 'command', command: 'echo user hook' }] },
-            { hooks: [{ type: 'command', command: 'echo $EMDASH_HOOK_PORT' }] },
-          ],
-        },
-      })
-    );
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('droid');
-
-    const config = JSON.parse(fs.files.get('.factory/settings.json')!);
-    expect(config.hooks.Notification).toHaveLength(2);
-    expect(config.hooks.Notification[0].hooks[0].command).toBe('echo user notification hook');
-    expect(config.hooks.Notification[1].hooks[0].command).toContain(
-      'X-Emdash-Event-Type: notification'
-    );
-    expect(config.hooks.Stop).toHaveLength(2);
-    expect(config.hooks.Stop[0].hooks[0].command).toBe('echo user hook');
-    expect(config.hooks.Stop[1].hooks[0].command).toContain('X-Emdash-Event-Type: stop');
-  });
-
-  it('skips Droid hooks when droid is unavailable', async () => {
-    mockResolveCommandPath.mockResolvedValue(undefined);
-    const fs = new MemoryFs();
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('droid');
-
-    expect(fs.files.has('.factory/settings.json')).toBe(false);
-    expect(fs.files.has('.gitignore')).toBe(false);
   });
 
   it('still reports Codex hooks available when legacy notify cleanup fails', async () => {
@@ -253,43 +155,5 @@ describe('HookConfigWriter', () => {
 
     const config = toml.parse(fs.files.get('.codex/config.toml')!) as Record<string, unknown>;
     expect(config.notify).toEqual(['bash', '-c', 'echo user notify']);
-  });
-
-  it('writes the OpenCode notifications plugin and ignores it in git', async () => {
-    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/opencode');
-    const fs = new MemoryFs();
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('opencode');
-
-    expect(fs.files.get('.opencode/plugins/emdash-notifications.js')).toContain(
-      'EmdashNotifications'
-    );
-    expect(fs.files.get('.opencode/plugins/emdash-notifications.js')).toContain(
-      "event.type === 'session.idle'"
-    );
-    expect(fs.files.get('.gitignore')).toBe('.opencode/plugins/emdash-notifications.js\n');
-  });
-
-  it('does not duplicate the OpenCode gitignore entry', async () => {
-    mockResolveCommandPath.mockResolvedValue('/usr/local/bin/opencode');
-    const fs = new MemoryFs();
-    fs.files.set('.gitignore', '.opencode/plugins/emdash-notifications.js\n');
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('opencode');
-
-    expect(fs.files.get('.gitignore')).toBe('.opencode/plugins/emdash-notifications.js\n');
-  });
-
-  it('skips the OpenCode plugin when opencode is unavailable', async () => {
-    mockResolveCommandPath.mockResolvedValue(undefined);
-    const fs = new MemoryFs();
-    const writer = makeWriter(fs);
-
-    await writer.writeForProvider('opencode');
-
-    expect(fs.files.has('.opencode/plugins/emdash-notifications.js')).toBe(false);
-    expect(fs.files.has('.gitignore')).toBe(false);
   });
 });

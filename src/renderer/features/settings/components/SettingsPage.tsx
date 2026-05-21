@@ -1,7 +1,5 @@
-import { ExternalLink } from 'lucide-react';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { PageHeader } from '@renderer/lib/components/page-header';
-import { rpc } from '@renderer/lib/ipc';
 import { cn } from '@renderer/utils/utils';
 import { AccountTab } from './AccountTab';
 import { CliAgentsList } from './CliAgentsList';
@@ -13,14 +11,12 @@ import NotificationSettingsCard from './NotificationSettingsCard';
 import { PhilosophersSettingsCard } from './PhilosophersSettingsCard';
 import RepositorySettingsCard from './RepositorySettingsCard';
 import ResourceMonitorSettingsCard from './ResourceMonitorSettingsCard';
-import { SshConnectionsSettingsCard } from './SshConnectionsSettingsCard';
 import {
   AutoGenerateTaskNamesRow,
   AutoTrustWorktreesRow,
   CreateBranchAndWorktreeRow,
   EnableTmuxRow,
 } from './TaskSettingsRows';
-import TelemetryCard from './TelemetryCard';
 import TerminalSettingsCard from './TerminalSettingsCard';
 import ThemeCard from './ThemeCard';
 import { UpdateCard } from './UpdateCard';
@@ -30,11 +26,9 @@ export type SettingsPageTab =
   | 'account'
   | 'clis-models'
   | 'integrations'
-  | 'connections'
   | 'repository'
   | 'philosophers'
-  | 'interface'
-  | 'docs';
+  | 'interface';
 
 interface SectionConfig {
   title?: string;
@@ -49,24 +43,17 @@ export function SettingsPage({
   tab: SettingsPageTab;
   onTabChange: (tab: SettingsPageTab) => void;
 }) {
-  const handleDocsClick = useCallback(() => {
-    void rpc.app.openExternal('https://docs.emdash.sh');
-  }, []);
-
   const tabs: Array<{
     id: SettingsPageTab;
     label: string;
-    isExternal?: boolean;
   }> = [
     { id: 'general', label: 'General' },
     { id: 'account', label: 'Account' },
     { id: 'clis-models', label: 'Agents' },
     { id: 'integrations', label: 'Integrations' },
-    { id: 'connections', label: 'Connections' },
     { id: 'repository', label: 'Repository' },
     { id: 'philosophers', label: 'Philosophers' },
     { id: 'interface', label: 'Interface' },
-    { id: 'docs', label: 'Docs', isExternal: true },
   ];
 
   const tabContent: Record<
@@ -75,11 +62,8 @@ export function SettingsPage({
   > = {
     general: {
       title: 'General',
-      description: 'Manage your account, privacy settings, notifications, and app updates.',
+      description: 'Manage notifications and app updates.',
       sections: [
-        {
-          component: <TelemetryCard />,
-        },
         {
           component: <AutoGenerateTaskNamesRow />,
         },
@@ -125,11 +109,6 @@ export function SettingsPage({
       description: 'Connect external services and tools.',
       sections: [{ title: 'Integrations', component: <IntegrationsCard /> }],
     },
-    connections: {
-      title: 'Connections',
-      description: 'Manage reusable SSH connections for remote projects.',
-      sections: [{ component: <SshConnectionsSettingsCard /> }],
-    },
     repository: {
       title: 'Repository',
       description: 'Configure repository and branch settings.',
@@ -165,18 +144,12 @@ export function SettingsPage({
           <div className="py-10">
             <nav className="flex min-h-0 w-52 flex-col gap-0.5 overflow-y-auto">
               {tabs.map((tab) => {
-                const isActive = tab.id === activeTab && !tab.isExternal;
+                const isActive = tab.id === activeTab;
                 return (
                   <button
                     key={tab.id}
                     type="button"
-                    onClick={() => {
-                      if (tab.isExternal) {
-                        handleDocsClick();
-                      } else {
-                        onTabChange(tab.id);
-                      }
-                    }}
+                    onClick={() => onTabChange(tab.id)}
                     className={cn(
                       'flex w-full items-center gap-2 hover:bg-background-1 text-foreground-muted hover:text-foreground rounded-md px-3 py-2 text-sm font-normal transition-colors',
                       isActive &&
@@ -184,13 +157,11 @@ export function SettingsPage({
                     )}
                   >
                     <span className="text-left">{tab.label}</span>
-                    {tab.isExternal && <ExternalLink className="h-4 w-4" />}
                   </button>
                 );
               })}
             </nav>
           </div>
-          {/* Content container */}
           {currentContent && (
             <div className="min-h-0 min-w-0 flex-1 justify-center overflow-x-hidden overflow-y-auto">
               <div className="mx-auto w-full max-w-4xl space-y-8 px-1 py-10">

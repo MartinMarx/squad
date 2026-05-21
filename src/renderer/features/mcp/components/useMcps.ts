@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useToast } from '@renderer/lib/hooks/use-toast';
 import { rpc } from '@renderer/lib/ipc';
-import { captureTelemetry } from '@renderer/utils/telemetryClient';
 import type { McpCatalogEntry, McpProvidersResponse, McpServer } from '@shared/mcp/types';
 
 const MCP_QUERY_KEY = ['mcp', 'all'] as const;
@@ -46,10 +45,7 @@ export function useMcps() {
       const result = await rpc.mcp.saveServer(payload.server);
       if (!result.success) throw new Error(result.error ?? 'Failed to save server');
     },
-    onSuccess: (_, payload) => {
-      if (payload.source) {
-        captureTelemetry('mcp_server_added', { source: payload.source });
-      }
+    onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: MCP_QUERY_KEY });
     },
     onError: (error) => {
@@ -74,7 +70,6 @@ export function useMcps() {
       if (!result.success) throw new Error(result.error ?? 'Failed to remove server');
     },
     onSuccess: () => {
-      captureTelemetry('mcp_server_removed');
       void queryClient.invalidateQueries({ queryKey: MCP_QUERY_KEY });
     },
     onError: (error) => {

@@ -16,7 +16,6 @@ import { providerOverrideSettings } from '@main/core/settings/provider-settings-
 import { appSettingsService } from '@main/core/settings/settings-service';
 import { events } from '@main/lib/events';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { getProvider } from '@shared/agent-provider-registry';
 import type { Conversation } from '@shared/conversations';
 import { agentSessionExitedChannel } from '@shared/events/agentEvents';
@@ -105,10 +104,7 @@ export class LocalConversationProvider implements ConversationProvider {
       isResuming,
       initialPrompt,
     });
-    const providerEnv = resolveProviderEnv(providerConfig, {
-      providerId: conversation.providerId,
-      autoApprove: conversation.autoApprove,
-    });
+    const providerEnv = resolveProviderEnv(providerConfig);
 
     const tmuxSessionName = this.tmux ? makeTmuxSessionName(sessionId) : undefined;
 
@@ -203,12 +199,6 @@ export class LocalConversationProvider implements ConversationProvider {
     });
     this.sessions.set(sessionId, pty);
     scheduleInitialPromptInjection({ pty, conversation, initialPrompt, isResuming });
-    telemetryService.capture('agent_run_started', {
-      provider: conversation.providerId,
-      project_id: conversation.projectId,
-      task_id: conversation.taskId,
-      conversation_id: conversation.id,
-    });
   }
 
   private async prepareHookConfig(providerId: Conversation['providerId']): Promise<boolean> {

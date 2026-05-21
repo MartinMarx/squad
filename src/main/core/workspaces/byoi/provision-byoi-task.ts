@@ -1,7 +1,6 @@
 import type { IExecutionContext } from '@main/core/execution-context/types';
 import type { ProvisionResult } from '@main/core/projects/project-provider';
 import type { ProjectSettingsProvider } from '@main/core/projects/settings/provider';
-import { sshConnectionManager } from '@main/core/ssh/ssh-connection-manager';
 import { buildTaskFromWorkspace } from '@main/core/tasks/task-builder';
 import { parseProvisionOutput } from '@main/core/workspaces/byoi/provision-output';
 import { createWorkspaceFactory } from '@main/core/workspaces/workspace-factory';
@@ -19,24 +18,15 @@ export type ProvisionBYOITaskParams = {
   task: Task;
   conversations: Conversation[];
   terminals: Terminal[];
-  /** Workspace provider config read from project settings (`workspaceProvider.type === 'script'`). */
   wpConfig: NonNullable<ProjectSettings['workspaceProvider']>;
-  /** Execution context for running provision/terminate scripts. */
   ctx: IExecutionContext;
   projectId: string;
   projectPath: string;
   settings: ProjectSettingsProvider;
   logPrefix: string;
-  /** UUID from the workspaces table — used as the workspace registry key. */
   workspaceId: string;
 };
 
-/**
- * Runs the BYOI script-run → SSH-connect → workspace-acquire → build flow.
- * Parameterised by `execFn` so both local and SSH project providers can use it:
- * - Local project: pass `new LocalExecutionContext({ root: projectPath })` (scripts run on local machine)
- * - SSH project:  pass `new SshExecutionContext(proxy, { root: projectPath })` (scripts run on remote host)
- */
 export async function provisionBYOITask(params: ProvisionBYOITaskParams): Promise<ProvisionResult> {
   const {
     task,
@@ -65,20 +55,9 @@ export async function provisionBYOITask(params: ProvisionBYOITaskParams): Promis
   }
   const output = parseResult.data;
 
-  events.emit(taskProvisionProgressChannel, {
-    taskId: task.id,
-    projectId,
-    step: 'connecting',
-    message: `Connecting to ${output.host}…`,
-  });
-
-  const connectionId = `task:${task.id}`;
-  const proxy = await sshConnectionManager.connectFromConfig(connectionId, {
-    host: output.host,
-    port: output.port ?? 22,
-    username: output.username ?? process.env['USER'],
-    ...(output.password ? { password: output.password } : { agent: process.env['SSH_AUTH_SOCK'] }),
-  });
+  if (output.host) {
+    throw new Error('Remote BYOI workspaces are no longer supported');
+  }
 
   events.emit(taskProvisionProgressChannel, {
     taskId: task.id,
@@ -95,7 +74,7 @@ export async function provisionBYOITask(params: ProvisionBYOITaskParams): Promis
     projectId,
     createWorkspaceFactory(
       workspaceId,
-      { kind: 'ssh', proxy, connectionId },
+      { kind: 'local' },
       {
         task,
         workDir,
@@ -111,10 +90,6 @@ export async function provisionBYOITask(params: ProvisionBYOITaskParams): Promis
             await ctx.exec('/bin/sh', ['-c', cmd]).catch((e) => {
               log.warn(`${logPrefix}: terminate command failed`, { error: String(e) });
             });
-            await sshConnectionManager.disconnect(connectionId);
-          },
-          onDetach: async () => {
-            await sshConnectionManager.disconnect(connectionId);
           },
         },
       }
@@ -132,7 +107,7 @@ export async function provisionBYOITask(params: ProvisionBYOITaskParams): Promis
     const { taskProvider } = await buildTaskFromWorkspace(
       task,
       workspace,
-      { kind: 'ssh', proxy, connectionId },
+      { kind: 'local' },
       projectId,
       projectPath,
       settings,
@@ -146,7 +121,6 @@ export async function provisionBYOITask(params: ProvisionBYOITaskParams): Promis
       persistData: {
         workspaceId: workspace.id,
         workspaceProviderData: { ...wpConfig, remoteWorkspaceId: output.id },
-        sshConnectionId: connectionId,
       },
     };
   } finally {

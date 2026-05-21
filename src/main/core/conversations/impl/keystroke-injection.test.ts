@@ -53,65 +53,6 @@ describe('scheduleInitialPromptInjection', () => {
     vi.useRealTimers();
   });
 
-  it('injects after PTY output goes quiet', () => {
-    const { pty, write, emitData } = makePty();
-    scheduleInitialPromptInjection({
-      pty,
-      conversation: makeConversation('hermes'),
-      initialPrompt: 'Fix the bug',
-      isResuming: false,
-    });
-
-    emitData('booting...');
-    vi.advanceTimersByTime(200);
-    emitData('still booting...');
-    expect(write).not.toHaveBeenCalled();
-
-    vi.advanceTimersByTime(900);
-    expect(write).toHaveBeenCalledExactlyOnceWith('Fix the bug\r');
-  });
-
-  it('falls back to a max wait when no output ever arrives', () => {
-    const { pty, write } = makePty();
-    scheduleInitialPromptInjection({
-      pty,
-      conversation: makeConversation('hermes'),
-      initialPrompt: 'Fix the bug',
-      isResuming: false,
-    });
-
-    vi.advanceTimersByTime(15_000);
-    expect(write).toHaveBeenCalledExactlyOnceWith('Fix the bug\r');
-  });
-
-  it('wraps multi-line prompts in bracketed paste sequences', () => {
-    const { pty, write, emitData } = makePty();
-    scheduleInitialPromptInjection({
-      pty,
-      conversation: makeConversation('hermes'),
-      initialPrompt: 'line one\nline two',
-      isResuming: false,
-    });
-
-    emitData('ready');
-    vi.advanceTimersByTime(900);
-    expect(write).toHaveBeenCalledExactlyOnceWith('\x1b[200~line one\nline two\x1b[201~\r');
-  });
-
-  it('does nothing for OpenCode because its initial prompt is passed with --prompt', () => {
-    const { pty, write, emitData } = makePty();
-    scheduleInitialPromptInjection({
-      pty,
-      conversation: makeConversation('opencode'),
-      initialPrompt: 'Fix the bug',
-      isResuming: false,
-    });
-
-    emitData('ready');
-    vi.advanceTimersByTime(20_000);
-    expect(write).not.toHaveBeenCalled();
-  });
-
   it('does nothing for providers without keystroke injection', () => {
     const { pty, write, emitData } = makePty();
     scheduleInitialPromptInjection({
@@ -130,7 +71,7 @@ describe('scheduleInitialPromptInjection', () => {
     const { pty, write, emitData } = makePty();
     scheduleInitialPromptInjection({
       pty,
-      conversation: makeConversation('hermes'),
+      conversation: makeConversation('claude'),
       initialPrompt: 'Fix the bug',
       isResuming: true,
     });
@@ -144,7 +85,7 @@ describe('scheduleInitialPromptInjection', () => {
     const { pty, write, emitData } = makePty();
     scheduleInitialPromptInjection({
       pty,
-      conversation: makeConversation('hermes'),
+      conversation: makeConversation('claude'),
       initialPrompt: '   ',
       isResuming: false,
     });
@@ -158,7 +99,7 @@ describe('scheduleInitialPromptInjection', () => {
     const { pty, write, emitData, emitExit } = makePty();
     scheduleInitialPromptInjection({
       pty,
-      conversation: makeConversation('hermes'),
+      conversation: makeConversation('claude'),
       initialPrompt: 'Fix the bug',
       isResuming: false,
     });

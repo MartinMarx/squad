@@ -105,10 +105,7 @@ const WATCH_IGNORED_NAMES = [
   '.conductor',
   '.cursor',
   '.claude',
-  '.amp',
   '.codex',
-  '.aider',
-  '.continue',
   '.cody',
   '.windsurf',
 ];

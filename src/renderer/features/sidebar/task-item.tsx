@@ -6,7 +6,6 @@ import {
   getTaskGitStore,
   getTaskManagerStore,
   getTaskStore,
-  getWorkspaceForTask,
 } from '@renderer/features/tasks/stores/task-selectors';
 import { type TaskStore } from '@renderer/features/tasks/stores/task-store';
 import {
@@ -74,13 +73,10 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
     });
 
   const canPin = task.state !== 'unregistered';
-
-  const workspaceStore = getWorkspaceForTask(projectId, taskId);
   const git = getTaskGitStore(projectId, taskId);
   const branchName =
     git?.branchName ?? ('taskBranch' in task.data ? task.data.taskBranch : undefined);
-  const handleReconnect =
-    workspaceStore?.connectionState != null ? () => workspaceStore.reconnect() : undefined;
+  const handleReconnect = undefined;
 
   return (
     <TaskContextMenu

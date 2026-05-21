@@ -9,19 +9,13 @@ import { Label } from '@renderer/lib/ui/label';
 import { RadioGroup, RadioGroupItem } from '@renderer/lib/ui/radio-group';
 import { Separator } from '@renderer/lib/ui/separator';
 import { Switch } from '@renderer/lib/ui/switch';
-import { type Strategy } from './add-project-modal';
 import { LocalDirectorySelector } from './local-directory-selector';
 import { type CloneModeState, type NewModeState, type PickModeState } from './modes';
-import { RemoteDirectorySelector } from './remote-directory-selector';
 
 export function PickExistingPanel({
-  strategy,
-  connectionId,
   state,
   showInitializeGitPrompt,
 }: {
-  strategy: Strategy;
-  connectionId?: string;
   state: PickModeState;
   showInitializeGitPrompt: boolean;
 }) {
@@ -30,20 +24,12 @@ export function PickExistingPanel({
     <FieldGroup>
       <Field>
         <FieldLabel>Directory</FieldLabel>
-        {strategy === 'local' ? (
-          <LocalDirectorySelector
-            path={state.path}
-            onPathChange={state.handlePathChange}
-            title="Select a local project"
-            message="Select a project directory to open"
-          />
-        ) : (
-          <RemoteDirectorySelector
-            connectionId={connectionId}
-            value={state.path}
-            onChange={state.handlePathChange}
-          />
-        )}
+        <LocalDirectorySelector
+          path={state.path}
+          onPathChange={state.handlePathChange}
+          title="Select a local project"
+          message="Select a project directory to open"
+        />
       </Field>
       <Field>
         <FieldLabel htmlFor={nameId}>Name</FieldLabel>
@@ -75,14 +61,10 @@ export function PickExistingPanel({
 }
 
 export function CreateNewPanel({
-  strategy,
-  connectionId,
   state,
   showGithubAuthDisclaimer,
   onOpenAccountSettings,
 }: {
-  strategy: Strategy;
-  connectionId?: string;
   state: NewModeState;
   showGithubAuthDisclaimer: boolean;
   onOpenAccountSettings: () => void;
@@ -155,36 +137,20 @@ export function CreateNewPanel({
           />
         </Field>
         <Field>
-          <FieldLabel>{strategy === 'local' ? 'Project Directory' : 'Remote Directory'}</FieldLabel>
-          {strategy === 'local' ? (
-            <LocalDirectorySelector
-              path={state.path}
-              onPathChange={state.setPath}
-              title="Select a local project"
-              message="Select a project directory to open"
-            />
-          ) : (
-            <RemoteDirectorySelector
-              connectionId={connectionId}
-              value={state.path}
-              onChange={state.setPath}
-            />
-          )}
+          <FieldLabel>Project Directory</FieldLabel>
+          <LocalDirectorySelector
+            path={state.path}
+            onPathChange={state.setPath}
+            title="Select a local project"
+            message="Select a project directory to open"
+          />
         </Field>
       </FieldGroup>
     </div>
   );
 }
 
-export function ClonePanel({
-  strategy,
-  connectionId,
-  state,
-}: {
-  strategy: Strategy;
-  connectionId?: string;
-  state: CloneModeState;
-}) {
+export function ClonePanel({ state }: { state: CloneModeState }) {
   const repositoryUrlId = useId();
   const projectNameId = useId();
   return (
@@ -213,21 +179,13 @@ export function ClonePanel({
           />
         </Field>
         <Field>
-          <FieldLabel>{strategy === 'local' ? 'Project Directory' : 'Remote Directory'}</FieldLabel>
-          {strategy === 'local' ? (
-            <LocalDirectorySelector
-              path={state.path}
-              onPathChange={state.setPath}
-              title="Select a local project"
-              message="Select a project directory to open"
-            />
-          ) : (
-            <RemoteDirectorySelector
-              connectionId={connectionId}
-              value={state.path}
-              onChange={state.setPath}
-            />
-          )}
+          <FieldLabel>Project Directory</FieldLabel>
+          <LocalDirectorySelector
+            path={state.path}
+            onPathChange={state.setPath}
+            title="Select a local project"
+            message="Select a project directory to open"
+          />
         </Field>
       </FieldGroup>
     </div>

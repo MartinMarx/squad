@@ -1,6 +1,5 @@
 import { useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import { usePromptLibrary } from '@renderer/features/library/prompts/use-prompt-library';
-import { getProjectSshConnectionId } from '@renderer/features/projects/stores/project-selectors';
 import {
   buildContextActionText,
   buildTaskContextActions,
@@ -22,19 +21,16 @@ export type InitialConversationState = {
   setProvider: (provider: AgentProviderId | null) => void;
   prompt: string;
   setPrompt: Dispatch<SetStateAction<string>>;
-  connectionId?: string;
 };
 
-export function useInitialConversationState(projectId?: string): InitialConversationState {
-  const connectionId = projectId ? getProjectSshConnectionId(projectId) : undefined;
-  const { providerId, setProviderOverride } = useEffectiveProvider(connectionId);
+export function useInitialConversationState(_projectId?: string): InitialConversationState {
+  const { providerId, setProviderOverride } = useEffectiveProvider();
   const [prompt, setPrompt] = useState('');
   return {
     provider: providerId,
     setProvider: setProviderOverride,
     prompt,
     setPrompt,
-    connectionId,
   };
 }
 
@@ -65,7 +61,6 @@ export function InitialConversationField({ state, linkedIssue }: InitialConversa
           <AgentSelector
             value={state.provider}
             onChange={(provider) => state.setProvider(provider)}
-            connectionId={state.connectionId}
             className="rounded-none border-0 border-b"
           />
           <Textarea

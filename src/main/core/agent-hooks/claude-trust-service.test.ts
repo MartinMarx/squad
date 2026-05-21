@@ -1,11 +1,5 @@
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { IExecutionContext } from '@main/core/execution-context/types';
-import {
-  FileSystemError,
-  FileSystemErrorCodes,
-  type FileSystemProvider,
-} from '@main/core/fs/types';
 import { ClaudeTrustService } from './claude-trust-service';
 
 const mockReadFile = vi.hoisted(() => vi.fn());
@@ -36,30 +30,11 @@ vi.mock('@main/lib/logger', () => ({
   },
 }));
 
-function notFound(pathName: string): FileSystemError {
-  return new FileSystemError(
-    `File not found: ${pathName}`,
-    FileSystemErrorCodes.NOT_FOUND,
-    pathName
-  );
-}
-
 function makeService(overrides: { autoTrustWorktrees?: boolean } = {}): ClaudeTrustService {
   return new ClaudeTrustService({
     getTaskSettings: () =>
       Promise.resolve({ autoTrustWorktrees: overrides.autoTrustWorktrees ?? true }),
   });
-}
-
-function makeRemoteFs(
-  overrides: Partial<Pick<FileSystemProvider, 'realPath' | 'read' | 'write'>> = {}
-): Pick<FileSystemProvider, 'realPath' | 'read' | 'write'> {
-  return {
-    realPath: vi.fn(async (p: string) => p),
-    read: vi.fn().mockRejectedValue(notFound('/home/remote-user/.claude.json')),
-    write: vi.fn().mockResolvedValue({ success: true, bytesWritten: 0 }),
-    ...overrides,
-  };
 }
 
 describe('ClaudeTrustService', () => {
@@ -218,49 +193,4 @@ describe('ClaudeTrustService', () => {
     });
   });
 
-  it('writes ssh config and renames tmp file remotely', async () => {
-    const service = makeService();
-    const remoteFs = makeRemoteFs({
-      realPath: vi.fn().mockResolvedValue('/remote/worktree'),
-    });
-
-    const ctx: IExecutionContext = {
-      root: undefined,
-      supportsLocalSpawn: false,
-      exec: vi.fn().mockImplementation(async (command: string, args: string[] = []) => {
-        if (command === 'sh') {
-          return { stdout: '/home/remote-user', stderr: '' };
-        }
-        if (command === 'mv') {
-          expect(args[0]).toContain('/home/remote-user/.claude.json.');
-          expect(args[1]).toBe('/home/remote-user/.claude.json');
-          return { stdout: '', stderr: '' };
-        }
-        return { stdout: '', stderr: '' };
-      }),
-      execStreaming: vi.fn(),
-      dispose: vi.fn(),
-    };
-
-    await service.maybeAutoTrustSsh({
-      providerId: 'claude',
-      cwd: '/remote/worktree',
-      ctx,
-      remoteFs,
-    });
-
-    expect(remoteFs.read).toHaveBeenCalledWith(
-      '/home/remote-user/.claude.json',
-      expect.any(Number)
-    );
-    expect(remoteFs.write).toHaveBeenCalledTimes(1);
-    const [tmpPath, content] = vi.mocked(remoteFs.write).mock.calls[0];
-    expect(tmpPath).toContain('/home/remote-user/.claude.json.');
-    const written = JSON.parse(String(content));
-    expect(written.projects['/remote/worktree']).toEqual({
-      hasTrustDialogAccepted: true,
-      hasCompletedProjectOnboarding: true,
-    });
-    expect(ctx.exec).toHaveBeenCalledWith('mv', [tmpPath, '/home/remote-user/.claude.json']);
-  });
 });

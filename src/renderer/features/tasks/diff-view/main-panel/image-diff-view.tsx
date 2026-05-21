@@ -32,7 +32,7 @@ type Side = 'original' | 'modified';
 function unavailableMessage(reason: ImageUnavailableReason): string {
   switch (reason) {
     case 'ssh':
-      return 'Preview unavailable on SSH workspaces';
+      return 'Preview unavailable';
     case 'unsupported':
       return 'Preview unavailable for this format';
     case 'too-large':

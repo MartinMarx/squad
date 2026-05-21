@@ -1,5 +1,4 @@
 import { Buffer } from 'node:buffer';
-import openCodePluginContent from './opencode-notifications-plugin.js?raw';
 
 type HookPostPayload = 'stdin' | { json: Record<string, string> };
 
@@ -60,10 +59,6 @@ function makeHookPostCommand(options: HookPostCommandOptions): string {
 
 export function makeClaudeHookCommand(eventType: string, options: HookCommandOptions = {}): string {
   return makeHookPostCommand({ eventType, payload: 'stdin', platform: options.platform });
-}
-
-export function makeOpenCodePluginContent(): string {
-  return openCodePluginContent;
 }
 
 export function makeCodexHookCommand(

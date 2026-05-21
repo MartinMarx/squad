@@ -17,7 +17,6 @@ import {
   setPreviousTabActive as tabUtilsSetPreviousTabActive,
   setTabActiveIndex as tabUtilsSetTabActiveIndex,
 } from '@renderer/lib/stores/tab-utils';
-import { setTelemetryConversationScope } from '@renderer/utils/telemetry-scope';
 import type { GitChangeStatus, GitObjectRef } from '@shared/git';
 import type { ActiveFile, TabDescriptor, TabManagerSnapshot } from '@shared/view-state';
 
@@ -188,17 +187,6 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
       })
     );
 
-    // Update telemetry scope when the active conversation changes in the focused pane.
-    this.disposers.push(
-      reaction(
-        () => this.activeConversation?.data.id ?? null,
-        (conversationId) => {
-          if (this.isFocused) {
-            setTelemetryConversationScope(conversationId);
-          }
-        }
-      )
-    );
   }
 
   // ---------------------------------------------------------------------------
@@ -564,10 +552,6 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
 
   setActiveTab(id: string): void {
     this.activeTabId = id;
-    const entry = this.activeDescriptor;
-    if (entry?.kind === 'conversation' && this.isVisible) {
-      setTelemetryConversationScope(entry.conversationId);
-    }
   }
 
   reorderTabs(fromIndex: number, toIndex: number): void {
@@ -592,14 +576,11 @@ export class TabManagerStore implements Snapshottable<TabManagerSnapshot> {
   }
 
   // ---------------------------------------------------------------------------
-  // Visibility / telemetry
+  // Visibility
   // ---------------------------------------------------------------------------
 
   setVisible(visible: boolean): void {
     this.isVisible = visible;
-    if (visible) {
-      setTelemetryConversationScope(this.activeConversation?.data.id ?? null);
-    }
   }
 
   setFocused(focused: boolean): void {

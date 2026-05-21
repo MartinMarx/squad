@@ -3,31 +3,11 @@ import { type GuardResult, type ViewId, type WrapParams } from '@renderer/app/vi
 import type { NonSettingsViewId } from '@renderer/lib/layout/navigation-provider';
 import { modalStore } from '@renderer/lib/modal/modal-store';
 import { focusTracker } from '@renderer/utils/focus-tracker';
-import { captureTelemetry } from '@renderer/utils/telemetryClient';
 import type { NavigationSnapshot } from '@shared/view-state';
 import { appState } from './app-state';
 import type { Snapshottable } from './snapshottable';
 
 type ViewParamsStore = Partial<{ [K in ViewId]: WrapParams<K> }>;
-
-export const viewEvents: Record<
-  ViewId,
-  | 'home_viewed'
-  | 'project_viewed'
-  | 'task_viewed'
-  | 'settings_viewed'
-  | 'library_viewed'
-  | 'skills_viewed'
-  | 'mcp_viewed'
-> = {
-  home: 'home_viewed',
-  library: 'library_viewed',
-  project: 'project_viewed',
-  task: 'task_viewed',
-  settings: 'settings_viewed',
-  skills: 'skills_viewed',
-  mcp: 'mcp_viewed',
-};
 
 export class NavigationStore implements Snapshottable<NavigationSnapshot> {
   currentViewId: ViewId = 'home';
@@ -80,7 +60,7 @@ export class NavigationStore implements Snapshottable<NavigationSnapshot> {
     }
 
     if (viewId !== this.currentViewId) {
-      const transition = focusTracker.transition(
+      focusTracker.transition(
         viewId === 'task'
           ? { view: viewId }
           : {
@@ -90,9 +70,6 @@ export class NavigationStore implements Snapshottable<NavigationSnapshot> {
             },
         'navigation'
       );
-      captureTelemetry(viewEvents[viewId], {
-        from_view: transition?.previous.view ?? null,
-      });
       this.currentViewId = viewId;
       if (viewId !== 'settings') {
         this.lastNonSettingsView = viewId;

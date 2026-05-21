@@ -15,7 +15,6 @@ vi.mock('@main/db/client', () => ({ db: {}, sqlite: {} }));
 
 function makeCtx(overrides: Partial<WorktreeContext> = {}): WorktreeContext {
   return {
-    connectionId: undefined,
     repoPath: '/repo/root',
     worktreeService: {
       existsAtAbsolutePath: vi.fn().mockResolvedValue(false),
@@ -273,21 +272,6 @@ describe('WorkspaceBootstrapService', () => {
       const [ws] = await fixture.db.select().from(workspaces).where(eq(workspaces.id, WS_ID));
       expect(ws.path).toBe('/worktrees/adopted');
       expect(ws.key).toBe(computeWorkspaceKey('local', '/worktrees/adopted'));
-    });
-
-    it('includes connectionId in key for SSH workspaces', async () => {
-      await fixture.db
-        .update(workspaces)
-        .set({ type: 'project-ssh' })
-        .where(eq(workspaces.id, WS_ID));
-
-      const ctx = makeCtx({ connectionId: 'conn-123' });
-      await svc.adoptPath(TASK_ID, '/remote/worktrees/branch', ctx);
-
-      const [ws] = await fixture.db.select().from(workspaces).where(eq(workspaces.id, WS_ID));
-      expect(ws.key).toBe(
-        computeWorkspaceKey('project-ssh', '/remote/worktrees/branch', 'conn-123')
-      );
     });
   });
 

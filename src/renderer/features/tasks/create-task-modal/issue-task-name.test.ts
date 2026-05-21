@@ -17,7 +17,7 @@ describe('getIssueTaskName', () => {
   it('returns null for non-Linear issues', () => {
     expect(
       getIssueTaskName({
-        provider: 'jira',
+        provider: 'github',
         url: 'https://example.atlassian.net/browse/APP-42',
         title: 'Fix login bug',
         identifier: 'APP-42',

@@ -1,7 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
 import { mapConversationRowToConversation } from '@main/core/conversations/utils';
 import { projectManager } from '@main/core/projects/project-manager';
-import { sshConnectionManager } from '@main/core/ssh/ssh-connection-manager';
 import { mapTerminalRowToTerminal } from '@main/core/terminals/core';
 import { workspaceBootstrapService } from '@main/core/workspaces/workspace-bootstrap-service';
 import { workspaceRegistry } from '@main/core/workspaces/workspace-registry';
@@ -42,8 +41,6 @@ export type TaskCrudHooks = {
   'task:deleted': (taskId: string, projectId: string) => void | Promise<void>;
 };
 
-type ProvisionResult = ProvisionTaskResult & { sshConnectionId?: string };
-
 export class TaskService implements Hookable<TaskCrudHooks> {
   private readonly _hooks = new HookCore<TaskCrudHooks>((name, e) =>
     log.error(`TaskService: ${String(name)} hook error`, e)
@@ -59,7 +56,7 @@ export class TaskService implements Hookable<TaskCrudHooks> {
     return result;
   }
 
-  async provision(taskId: string): Promise<Result<ProvisionResult, ProvisionTaskError>> {
+  async provision(taskId: string): Promise<Result<ProvisionTaskResult, ProvisionTaskError>> {
     const [row] = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1);
     if (!row) throw new Error(`Task not found: ${taskId}`);
 
@@ -67,7 +64,6 @@ export class TaskService implements Hookable<TaskCrudHooks> {
     const project = projectManager.getProject(task.projectId);
     if (!project) throw new Error(`Project not found: ${task.projectId}`);
 
-    // Idempotency: task is already live — return current state.
     const existingTask = taskManager.getTask(taskId);
     if (existingTask) {
       const pd = taskManager.getPersistData(taskId);
@@ -75,11 +71,9 @@ export class TaskService implements Hookable<TaskCrudHooks> {
       return ok({
         path: workspaceRegistry.get(wsId)?.path ?? '',
         workspaceId: wsId,
-        sshConnectionId: pd?.sshConnectionId,
       });
     }
 
-    // Load existing sessions (empty arrays for brand-new tasks).
     const [existingTerminals, existingConversations] = await Promise.all([
       db
         .select()
@@ -107,7 +101,7 @@ export class TaskService implements Hookable<TaskCrudHooks> {
 
     const hint: WorkspaceHint = {
       id: workspaceRow.id,
-      type: workspaceRow.type,
+      type: workspaceRow.type === 'byoi' ? 'byoi' : 'local',
       path: workspaceRow.path ?? undefined,
     };
 
@@ -121,11 +115,6 @@ export class TaskService implements Hookable<TaskCrudHooks> {
     if (!result.success) return err(result.error);
 
     const { persistData } = result.data;
-
-    if (persistData.sshConnectionId) {
-      sshConnectionManager.reportChannelRecovered(persistData.sshConnectionId);
-    }
-
     const workspacePath = workspaceRegistry.get(persistData.workspaceId)?.path ?? '';
 
     await db
@@ -134,15 +123,10 @@ export class TaskService implements Hookable<TaskCrudHooks> {
       .where(eq(tasks.id, taskId));
 
     if (!workspaceRow.path && workspacePath) {
-      const connectionId =
-        project.defaultWorkspaceType.kind === 'ssh'
-          ? project.defaultWorkspaceType.connectionId
-          : undefined;
       await workspaceBootstrapService.persistPath(
         workspaceRow.id,
         workspacePath,
-        workspaceRow.type,
-        connectionId
+        workspaceRow.type === 'byoi' ? 'byoi' : 'local'
       );
     }
 
@@ -159,7 +143,6 @@ export class TaskService implements Hookable<TaskCrudHooks> {
     return ok({
       path: workspacePath,
       workspaceId: persistData.workspaceId,
-      sshConnectionId: persistData.sshConnectionId,
     });
   }
 
@@ -213,7 +196,6 @@ export class TaskService implements Hookable<TaskCrudHooks> {
     if (task) this._hooks.callHookBackground('task:updated', task);
   }
 
-  // Operations with no hook — thin pass-throughs
   updateTaskStatus = updateTaskStatus;
   setTaskPinned = setTaskPinned;
   getTasks = getTasks;

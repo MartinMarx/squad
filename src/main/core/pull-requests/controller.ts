@@ -1,6 +1,5 @@
 import { RequestError } from '@octokit/request-error';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { createRPCController } from '@shared/ipc/rpc';
 import type {
   ListPrOptions,
@@ -169,13 +168,9 @@ export const pullRequestController = createRPCController({
       }
       // Sync the newly created PR into the DB
       void prSyncEngine.syncSingle(params.repositoryUrl, result.data.number);
-      telemetryService.capture('pr_created', { is_draft: params.draft });
       return ok({ url: result.data.url, number: result.data.number });
     } catch (error) {
       log.error('Failed to create pull request:', error);
-      telemetryService.capture('pr_creation_failed', {
-        error_type: error instanceof Error ? error.name || 'error' : 'unknown_error',
-      });
       const ghErrors =
         error instanceof RequestError &&
         Array.isArray((error.response?.data as { errors?: unknown[] } | undefined)?.errors)

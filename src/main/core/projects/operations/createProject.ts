@@ -3,38 +3,21 @@ import type {
   InspectProjectPathParams,
   LocalProject,
   ProjectPathInspection,
-  SshProject,
 } from '@shared/projects';
 import { createLocalProject, getLocalProjectPathStatus } from './create-local-project';
-import { createSshProject, getSshProjectPathStatus } from './create-ssh-project';
-import { getLocalProjectByPath, getSshProjectByPath } from './getProjects';
+import { getLocalProjectByPath } from './getProjects';
 
-export async function createProject(
-  params: CreateProjectParams
-): Promise<LocalProject | SshProject> {
-  if (params.type === 'local') {
-    const { type: _type, ...localParams } = params;
-    return createLocalProject(localParams);
-  }
-
-  const { type: _type, ...sshParams } = params;
-  return createSshProject(sshParams);
+export async function createProject(params: CreateProjectParams): Promise<LocalProject> {
+  const { type: _type, ...localParams } = params;
+  return createLocalProject(localParams);
 }
 
 export async function inspectProjectPath(
   params: InspectProjectPathParams
 ): Promise<ProjectPathInspection> {
-  if (params.type === 'local') {
-    const [status, existingProject] = await Promise.all([
-      getLocalProjectPathStatus(params.path),
-      getLocalProjectByPath(params.path),
-    ]);
-    return { ...status, existingProject };
-  }
-
   const [status, existingProject] = await Promise.all([
-    getSshProjectPathStatus(params.path, params.connectionId),
-    getSshProjectByPath(params.path, params.connectionId),
+    getLocalProjectPathStatus(params.path),
+    getLocalProjectByPath(params.path),
   ]);
   return { ...status, existingProject };
 }

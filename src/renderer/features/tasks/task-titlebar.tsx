@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import {
-  asMounted,
   getProjectStore,
   projectDisplayName,
 } from '@renderer/features/projects/stores/project-selectors';
@@ -27,7 +26,6 @@ import {
   useWorkspace,
   useWorkspaceViewModel,
 } from '@renderer/features/tasks/task-view-context';
-import { ConnectionStatusDot } from '@renderer/lib/components/connection-status-dot';
 import { OpenInMenu } from '@renderer/lib/components/titlebar/open-in-menu';
 import { Titlebar } from '@renderer/lib/components/titlebar/Titlebar';
 import { rpc } from '@renderer/lib/ipc';
@@ -124,14 +122,11 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
   const linesDeleted = workspace.git.totalLinesDeleted;
   const hasDiffStats = linesAdded > 0 || linesDeleted > 0;
 
-  const projectStore = asMounted(getProjectStore(projectId));
-
   const projectName = projectDisplayName(getProjectStore(projectId));
   const { navigate } = useNavigate();
 
   if (!taskStore || !taskPayload) return null;
 
-  const isRemoteProject = projectStore?.data.type === 'ssh';
   return (
     <Titlebar
       leftSlot={
@@ -149,10 +144,7 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
               <TooltipTrigger
                 render={
                   <PopoverTrigger className="flex items-center gap-1 text-sm text-foreground-muted hover:text-foreground">
-                    <span className="flex min-w-0 items-center gap-1.5">
-                      <span className="max-w-56 truncate">{taskDisplayName(taskStore)}</span>
-                      <ConnectionStatusDot state={workspace.connectionState} />
-                    </span>
+                    <span className="max-w-56 truncate">{taskDisplayName(taskStore)}</span>
                     <ChevronDown className="size-3.5 shrink-0" />
                   </PopoverTrigger>
                 }
@@ -309,9 +301,7 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
       rightSlot={
         <div className="flex items-center gap-2">
           <DevServerPills projectId={projectId} taskId={taskId} />
-          {!isRemoteProject && (
-            <OpenInMenu path={workspace.path} className="h-7 bg-transparent" borderless />
-          )}
+          <OpenInMenu path={workspace.path} className="h-7 bg-transparent" borderless />
           <Separator orientation="vertical" className="h-5 self-center!" />
           <Tooltip>
             <TooltipTrigger>
@@ -416,11 +406,7 @@ function LinkedIssueBadge({ issue }: { issue: Issue }) {
             className="hover:bg-muted/30 flex items-center gap-1 rounded-md border border-border px-1.5 py-0.5 text-xs text-foreground-muted disabled:cursor-default disabled:opacity-60"
           >
             <ProviderLogo provider={issue.provider} className="h-3 w-3" />
-            {issue.provider === 'asana' ? (
-              <span className="max-w-[180px] truncate">{issue.title || 'Asana task'}</span>
-            ) : (
-              <span className="font-mono">{issue.identifier}</span>
-            )}
+            <span className="font-mono">{issue.identifier}</span>
           </button>
         }
       />

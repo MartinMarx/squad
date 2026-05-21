@@ -81,7 +81,7 @@ If you need to skip the hook for a work-in-progress commit, use `git commit --no
 Examples
 
 ```
-fix(opencode): change initialPromptFlag from -p to --prompt for TUI
+fix(cursor): handle resume flag in agent command builder
 
 feat(docs): add changelog tab with GitHub releases integration
 ```
