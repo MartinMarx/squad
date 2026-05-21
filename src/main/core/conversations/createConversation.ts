@@ -4,7 +4,6 @@ import { withCompensation } from '@main/core/utils/compensation';
 import { db } from '@main/db/client';
 import { conversations } from '@main/db/schema';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { type Conversation, type CreateConversationParams } from '@shared/conversations';
 import { resolveTask } from '../projects/utils';
 import { conversationEvents } from './conversation-events';
@@ -12,11 +11,6 @@ import { mapConversationRowToConversation } from './utils';
 
 export async function createConversation(params: CreateConversationParams): Promise<Conversation> {
   const id = params.id ?? randomUUID();
-  const [existingConversation] = await db
-    .select({ id: conversations.id })
-    .from(conversations)
-    .where(eq(conversations.taskId, params.taskId))
-    .limit(1);
 
   const config =
     params.autoApprove === undefined
@@ -66,13 +60,6 @@ export async function createConversation(params: CreateConversationParams): Prom
   });
 
   conversationEvents._emit('conversation:created', conversation);
-  telemetryService.capture('conversation_created', {
-    provider: params.provider,
-    is_first_in_task: existingConversation === undefined,
-    project_id: params.projectId,
-    task_id: params.taskId,
-    conversation_id: id,
-  });
 
   return conversation;
 }

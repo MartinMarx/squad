@@ -58,10 +58,8 @@
     "@dnd-kit/react": "^0.3.2",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@gitbeaker/rest": "^43.8.0",
     "@isaacs/brace-expansion": "^5.0.1",
     "@linear/sdk": "^77.0.0",
-    "@llamaduck/forgejo-ts": "^14.0.3",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@monaco-editor/react": "^4.7.0",
     "@octokit/auth-oauth-device": "^8.0.3",
@@ -91,10 +89,8 @@
     "@tanstack/react-hotkeys": "^0.4.1",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-virtual": "^3.13.23",
-    "@team-plain/graphql": "^1.0.1",
     "@types/better-sqlite3": "^7.6.13",
     "@types/react-window": "^1.8.8",
-    "@types/ssh2": "^1.15.5",
     "@xterm/addon-canvas": "^0.7.0",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/addon-web-links": "^0.12.0",
@@ -139,7 +135,6 @@
     "remark-math": "^6.0.0",
     "smol-toml": "^1.6.0",
     "sonner": "^2.0.7",
-    "ssh2": "^1.17.0",
     "streamdown": "^1.3.0",
     "tailwind-merge": "^2.6.0",
     "tsconfig-paths": "^3.15.0",
@@ -203,8 +198,7 @@
       "core-js",
       "cpu-features",
       "esbuild",
-      "protobufjs",
-      "ssh2"
+      "protobufjs"
     ]
   }
 }

@@ -1,7 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '@main/db/client';
 import { conversations } from '@main/db/schema';
-import { telemetryService } from '@main/lib/telemetry';
 import { resolveTask } from '../projects/utils';
 import { conversationEvents } from './conversation-events';
 
@@ -24,9 +23,4 @@ export async function deleteConversation(
 
   const task = resolveTask(projectId, taskId);
   await task?.conversations.stopSession(conversationId);
-  telemetryService.capture('conversation_deleted', {
-    project_id: projectId,
-    task_id: taskId,
-    conversation_id: conversationId,
-  });
 }

@@ -1,6 +1,4 @@
 import { log } from '@renderer/utils/logger';
-import type { TelemetryEventProperties } from '@shared/telemetry';
-import { captureTelemetry } from '../utils/telemetryClient';
 
 interface ErrorContext {
   // Component/UI context
@@ -36,75 +34,27 @@ class RendererErrorTracking {
    */
   captureException(error: Error | unknown, context?: ErrorContext): void {
     try {
-      // Rate limiting
       const now = Date.now();
       if (now - this.lastErrorTimestamp < 100) {
-        return; // Skip if error happened within 100ms
+        return;
       }
       this.lastErrorTimestamp = now;
       this.sessionErrors++;
 
-      // Build error object
       const errorObj = error instanceof Error ? error : new Error(String(error));
       const errorMessage = errorObj.message || 'Unknown error';
-      const errorStack = errorObj.stack || '';
-
-      // Determine severity if not provided
       const severity = context?.severity || this.determineSeverity(errorMessage, context);
 
-      // Build error properties following PostHog's $exception format
-      const properties: Record<string, any> = {
-        // PostHog required fields for error tracking
-        $exception_message: errorMessage.slice(0, 500),
-        $exception_type: context?.error_type || this.classifyError(errorMessage),
-        $exception_stack_trace_raw: errorStack.slice(0, 2000),
-        $exception_fingerprint: `${context?.component || 'renderer'}_${context?.operation || context?.action || 'unknown'}_${this.classifyError(errorMessage)}`,
-
-        // Additional context
-        severity,
-
-        // Component/UI context
-        component: context?.component || 'renderer',
-        action: context?.action,
-        user_action: context?.user_action,
-
-        // Operation context
-        operation: context?.operation,
-        endpoint: context?.endpoint,
-
-        // Task/Project context
-        task_id: context?.task_id,
-        project_id: context?.project_id,
-        provider: context?.provider,
-
-        // Session info
-        session_errors: this.sessionErrors,
-        error_timestamp: new Date().toISOString(),
-
-        // Browser info
-        user_agent: navigator.userAgent,
-        viewport: `${window.innerWidth}x${window.innerHeight}`,
-
-        // Additional custom context
-        ...this.sanitizeContext(context),
-      };
-
-      // Filter out undefined/null values
-      const cleanProperties = Object.fromEntries(
-        Object.entries(properties).filter(([_, v]) => v !== undefined && v !== null)
-      ) as TelemetryEventProperties['$exception'];
-
-      // Send to main process as $exception event (required for PostHog error tracking)
-      this.sendToMainProcess('$exception', cleanProperties);
-
-      // Also log to console for debugging
       log.error('[ErrorTracking]', errorMessage, {
         severity,
         component: context?.component,
         action: context?.action,
+        operation: context?.operation,
+        endpoint: context?.endpoint,
+        session_errors: this.sessionErrors,
+        ...this.sanitizeContext(context),
       });
     } catch (trackingError) {
-      // Never let error tracking crash the renderer
       log.warn('Failed to capture exception:', trackingError);
     }
   }
@@ -170,13 +120,6 @@ class RendererErrorTracking {
   }
 
   // Private helper methods
-
-  private sendToMainProcess(
-    event: '$exception',
-    properties: TelemetryEventProperties['$exception']
-  ): void {
-    captureTelemetry(event, properties);
-  }
 
   private determineSeverity(
     errorMessage: string,

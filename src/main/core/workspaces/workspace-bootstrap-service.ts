@@ -7,9 +7,11 @@ import type { WorktreeBootstrapOps } from '../projects/worktrees/worktree-servic
 import { mapWorktreeErrorToProvisionError } from '../tasks/provision-task-error';
 import { computeWorkspaceKey } from './workspace-key';
 
+function normalizeWorkspaceType(type: string): WorkspaceType {
+  return type === 'byoi' ? 'byoi' : 'local';
+}
+
 export type WorktreeContext = {
-  /** undefined for local projects, set for SSH */
-  connectionId?: string;
   /** Absolute path to the project repo root — used when a task has no taskBranch */
   repoPath: string;
   worktreeService: WorktreeBootstrapOps;
@@ -30,7 +32,7 @@ export class WorkspaceBootstrapService {
     let workspaceId: string;
 
     if (!rawWorkspaceId || this._isLegacyWorkspaceId(rawWorkspaceId)) {
-      workspaceId = await this._migrateLegacyWorkspaceId(taskId, taskRow, rawWorkspaceId, ctx);
+      workspaceId = await this._migrateLegacyWorkspaceId(taskId, taskRow, rawWorkspaceId);
     } else {
       workspaceId = rawWorkspaceId;
     }
@@ -81,8 +83,7 @@ export class WorkspaceBootstrapService {
         workspace.id,
         taskId,
         candidatePath,
-        workspace.type,
-        ctx.connectionId
+        normalizeWorkspaceType(workspace.type)
       );
       return { kind: 'ready' };
     }
@@ -128,15 +129,14 @@ export class WorkspaceBootstrapService {
       workspace.id,
       taskId,
       worktreePath,
-      workspace.type,
-      ctx.connectionId
+      normalizeWorkspaceType(workspace.type)
     );
   }
 
   /**
    * Adopts an existing path as the workspace location for a task.
    */
-  async adoptPath(taskId: string, candidatePath: string, ctx: WorktreeContext): Promise<void> {
+  async adoptPath(taskId: string, candidatePath: string, _ctx: WorktreeContext): Promise<void> {
     const [taskRow] = await this.db.select().from(tasks).where(eq(tasks.id, taskId));
     if (!taskRow?.workspaceId) throw new Error(`Task or workspace not found: ${taskId}`);
 
@@ -150,8 +150,7 @@ export class WorkspaceBootstrapService {
       workspace.id,
       taskId,
       candidatePath,
-      workspace.type,
-      ctx.connectionId
+      normalizeWorkspaceType(workspace.type)
     );
   }
 
@@ -162,13 +161,8 @@ export class WorkspaceBootstrapService {
    * so the caller can re-point any tasks. Returns the original workspaceId when
    * the update succeeds normally.
    */
-  async persistPath(
-    workspaceId: string,
-    path: string,
-    type: WorkspaceType,
-    connectionId?: string
-  ): Promise<string> {
-    const key = type !== 'byoi' ? computeWorkspaceKey(type, path, connectionId) : null;
+  async persistPath(workspaceId: string, path: string, type: WorkspaceType): Promise<string> {
+    const key = type !== 'byoi' ? computeWorkspaceKey('local', path) : null;
 
     if (key) {
       const [existing] = await this.db.select().from(workspaces).where(eq(workspaces.key, key));
@@ -192,10 +186,9 @@ export class WorkspaceBootstrapService {
     workspaceId: string,
     taskId: string,
     path: string,
-    type: WorkspaceType,
-    connectionId?: string
+    type: WorkspaceType
   ): Promise<void> {
-    const resolvedId = await this.persistPath(workspaceId, path, type, connectionId);
+    const resolvedId = await this.persistPath(workspaceId, path, type);
     if (resolvedId !== workspaceId) {
       // Key conflict: re-point the task to the workspace that already owns this path.
       await this.db.update(tasks).set({ workspaceId: resolvedId }).where(eq(tasks.id, taskId));
@@ -209,15 +202,10 @@ export class WorkspaceBootstrapService {
   private async _migrateLegacyWorkspaceId(
     taskId: string,
     taskRow: { workspaceProvider?: string | null; workspaceId?: string | null },
-    rawWorkspaceId: string | null | undefined,
-    ctx: WorktreeContext
+    rawWorkspaceId: string | null | undefined
   ): Promise<string> {
     const newId = crypto.randomUUID();
-    const workspaceType = this._resolveWorkspaceType(
-      rawWorkspaceId,
-      taskRow.workspaceProvider,
-      ctx
-    );
+    const workspaceType = this._resolveWorkspaceType(rawWorkspaceId, taskRow.workspaceProvider);
 
     this.db.transaction((tx) => {
       tx.insert(workspaces).values({ id: newId, type: workspaceType }).run();
@@ -229,11 +217,9 @@ export class WorkspaceBootstrapService {
 
   private _resolveWorkspaceType(
     rawWorkspaceId: string | null | undefined,
-    workspaceProvider: string | null | undefined,
-    ctx: WorktreeContext
+    workspaceProvider: string | null | undefined
   ): WorkspaceType {
     if (rawWorkspaceId?.startsWith('remote:') || workspaceProvider === 'byoi') return 'byoi';
-    if (rawWorkspaceId?.startsWith('ssh:') || ctx.connectionId !== undefined) return 'project-ssh';
     return 'local';
   }
 }

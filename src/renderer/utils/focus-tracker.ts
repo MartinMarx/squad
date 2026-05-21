@@ -1,11 +1,21 @@
-import type {
-  FocusContext,
-  FocusedRegion,
-  FocusMainPanel,
-  FocusTrigger,
-  FocusView,
-  TelemetryEventProperties,
-} from '@shared/telemetry';
+export type FocusView =
+  | 'home'
+  | 'library'
+  | 'project'
+  | 'task'
+  | 'settings'
+  | 'skills'
+  | 'mcp';
+
+export type FocusMainPanel = 'agents' | 'editor' | 'diff' | 'terminal' | 'browser' | 'files';
+export type FocusedRegion = 'main' | 'bottom' | 'sidebar' | 'right';
+export type FocusTrigger = 'navigation' | 'panel_switch' | 'region_switch';
+
+export interface FocusContext {
+  active_view: FocusView | null;
+  active_main_panel: FocusMainPanel | null;
+  focused_region: FocusedRegion | null;
+}
 
 interface FocusState {
   view: FocusView | null;
@@ -18,7 +28,12 @@ export interface FocusTransitionResult {
   changed: boolean;
 }
 
-type FocusChangedPayload = TelemetryEventProperties['focus_changed'];
+type FocusChangedPayload = {
+  view: FocusView | null;
+  main_panel: FocusMainPanel | null;
+  focused_region: FocusedRegion | null;
+  trigger: FocusTrigger;
+};
 
 type TransitionEmitter = (payload: FocusChangedPayload) => void;
 

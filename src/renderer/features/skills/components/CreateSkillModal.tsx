@@ -14,7 +14,6 @@ import {
 import { Input } from '@renderer/lib/ui/input';
 import { Label } from '@renderer/lib/ui/label';
 import { Textarea } from '@renderer/lib/ui/textarea';
-import { captureTelemetry } from '@renderer/utils/telemetryClient';
 import { isValidSkillName } from '@shared/skills/validation';
 
 type Props = BaseModalProps<void>;
@@ -55,7 +54,6 @@ export function CreateSkillModal({ onSuccess, onClose }: Props) {
         return;
       }
 
-      captureTelemetry('skill_created');
       onSuccess();
       void queryClient.invalidateQueries({ queryKey: ['skills', 'catalog'] });
     } catch (error) {

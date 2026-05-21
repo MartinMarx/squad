@@ -31,7 +31,6 @@ interface AgentSelectorProps {
   onChange: (agent: AgentProviderId) => void;
   disabled?: boolean;
   className?: string;
-  connectionId?: string;
   installable?: boolean;
   autoFocus?: boolean;
 }
@@ -42,15 +41,11 @@ export const AgentSelector: React.FC<AgentSelectorProps> = observer(
     onChange,
     disabled = false,
     className = '',
-    connectionId,
     installable = true,
     autoFocus = false,
   }) => {
     const [open, setOpen] = useState(false);
-    const { groups, installingAgents, installAgent } = useAgentAvailability({
-      connectionId,
-      value,
-    });
+    const { groups, installingAgents, installAgent } = useAgentAvailability({ value });
     const allOptions = useMemo(() => groups.flatMap((group) => group.items), [groups]);
 
     const selectedConfig = value ? agentConfig[value] : null;

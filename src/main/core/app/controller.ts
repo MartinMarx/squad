@@ -1,4 +1,4 @@
-import { telemetryService } from '@main/lib/telemetry';
+import { getFeatureFlags } from '@main/lib/feature-flags';
 import { createRPCController } from '@shared/ipc/rpc';
 import type { OpenInAppId } from '@shared/openInApps';
 import { appService } from './service';
@@ -7,7 +7,6 @@ export const appController = createRPCController({
   openExternal: async (url: string) => {
     try {
       await appService.openExternal(url);
-      telemetryService.capture('open_in_external', { app: 'browser' });
       return { success: true };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : String(error) };
@@ -29,15 +28,9 @@ export const appController = createRPCController({
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   },
-  openIn: async (args: {
-    app: OpenInAppId;
-    path: string;
-    isRemote?: boolean;
-    sshConnectionId?: string | null;
-  }) => {
+  openIn: async (args: { app: OpenInAppId; path: string }) => {
     try {
       await appService.openIn(args);
-      telemetryService.capture('open_in_external', { app: args.app });
       return { success: true };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : String(error) };
@@ -62,4 +55,5 @@ export const appController = createRPCController({
   getAppVersion: () => appService.getCachedAppVersion(),
   getElectronVersion: () => process.versions.electron,
   getPlatform: () => process.platform,
+  getFeatureFlags: () => getFeatureFlags(),
 });

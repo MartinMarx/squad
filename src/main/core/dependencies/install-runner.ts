@@ -2,9 +2,6 @@ import os from 'node:os';
 import { spawnLocalPty } from '@main/core/pty/local-pty';
 import type { Pty } from '@main/core/pty/pty';
 import { logLocalPtySpawnWarnings, resolveLocalPtySpawn } from '@main/core/pty/pty-spawn-platform';
-import { openSsh2Pty } from '@main/core/pty/ssh2-pty';
-import { buildRemoteShellCommand } from '@main/core/ssh/remote-shell-profile';
-import type { SshClientProxy } from '@main/core/ssh/ssh-client-proxy';
 import { log } from '@main/lib/logger';
 import { ensureUserBinDirsInPath } from '@main/utils/userEnv';
 import type { InstallCommandError } from '@shared/dependencies';
@@ -96,22 +93,4 @@ export function runLocalInstallCommand(
     }
     return result;
   });
-}
-
-export function createSshInstallCommandRunner(proxy: SshClientProxy): InstallCommandRunner {
-  return async (command: string) => {
-    const profile = await proxy.getRemoteShellProfile();
-    const result = await openSsh2Pty(proxy, {
-      id: `install:${crypto.randomUUID()}`,
-      command: buildRemoteShellCommand(profile, command),
-      cols: 80,
-      rows: 24,
-    });
-
-    if (!result.success) {
-      return err({ type: 'pty-open-failed', message: result.error.message });
-    }
-
-    return waitForInstallPty(result.data);
-  };
 }

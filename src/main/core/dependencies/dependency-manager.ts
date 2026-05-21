@@ -1,7 +1,5 @@
 import { LocalExecutionContext } from '@main/core/execution-context/local-execution-context';
-import { SshExecutionContext } from '@main/core/execution-context/ssh-execution-context';
 import type { IExecutionContext } from '@main/core/execution-context/types';
-import { sshConnectionManager } from '@main/core/ssh/ssh-connection-manager';
 import { events } from '@main/lib/events';
 import type { IInitializable } from '@main/lib/lifecycle';
 import { log } from '@main/lib/logger';
@@ -14,11 +12,7 @@ import type {
 } from '@shared/dependencies';
 import { dependencyStatusUpdatedChannel } from '@shared/events/appEvents';
 import { err, ok } from '@shared/result';
-import {
-  createSshInstallCommandRunner,
-  runLocalInstallCommand,
-  type InstallCommandRunner,
-} from './install-runner';
+import { runLocalInstallCommand, type InstallCommandRunner } from './install-runner';
 import { resolveCommandPath, runVersionProbe } from './probe';
 import { DEPENDENCIES, getDependencyDescriptor } from './registry';
 import type { DependencyDescriptor, ProbeResult } from './types';
@@ -42,7 +36,6 @@ function resolveProbeStatus(
 function extractVersion(probe: ProbeResult): string | null {
   const raw = (probe.stdout || probe.stderr).trim();
   const firstLine = raw.split('\n')[0]?.trim() ?? '';
-  // Extract a version-like token, e.g. "git version 2.39.0" → "2.39.0"
   const m = VERSION_RE.exec(firstLine);
   return m ? m[1] : firstLine || null;
 }
@@ -81,30 +74,22 @@ export class DependencyManager implements IInitializable {
   private readonly ctx: IExecutionContext;
   private readonly emitEvents: boolean;
   private readonly runInstallCommand: InstallCommandRunner;
-  private readonly connectionId: string | undefined;
 
   constructor(
     ctx: IExecutionContext,
     {
       emitEvents = true,
       runInstallCommand = runLocalInstallCommand,
-      connectionId,
     }: {
       emitEvents?: boolean;
       runInstallCommand?: InstallCommandRunner;
-      connectionId?: string;
     } = {}
   ) {
     this.ctx = ctx;
     this.emitEvents = emitEvents;
     this.runInstallCommand = runInstallCommand;
-    this.connectionId = connectionId;
   }
 
-  /**
-   * Kick off background probing for all dependencies. Returns immediately;
-   * results stream in via `dependencyStatusUpdatedChannel` events.
-   */
   initialize(): void {
     void this.probeAll();
   }
@@ -124,18 +109,12 @@ export class DependencyManager implements IInitializable {
     });
   }
 
-  /**
-   * Two-phase probe for a single dependency:
-   *   1. Resolve path (fast, ~5ms) — emits an event immediately.
-   *   2. Run version probe (slow, up to 10s) — emits a second event on completion.
-   */
   async probe(id: DependencyId): Promise<DependencyState> {
     const descriptor = getDependencyDescriptor(id);
     if (!descriptor) {
       throw new Error(`Unknown dependency id: ${id}`);
     }
 
-    // Phase 1: path resolution
     const resolvedPath = await this.resolveFirstPath(descriptor);
     const pathState = dependencyStateFromProbeResult(descriptor, resolvedPath, null);
     this.updateState(pathState);
@@ -144,7 +123,6 @@ export class DependencyManager implements IInitializable {
       return pathState;
     }
 
-    // Phase 2: version probe
     const versionArgs = descriptor.versionArgs ?? ['--version'];
     const probeResult = await runVersionProbe(
       descriptor.commands[0] ?? id,
@@ -179,10 +157,6 @@ export class DependencyManager implements IInitializable {
     );
   }
 
-  /**
-   * Run the installCommand for a dependency, then re-probe to update state.
-   * Returns the updated DependencyState after installation attempt.
-   */
   async install(id: DependencyId): Promise<DependencyInstallResult> {
     const descriptor = getDependencyDescriptor(id);
     if (!descriptor) {
@@ -223,7 +197,6 @@ export class DependencyManager implements IInitializable {
       events.emit(dependencyStatusUpdatedChannel, {
         id: state.id,
         state,
-        connectionId: this.connectionId,
       });
     }
   }
@@ -231,19 +204,6 @@ export class DependencyManager implements IInitializable {
 
 export const localDependencyManager = new DependencyManager(new LocalExecutionContext());
 
-const sshManagers = new Map<string, DependencyManager>();
-
-export async function getDependencyManager(connectionId?: string): Promise<DependencyManager> {
-  if (!connectionId) return localDependencyManager;
-  let mgr = sshManagers.get(connectionId);
-  if (!mgr) {
-    const proxy = await sshConnectionManager.connect(connectionId);
-    mgr = new DependencyManager(new SshExecutionContext(proxy), {
-      emitEvents: true,
-      runInstallCommand: createSshInstallCommandRunner(proxy),
-      connectionId,
-    });
-    sshManagers.set(connectionId, mgr);
-  }
-  return mgr;
+export async function getDependencyManager(_connectionId?: string): Promise<DependencyManager> {
+  return localDependencyManager;
 }

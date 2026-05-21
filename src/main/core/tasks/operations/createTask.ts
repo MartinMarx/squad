@@ -202,9 +202,8 @@ export async function createTask(
     await unlockPhilosopherFromTaskName(params.name);
   }
 
-  const workspaceType = ((): 'local' | 'project-ssh' | 'byoi' => {
+  const workspaceType = ((): 'local' | 'byoi' => {
     if (params.workspaceProvider === 'byoi') return 'byoi';
-    if (project.defaultWorkspaceType.kind === 'ssh') return 'project-ssh';
     return 'local';
   })();
   const workspaceId = crypto.randomUUID();

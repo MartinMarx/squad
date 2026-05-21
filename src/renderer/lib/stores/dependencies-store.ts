@@ -13,7 +13,6 @@ import { Resource } from './resource';
 export class DependenciesStore {
   readonly local: Resource<DependencyStatusMap, DependencyStatusUpdatedEvent>;
 
-  private readonly _remoteStores = new Map<string, Resource<DependencyStatusMap>>();
   private readonly _installingDependencyKeys = observable.set<string>();
   private readonly _inFlightInstalls = new Map<string, Promise<DependencyInstallResult>>();
 
@@ -34,21 +33,12 @@ export class DependenciesStore {
       {
         kind: 'event',
         subscribe: (handler) => events.on(dependencyStatusUpdatedChannel, handler),
-        onEvent: ({ id, state, connectionId }, ctx) => {
-          if (connectionId) {
-            const remote = this.getRemote(connectionId);
-            remote.setValue({ ...(remote.data ?? {}), [id]: state as DependencyState });
-            return;
-          }
+        onEvent: ({ id, state }, ctx) => {
           ctx.set({ ...(ctx.data ?? {}), [id]: state as DependencyState });
         },
       },
     ]);
   }
-
-  // ---------------------------------------------------------------------------
-  // Computed
-  // ---------------------------------------------------------------------------
 
   get allStatuses(): DependencyStatusMap {
     return this.local.data ?? {};
@@ -66,76 +56,34 @@ export class DependenciesStore {
       .map(([id]) => id);
   }
 
-  // ---------------------------------------------------------------------------
-  // Remote (per SSH connection)
-  // ---------------------------------------------------------------------------
-
-  /**
-   * Returns (and lazily creates) a demand-loaded Resource for a remote connection.
-   * The resource probes all agent-category dependencies over SSH then fetches
-   * the results. It loads on first observer attachment.
-   */
-  getRemote(connectionId: string): Resource<DependencyStatusMap> {
-    let store = this._remoteStores.get(connectionId);
-    if (!store) {
-      store = new Resource<DependencyStatusMap>(
-        () => this.loadAgentStatuses(connectionId),
-        [{ kind: 'demand' }]
-      );
-      this._remoteStores.set(connectionId, store);
-    }
-    return store;
+  isInstalling(id: DependencyId): boolean {
+    return this._installingDependencyKeys.has(id);
   }
 
-  /**
-   * Returns the installed agent IDs for a remote connection.
-   * Reads from the demand-loaded resource; returns [] while loading.
-   */
-  remoteInstalledAgents(connectionId: string): string[] {
-    const data = this.getRemote(connectionId).data;
-    if (!data) return [];
-    return Object.entries(data)
-      .filter(([, s]) => s.status === 'available')
-      .map(([id]) => id);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Actions
-  // ---------------------------------------------------------------------------
-
-  isInstalling(id: DependencyId, connectionId?: string): boolean {
-    return this._installingDependencyKeys.has(this.installKey(id, connectionId));
-  }
-
-  async install(id: DependencyId, connectionId?: string): Promise<DependencyInstallResult> {
-    const key = this.installKey(id, connectionId);
-    const existing = this._inFlightInstalls.get(key);
+  async install(id: DependencyId): Promise<DependencyInstallResult> {
+    const existing = this._inFlightInstalls.get(id);
     if (existing) return existing;
 
-    const install = this.runInstall(id, connectionId, key);
-    this._inFlightInstalls.set(key, install);
+    const install = this.runInstall(id);
+    this._inFlightInstalls.set(id, install);
     return install;
   }
 
-  private async runInstall(
-    id: DependencyId,
-    connectionId: string | undefined,
-    key: string
-  ): Promise<DependencyInstallResult> {
+  private async runInstall(id: DependencyId): Promise<DependencyInstallResult> {
     runInAction(() => {
-      this._installingDependencyKeys.add(key);
+      this._installingDependencyKeys.add(id);
     });
 
     try {
-      const result = (await rpc.dependencies.install(id, connectionId)) as DependencyInstallResult;
+      const result = (await rpc.dependencies.install(id)) as DependencyInstallResult;
       if (!result.success) return result;
 
-      await this.refreshAgents(connectionId);
+      await this.refreshAgents();
       return result;
     } finally {
-      this._inFlightInstalls.delete(key);
+      this._inFlightInstalls.delete(id);
       runInAction(() => {
-        this._installingDependencyKeys.delete(key);
+        this._installingDependencyKeys.delete(id);
       });
     }
   }
@@ -145,40 +93,17 @@ export class DependenciesStore {
     this.local.invalidate();
   }
 
-  async refreshAgents(connectionId?: string): Promise<void> {
-    const statuses = await this.loadAgentStatuses(connectionId);
-    if (connectionId) {
-      this.getRemote(connectionId).setValue(statuses);
-      return;
-    }
-    this.local.setValue(statuses);
+  async refreshAgents(): Promise<void> {
+    await rpc.dependencies.probeCategory('agent');
+    const all = await rpc.dependencies.getAll();
+    this.local.setValue((all ?? {}) as DependencyStatusMap);
   }
 
-  // ---------------------------------------------------------------------------
-  // Lifecycle
-  // ---------------------------------------------------------------------------
-
-  /** Activate the event subscription and trigger the initial local fetch. */
   start(): void {
     this.local.start();
   }
 
-  /** Dispose all resources (timers, event listeners). */
   dispose(): void {
     this.local.dispose();
-    for (const store of this._remoteStores.values()) {
-      store.dispose();
-    }
-    this._remoteStores.clear();
-  }
-
-  private installKey(id: DependencyId, connectionId?: string): string {
-    return `${connectionId ?? 'local'}:${id}`;
-  }
-
-  private async loadAgentStatuses(connectionId?: string): Promise<DependencyStatusMap> {
-    await rpc.dependencies.probeCategory('agent', connectionId);
-    const all = await rpc.dependencies.getAll(connectionId);
-    return (all ?? {}) as DependencyStatusMap;
   }
 }

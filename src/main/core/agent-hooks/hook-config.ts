@@ -6,25 +6,16 @@ import { LocalFileSystem } from '@main/core/fs/impl/local-fs';
 import type { FileSystemProvider } from '@main/core/fs/types';
 import { log } from '@main/lib/logger';
 import type { AgentProviderId } from '@shared/agent-provider-registry';
-import {
-  makeClaudeHookCommand,
-  makeCodexHookCommand,
-  makeOpenCodePluginContent,
-} from './agent-notify-command';
-import piEmdashExtension from './pi-emdash-extension.ts?raw';
+import { makeClaudeHookCommand, makeCodexHookCommand } from './agent-notify-command';
 
 const EMDASH_MARKER = 'EMDASH_HOOK_PORT';
 
 const CLAUDE_SETTINGS_PATH = '.claude/settings.local.json';
 const CODEX_CONFIG_PATH = '.codex/config.toml';
 const CODEX_HOOKS_PATH = '.codex/hooks.json';
-const DROID_SETTINGS_PATH = '.factory/settings.json';
-const PI_EMDASH_EXTENSION_PATH = '.pi/extensions/emdash-hook.ts';
-const OPENCODE_PLUGIN_PATH = '.opencode/plugins/emdash-notifications.js';
 const GITIGNORE_PATH = '.gitignore';
 type HookConfigWriteOptions = { writeGitIgnoreEntries?: boolean };
 type CodexHookEvent = 'Stop' | 'PermissionRequest';
-type DroidHookEvent = 'Notification' | 'Stop';
 
 const HOOK_EVENT_MAP = [
   { eventType: 'notification', hookKey: 'Notification' },
@@ -35,11 +26,6 @@ const CODEX_HOOK_EVENT_MAP = [
   { hookKey: 'Stop', notificationType: 'idle_prompt' },
   { hookKey: 'PermissionRequest', notificationType: 'permission_prompt' },
 ] satisfies { hookKey: CodexHookEvent; notificationType: 'idle_prompt' | 'permission_prompt' }[];
-
-const DROID_HOOK_EVENT_MAP = [
-  { hookKey: 'Notification', eventType: 'notification' },
-  { hookKey: 'Stop', eventType: 'stop' },
-] satisfies { hookKey: DroidHookEvent; eventType: 'notification' | 'stop' }[];
 
 const LEGACY_CODEX_NOTIFY_COMMAND = [
   'bash',
@@ -118,57 +104,6 @@ export class HookConfigWriter {
     return true;
   }
 
-  async writeDroidHooks(): Promise<boolean> {
-    if (!(await resolveCommandPath('droid', this.exec))) return false;
-
-    const config: Record<string, unknown> = (await this.fs.exists(DROID_SETTINGS_PATH))
-      ? await this.fs
-          .read(DROID_SETTINGS_PATH)
-          .then((r) => JSON.parse(r.content) ?? {})
-          .catch(() => ({}))
-      : {};
-
-    const hooks = (config.hooks ?? {}) as Record<string, unknown[]>;
-
-    for (const { hookKey, eventType } of DROID_HOOK_EVENT_MAP) {
-      const existing = Array.isArray(hooks[hookKey]) ? hooks[hookKey] : [];
-      hooks[hookKey] = this.buildHookEntries(
-        existing,
-        makeClaudeHookCommand(eventType, { platform: this.platform })
-      );
-    }
-
-    await this.fs.write(DROID_SETTINGS_PATH, JSON.stringify({ ...config, hooks }, null, 2) + '\n');
-    return true;
-  }
-
-  async writePiExtension(): Promise<boolean> {
-    if (!(await resolveCommandPath('pi', this.exec))) return false;
-
-    const existing = await this.fs
-      .read(PI_EMDASH_EXTENSION_PATH)
-      .then((r) => r.content)
-      .catch(() => undefined);
-    if (existing === piEmdashExtension) return true;
-
-    await this.fs.write(PI_EMDASH_EXTENSION_PATH, piEmdashExtension);
-    return true;
-  }
-
-  async writeOpenCodePlugin(): Promise<boolean> {
-    if (!(await resolveCommandPath('opencode', this.exec))) return false;
-
-    const pluginContent = makeOpenCodePluginContent();
-    const existing = await this.fs
-      .read(OPENCODE_PLUGIN_PATH)
-      .then((r) => r.content)
-      .catch(() => undefined);
-    if (existing === pluginContent) return true;
-
-    await this.fs.write(OPENCODE_PLUGIN_PATH, pluginContent);
-    return true;
-  }
-
   async writeForProvider(
     providerId: AgentProviderId,
     options: HookConfigWriteOptions = {}
@@ -187,36 +122,12 @@ export class HookConfigWriter {
       return this.writeCodexHooks();
     }
 
-    if (providerId === 'droid') {
-      const wroteConfig = await this.writeDroidHooks();
-      if (wroteConfig && writeGitIgnoreEntries) {
-        await this.ensureGitIgnoreEntries([DROID_SETTINGS_PATH]);
-      }
-      return wroteConfig;
-    }
-
-    if (providerId === 'pi') {
-      const wroteConfig = await this.writePiExtension();
-      if (wroteConfig && writeGitIgnoreEntries) {
-        await this.ensureGitIgnoreEntries([PI_EMDASH_EXTENSION_PATH]);
-      }
-      return wroteConfig;
-    }
-
-    if (providerId === 'opencode') {
-      const wroteConfig = await this.writeOpenCodePlugin();
-      if (wroteConfig && writeGitIgnoreEntries) {
-        await this.ensureGitIgnoreEntries([OPENCODE_PLUGIN_PATH]);
-      }
-      return wroteConfig;
-    }
-
     return false;
   }
 
   async writeAll(options: HookConfigWriteOptions = {}): Promise<void> {
     await Promise.all(
-      (['claude', 'codex', 'droid', 'pi', 'opencode'] as const).map((providerId) =>
+      (['claude', 'codex'] as const).map((providerId) =>
         this.writeForProvider(providerId, options).catch((err: Error) => {
           log.warn(`Failed to write ${providerId} hook config`, { error: String(err) });
         })

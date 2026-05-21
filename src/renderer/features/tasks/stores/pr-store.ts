@@ -2,7 +2,6 @@ import { makeAutoObservable } from 'mobx';
 import type { RepositoryStore } from '@renderer/features/projects/stores/repository-store';
 import { events, rpc } from '@renderer/lib/ipc';
 import { Resource } from '@renderer/lib/stores/resource';
-import { captureTelemetry } from '@renderer/utils/telemetryClient';
 import { gitRefChangedChannel, gitWorkspaceChangedChannel } from '@shared/events/gitEvents';
 import { commitRef, mergeBaseRange, refsEqual, remoteRef, type GitChange } from '@shared/git';
 import { parseGitHubRepository } from '@shared/github-repository';
@@ -110,13 +109,6 @@ export class PrStore {
   ): Promise<MergeResult> {
     const pr = this.pullRequests.find((p) => p.url === id);
     if (!pr) {
-      captureTelemetry('pr_merged', {
-        strategy: options.strategy,
-        success: false,
-        error_type: 'pr_not_found',
-        project_id: this.projectId,
-        task_id: this.workspaceId,
-      });
       return { success: false, error: 'Pull request not found' };
     }
 
@@ -125,22 +117,9 @@ export class PrStore {
 
     const result = await rpc.pullRequests.mergePullRequest(pr.repositoryUrl, prNumber, options);
     if (result.success) {
-      captureTelemetry('pr_merged', {
-        strategy: options.strategy,
-        success: true,
-        project_id: this.projectId,
-        task_id: this.workspaceId,
-      });
       return { success: true };
     }
 
-    captureTelemetry('pr_merged', {
-      strategy: options.strategy,
-      success: false,
-      error_type: 'merge_failed',
-      project_id: this.projectId,
-      task_id: this.workspaceId,
-    });
     return { success: false, error: pullRequestErrorMessage(result.error) };
   }
 

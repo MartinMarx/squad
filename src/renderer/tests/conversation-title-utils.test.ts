@@ -36,7 +36,7 @@ describe('nextDefaultConversationTitle', () => {
 
   it('formats existing lowercase default titles for display', () => {
     expect(formatConversationTitleForDisplay('codex', 'codex (2)')).toBe('Codex (2)');
-    expect(formatConversationTitleForDisplay('gemini', 'gemini (1)')).toBe('Gemini (1)');
+    expect(formatConversationTitleForDisplay('cursor', 'cursor (1)')).toBe('Cursor (1)');
   });
 
   it('leaves custom conversation titles unchanged', () => {

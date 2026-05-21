@@ -1,94 +1,39 @@
-import { and, desc, eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { db } from '@main/db/client';
 import { projects } from '@main/db/schema';
-import type { LocalProject, SshProject } from '@shared/projects';
+import type { LocalProject } from '@shared/projects';
 
-export async function getProjects(): Promise<(LocalProject | SshProject)[]> {
-  const rows = await db.select().from(projects).orderBy(desc(projects.updatedAt));
-  return rows.map((row) =>
-    row.workspaceProvider === 'local'
-      ? {
-          type: 'local' as const,
-          id: row.id,
-          name: row.name,
-          path: row.path,
-          baseRef: row.baseRef ?? 'main',
-          createdAt: row.createdAt,
-          updatedAt: row.updatedAt,
-        }
-      : {
-          type: 'ssh' as const,
-          id: row.id,
-          name: row.name,
-          path: row.path,
-          baseRef: row.baseRef ?? 'main',
-          connectionId: row.sshConnectionId!,
-          createdAt: row.createdAt,
-          updatedAt: row.updatedAt,
-        }
-  );
-}
-
-export async function getProjectById(
-  projectId: string
-): Promise<LocalProject | SshProject | undefined> {
-  const [row] = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1);
-  if (!row) return undefined;
-  if (row.workspaceProvider === 'local') {
-    return {
-      type: 'local' as const,
-      id: row.id,
-      name: row.name,
-      path: row.path,
-      baseRef: row.baseRef ?? 'main',
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    };
-  }
+function rowToLocalProject(row: typeof projects.$inferSelect): LocalProject {
   return {
-    type: 'ssh' as const,
+    type: 'local',
     id: row.id,
     name: row.name,
     path: row.path,
     baseRef: row.baseRef ?? 'main',
-    connectionId: row.sshConnectionId!,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
+}
+
+export async function getProjects(): Promise<LocalProject[]> {
+  const rows = await db.select().from(projects).orderBy(desc(projects.updatedAt));
+  return rows
+    .filter((row) => row.workspaceProvider === 'local')
+    .map((row) => rowToLocalProject(row));
+}
+
+export async function getProjectById(projectId: string): Promise<LocalProject | undefined> {
+  const [row] = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1);
+  if (!row || row.workspaceProvider !== 'local') return undefined;
+  return rowToLocalProject(row);
 }
 
 export async function getLocalProjectByPath(path: string): Promise<LocalProject | undefined> {
-  const [row] = await db.select().from(projects).where(eq(projects.path, path)).limit(1);
-  if (!row) return undefined;
-  return {
-    type: 'local' as const,
-    id: row.id,
-    name: row.name,
-    path: row.path,
-    baseRef: row.baseRef ?? 'main',
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  };
-}
-
-export async function getSshProjectByPath(
-  path: string,
-  connectionId: string
-): Promise<SshProject | undefined> {
   const [row] = await db
     .select()
     .from(projects)
-    .where(and(eq(projects.path, path), eq(projects.sshConnectionId, connectionId)))
+    .where(eq(projects.path, path))
     .limit(1);
-  if (!row) return undefined;
-  return {
-    type: 'ssh' as const,
-    id: row.id,
-    name: row.name,
-    path: row.path,
-    baseRef: row.baseRef ?? 'main',
-    connectionId: row.sshConnectionId!,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  };
+  if (!row || row.workspaceProvider !== 'local') return undefined;
+  return rowToLocalProject(row);
 }

@@ -32,7 +32,7 @@ export const APP_COMMAND_DEFS = defineCommandDefs([
   {
     id: 'app.newProject',
     label: 'New Project',
-    description: 'Add a new local or SSH project',
+    description: 'Add a new local project',
     scope: 'app',
     shortcutKey: 'newProject',
     group: 'App',
@@ -46,14 +46,6 @@ export const APP_COMMAND_DEFS = defineCommandDefs([
     shortcutKey: 'newTask',
     group: 'App',
     iconKey: 'square-plus',
-  },
-  {
-    id: 'app.giveFeedback',
-    label: 'Give Feedback',
-    description: 'Send feedback to the emdash team',
-    scope: 'app',
-    group: 'App',
-    iconKey: 'message-square-share',
   },
   {
     id: 'app.toggleTheme',

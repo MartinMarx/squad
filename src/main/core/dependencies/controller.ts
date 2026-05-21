@@ -1,34 +1,34 @@
-import type { DependencyCategory, DependencyId } from '@shared/dependencies';
 import { createRPCController } from '@shared/ipc/rpc';
 import { getDependencyManager } from './dependency-manager';
+import type { DependencyCategory, DependencyId } from '@shared/dependencies';
 
 export const dependenciesController = createRPCController({
-  getAll: async (connectionId?: string) => {
-    const mgr = await getDependencyManager(connectionId);
+  getAll: async () => {
+    const mgr = await getDependencyManager();
     return Object.fromEntries(mgr.getAll());
   },
-  get: async (id: DependencyId, connectionId?: string) => {
-    const mgr = await getDependencyManager(connectionId);
+  get: async (id: DependencyId) => {
+    const mgr = await getDependencyManager();
     return mgr.get(id);
   },
-  getByCategory: async (cat: DependencyCategory, connectionId?: string) => {
-    const mgr = await getDependencyManager(connectionId);
+  getByCategory: async (cat: DependencyCategory) => {
+    const mgr = await getDependencyManager();
     return mgr.getByCategory(cat);
   },
-  probe: async (id: DependencyId, connectionId?: string) => {
-    const mgr = await getDependencyManager(connectionId);
+  probe: async (id: DependencyId) => {
+    const mgr = await getDependencyManager();
     return mgr.probe(id);
   },
-  probeAll: async (connectionId?: string) => {
-    const mgr = await getDependencyManager(connectionId);
+  probeAll: async () => {
+    const mgr = await getDependencyManager();
     return mgr.probeAll();
   },
-  probeCategory: async (cat: DependencyCategory, connectionId?: string) => {
-    const mgr = await getDependencyManager(connectionId);
+  probeCategory: async (cat: DependencyCategory) => {
+    const mgr = await getDependencyManager();
     return mgr.probeCategory(cat);
   },
-  install: async (id: DependencyId, connectionId?: string) => {
-    const mgr = await getDependencyManager(connectionId);
+  install: async (id: DependencyId) => {
+    const mgr = await getDependencyManager();
     return mgr.install(id);
   },
 });

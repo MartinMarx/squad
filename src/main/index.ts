@@ -30,7 +30,6 @@ import { updateService } from './core/updates/update-service';
 import { viewStateService } from './core/view-state/view-state-service';
 import { initializeDatabase } from './db/initialize';
 import { log } from './lib/logger';
-import { telemetryService } from './lib/telemetry';
 import { rpcRouter } from './rpc';
 import { resolveUserEnv } from './utils/userEnv';
 
@@ -101,19 +100,6 @@ void app.whenReady().then(async () => {
     return;
   }
 
-  try {
-    await telemetryService.initialize({ installSource: app.isPackaged ? 'dmg' : 'dev' });
-  } catch (e) {
-    log.warn('telemetry init failed:', e);
-  }
-
-  emdashAccountService.on('accountChanged', (username, userId, email) => {
-    void telemetryService.identify(username, userId, email);
-  });
-  emdashAccountService.on('accountCleared', () => {
-    telemetryService.clearIdentity();
-  });
-
   gitWatcherRegistry.initialize();
   projectSettingsService.initialize();
   prSyncScheduler.initialize();
@@ -156,16 +142,13 @@ void app.whenReady().then(async () => {
 
 app.on('before-quit', (event) => {
   event.preventDefault();
-  telemetryService.capture('app_closed');
-  void telemetryService.dispose().finally(() => {
-    agentHookService.dispose();
-    stopResourceSampler();
-    updateService.dispose();
-    prSyncScheduler.dispose();
-    void gitWatcherRegistry.dispose();
-    void projectManager.dispose().catch((e) => {
-      log.error('Failed to shutdown project manager:', e);
-    });
-    app.exit(0);
+  agentHookService.dispose();
+  stopResourceSampler();
+  updateService.dispose();
+  prSyncScheduler.dispose();
+  void gitWatcherRegistry.dispose();
+  void projectManager.dispose().catch((e) => {
+    log.error('Failed to shutdown project manager:', e);
   });
+  app.exit(0);
 });

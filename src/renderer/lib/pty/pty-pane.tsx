@@ -1,6 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import { getDraggedFilePaths } from '@renderer/lib/drag-files';
-import { rpc } from '@renderer/lib/ipc';
 import { log } from '@renderer/utils/logger';
 import { cn } from '@renderer/utils/utils';
 import { pastePromptInjection } from './prompt-injection';
@@ -17,8 +16,6 @@ type Props = {
   className?: string;
   contentFilter?: string;
   mapShiftEnterToCtrlJ?: boolean;
-  /** SSH connection ID — used for remote file drag-and-drop only. */
-  remoteConnectionId?: string;
   themeOverride?: SessionTheme['override'];
   onActivity?: () => void;
   onExit?: (info: { exitCode: number | undefined; signal?: number }) => void;
@@ -35,7 +32,6 @@ const PtyPaneComponent = forwardRef<{ focus: () => void }, Props>(
       className,
       contentFilter,
       mapShiftEnterToCtrlJ,
-      remoteConnectionId,
       themeOverride,
       onActivity,
       onExit,
@@ -78,28 +74,12 @@ const PtyPaneComponent = forwardRef<{ focus: () => void }, Props>(
 
         void (async () => {
           try {
-            if (remoteConnectionId) {
-              try {
-                const result = await rpc.pty.uploadFiles({ sessionId, localPaths: paths });
-                if (result.success && result.data?.remotePaths) {
-                  await pastePromptInjection({
-                    providerId: undefined,
-                    text: formatDroppedPaths(result.data.remotePaths),
-                    forceBracketedPaste: true,
-                    sendInput: async (data) => sendInput(`${data} `),
-                  });
-                }
-              } catch (error) {
-                log.warn('SSH file transfer failed', { error });
-              }
-            } else {
-              await pastePromptInjection({
-                providerId: undefined,
-                text: formatDroppedPaths(paths),
-                forceBracketedPaste: true,
-                sendInput: async (data) => sendInput(`${data} `),
-              });
-            }
+            await pastePromptInjection({
+              providerId: undefined,
+              text: formatDroppedPaths(paths),
+              forceBracketedPaste: true,
+              sendInput: async (data) => sendInput(`${data} `),
+            });
             focus();
           } catch (error) {
             log.warn('Terminal drop failed', { error });

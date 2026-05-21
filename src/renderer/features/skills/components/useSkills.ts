@@ -3,8 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useToast } from '@renderer/lib/hooks/use-toast';
 import { rpc } from '@renderer/lib/ipc';
 import { log } from '@renderer/utils/logger';
-import { captureTelemetry } from '@renderer/utils/telemetryClient';
-import type { CatalogIndex, CatalogSkill } from '@shared/skills/types';
+import type { CatalogSkill } from '@shared/skills/types';
 
 const CATALOG_QUERY_KEY = ['skills', 'catalog'] as const;
 
@@ -54,11 +53,6 @@ export function useSkills() {
       });
     },
     onSuccess: (skillId) => {
-      const skill = queryClient
-        .getQueryData<CatalogIndex>(CATALOG_QUERY_KEY)
-        ?.skills.find((s) => s.id === skillId);
-
-      captureTelemetry('skill_installed', { source: skill?.source });
       toast({
         title: 'Skill installed',
         description: `${skillId} is now available across your agents`,
@@ -93,7 +87,6 @@ export function useSkills() {
       });
     },
     onSuccess: () => {
-      captureTelemetry('skill_uninstalled');
 
       toast({ title: 'Skill removed', description: 'Skill has been uninstalled' });
       void queryClient.invalidateQueries({ queryKey: CATALOG_QUERY_KEY });

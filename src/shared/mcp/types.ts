@@ -45,7 +45,7 @@ export interface AgentMcpMeta {
   adapter: AdapterType;
 }
 
-export type AdapterType = 'passthrough' | 'gemini' | 'cursor' | 'codex' | 'opencode' | 'copilot';
+export type AdapterType = 'passthrough' | 'cursor' | 'codex';
 
 export interface McpLoadAllResponse {
   installed: McpServer[];

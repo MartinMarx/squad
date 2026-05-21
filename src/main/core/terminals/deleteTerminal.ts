@@ -1,7 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '@main/db/client';
 import { terminals } from '@main/db/schema';
-import { telemetryService } from '@main/lib/telemetry';
 import { resolveTask } from '../projects/utils';
 
 export async function deleteTerminal({
@@ -25,9 +24,4 @@ export async function deleteTerminal({
 
   const task = resolveTask(projectId, taskId);
   await task?.terminals.killTerminal(terminalId);
-  telemetryService.capture('terminal_deleted', {
-    terminal_id: terminalId,
-    project_id: projectId,
-    task_id: taskId,
-  });
 }

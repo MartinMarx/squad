@@ -1,11 +1,8 @@
 import {
-  CableIcon,
   ChevronRight,
   FolderClosed,
-  FolderInput,
   Loader2,
   Plus,
-  RotateCcw,
   Trash2,
   TriangleAlert,
 } from 'lucide-react';
@@ -21,19 +18,17 @@ import {
   getRepositoryStore,
   projectViewKind,
 } from '@renderer/features/projects/stores/project-selectors';
-import { ConnectionStatusDot } from '@renderer/lib/components/connection-status-dot';
 import {
   useNavigate,
   useParams,
   useWorkspaceSlots,
 } from '@renderer/lib/layout/navigation-provider';
 import { useShowModal } from '@renderer/lib/modal/modal-provider';
-import { appState, sidebarStore } from '@renderer/lib/stores/app-state';
+import { sidebarStore } from '@renderer/lib/stores/app-state';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@renderer/lib/ui/context-menu';
 import { BoundShortcut } from '@renderer/lib/ui/shortcut';
@@ -59,7 +54,6 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
   const { params: taskParams } = useParams('task');
   const showCreateTaskModal = useShowModal('taskModal');
   const showConfirmDeleteProject = useShowModal('confirmActionModal');
-  const showChangeConnectionModal = useShowModal('changeProjectConnectionModal');
 
   const project = getProjectStore(projectId);
 
@@ -86,14 +80,6 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
   const isExpanded = sidebarStore.expandedProjectIds.has(projectId);
 
   if (!project) return null;
-
-  const sshConnectionId = project.data?.type === 'ssh' ? project.data.connectionId : null;
-  const isSshProject = sshConnectionId !== null;
-  const sshConnectionState = sshConnectionId
-    ? appState.sshConnections.stateFor(sshConnectionId)
-    : null;
-  const canReconnect = sshConnectionState !== 'connected';
-  const ProjectIcon = isSshProject ? FolderInput : FolderClosed;
 
   const renderSpinnerWithTooltip = () => {
     if (!isUnregisteredProject(project)) return null;
@@ -132,7 +118,7 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
                   sidebarStore.toggleProjectExpanded(projectId);
                 }}
               >
-                <ProjectIcon className="absolute h-4 w-4 opacity-100 transition-opacity duration-150 group-hover/row:opacity-0" />
+                <FolderClosed className="absolute h-4 w-4 opacity-100 transition-opacity duration-150 group-hover/row:opacity-0" />
                 <ChevronRight
                   className={cn(
                     'absolute h-4 w-4 transition-all duration-150 opacity-0 group-hover/row:opacity-100',
@@ -148,24 +134,17 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
                   'text-foreground-tertiary-passive'
               )}
             >
-              {isSshProject ? (
-                <span className="flex min-w-0 items-center gap-2">
-                  <span className="truncate">{project.name}</span>
-                  <ConnectionStatusDot state={sshConnectionState} />
-                </span>
-              ) : (
-                <span className="flex min-w-0 items-center gap-1.5">
-                  <span className="truncate">{project.name}</span>
-                  {projectViewKind(project) === 'path_not_found' && (
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-foreground-destructive" />
-                      </TooltipTrigger>
-                      <TooltipContent>Project not found at path</TooltipContent>
-                    </Tooltip>
-                  )}
-                </span>
-              )}
+              <span className="flex min-w-0 items-center gap-1.5">
+                <span className="truncate">{project.name}</span>
+                {projectViewKind(project) === 'path_not_found' && (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-foreground-destructive" />
+                    </TooltipTrigger>
+                    <TooltipContent>Project not found at path</TooltipContent>
+                  </Tooltip>
+                )}
+              </span>
             </span>
           </div>
           <Tooltip>
@@ -196,31 +175,6 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
         </SidebarMenuRow>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        {sshConnectionId && (
-          <>
-            <ContextMenuItem
-              disabled={!canReconnect}
-              onClick={() => {
-                void appState.sshConnections.connect(sshConnectionId).catch(() => {});
-              }}
-            >
-              <RotateCcw className="size-4" />
-              Reconnect
-            </ContextMenuItem>
-            <ContextMenuItem
-              onClick={() => {
-                showChangeConnectionModal({
-                  projectId,
-                  currentConnectionId: sshConnectionId,
-                });
-              }}
-            >
-              <CableIcon className="size-4" />
-              Change SSH Connection
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-          </>
-        )}
         <ContextMenuItem
           variant="destructive"
           onClick={() => {

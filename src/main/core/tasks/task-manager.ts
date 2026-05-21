@@ -106,13 +106,7 @@ async function executeProvision(
     };
   }
 
-  return {
-    ...provisionResult,
-    persistData: {
-      ...provisionResult.persistData,
-      sshConnectionId: provider.defaultWorkspaceType.connectionId,
-    },
-  };
+  return provisionResult;
 }
 
 async function executeTeardown(

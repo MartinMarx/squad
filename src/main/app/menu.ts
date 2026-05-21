@@ -1,10 +1,8 @@
 import { app, clipboard, Menu, shell } from 'electron';
 import { events } from '@main/lib/events';
-import { telemetryService } from '@main/lib/telemetry';
 import {
   menuCheckForUpdatesChannel,
   menuCloseTabChannel,
-  menuGiveFeedbackChannel,
   menuOpenSettingsChannel,
   menuQuitRequestedChannel,
   menuRedoChannel,
@@ -13,11 +11,9 @@ import {
 import { EMDASH_DOCS_URL, EMDASH_ISSUES_NEW_URL, EMDASH_RELEASES_URL } from '@shared/urls';
 import { getMainWindow } from './window';
 
-function copyInstallationId(): void {
-  const instanceId = telemetryService.getInstanceId() ?? 'unavailable';
+function copyDebugInfo(): void {
   const lines = [
     `Emdash ${app.getVersion()}`,
-    `Installation ID: ${instanceId}`,
     `Platform: ${process.platform} ${process.arch}`,
     `Electron: ${process.versions.electron}`,
   ];
@@ -182,14 +178,10 @@ export function setupApplicationMenu(): void {
               },
             },
             {
-              label: 'Copy Installation ID',
-              click: copyInstallationId,
+              label: 'Copy Debug Info',
+              click: copyDebugInfo,
             },
           ],
-        },
-        {
-          label: 'Give Feedback',
-          click: () => events.emit(menuGiveFeedbackChannel, undefined),
         },
       ],
     },

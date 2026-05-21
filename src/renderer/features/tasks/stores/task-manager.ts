@@ -458,8 +458,7 @@ export class TaskManagerStore {
           result.path,
           result.workspaceId,
           this._settingsStore,
-          this._baseRef,
-          result.sshConnectionId ?? undefined
+          this._baseRef
         );
         current.activate();
       }

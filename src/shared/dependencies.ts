@@ -3,7 +3,7 @@ import type { Result } from '@shared/result';
 
 export type DependencyCategory = 'core' | 'agent';
 
-export type CoreDependencyId = 'git' | 'gh' | 'tmux' | 'ssh' | 'node';
+export type CoreDependencyId = 'git' | 'gh' | 'tmux' | 'node';
 
 export type DependencyId = CoreDependencyId | AgentProviderId;
 

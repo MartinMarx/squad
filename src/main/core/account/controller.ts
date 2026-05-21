@@ -1,5 +1,4 @@
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { createRPCController } from '@shared/ipc/rpc';
 import { emdashAccountService } from './services/emdash-account-service';
 
@@ -16,7 +15,6 @@ export const accountController = createRPCController({
   signIn: async (provider?: string) => {
     try {
       const result = await emdashAccountService.signIn(provider);
-      telemetryService.capture('user_signed_in');
       return { success: true, user: result.user };
     } catch (error) {
       log.error('Account sign-in failed:', error);
@@ -30,7 +28,6 @@ export const accountController = createRPCController({
   signOut: async () => {
     try {
       await emdashAccountService.signOut();
-      telemetryService.capture('user_signed_out');
       return { success: true };
     } catch (error) {
       log.error('Account sign-out failed:', error);

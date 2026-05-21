@@ -13,18 +13,7 @@ export type LocalProject = {
   updatedAt: string;
 };
 
-export type SshProject = {
-  type: 'ssh';
-  id: string;
-  name: string;
-  path: string;
-  baseRef: string;
-  connectionId: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type Project = LocalProject | SshProject;
+export type Project = LocalProject;
 
 export type CreateLocalProjectParams = {
   type: 'local';
@@ -34,29 +23,14 @@ export type CreateLocalProjectParams = {
   initGitRepository?: boolean;
 };
 
-export type CreateSshProjectParams = {
-  type: 'ssh';
-  id?: string;
-  name: string;
-  path: string;
-  connectionId: string;
-  initGitRepository?: boolean;
-};
-
-export type CreateProjectParams = CreateLocalProjectParams | CreateSshProjectParams;
+export type CreateProjectParams = CreateLocalProjectParams;
 
 export type InspectLocalProjectPathParams = {
   type: 'local';
   path: string;
 };
 
-export type InspectSshProjectPathParams = {
-  type: 'ssh';
-  path: string;
-  connectionId: string;
-};
-
-export type InspectProjectPathParams = InspectLocalProjectPathParams | InspectSshProjectPathParams;
+export type InspectProjectPathParams = InspectLocalProjectPathParams;
 
 export type ProjectPathInspection = ProjectPathStatus & {
   existingProject?: Project;
@@ -64,7 +38,6 @@ export type ProjectPathInspection = ProjectPathStatus & {
 
 export type OpenProjectError =
   | { type: 'path-not-found'; path: string }
-  | { type: 'ssh-disconnected'; connectionId: string }
   | { type: 'error'; message: string };
 
 export type UpdateProjectSettingsError =

@@ -2,7 +2,6 @@ import { conversationEvents } from '@main/core/conversations/conversation-events
 import { touchConversation } from '@main/core/conversations/touchConversation';
 import { events } from '@main/lib/events';
 import type { IDisposable, IInitializable } from '@main/lib/lifecycle';
-import { telemetryService } from '@main/lib/telemetry';
 import { agentEventChannel, type AgentEvent } from '@shared/events/agentEvents';
 import { conversationChangedChannel } from '@shared/events/conversationEvents';
 import { enrichEvent } from './event-enricher';
@@ -36,12 +35,6 @@ class AgentHookService implements IInitializable, IDisposable {
         };
         events.emit(agentEventChannel, { event: agentEvent, appFocused: isAppFocused() });
 
-        telemetryService.capture('agent_run_started', {
-          provider: providerId,
-          project_id: projectId,
-          task_id: taskId,
-          conversation_id: conversationId,
-        });
 
         const now = new Date().toISOString();
         void touchConversation(conversationId, now).then(() => {

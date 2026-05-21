@@ -1,6 +1,5 @@
 import { eq } from 'drizzle-orm';
 import { LocalFileSystem } from '@main/core/fs/impl/local-fs';
-import { SshFileSystem } from '@main/core/fs/impl/ssh-fs';
 import type { FileSystemProvider } from '@main/core/fs/types';
 import { workspaceRegistry } from '@main/core/workspaces/workspace-registry';
 import { db } from '@main/db/client';
@@ -69,11 +68,7 @@ async function resolveTaskTarget(
     taskId: task.id,
     label: task.name,
     path: targetPath,
-    fs:
-      fs ??
-      (project.defaultWorkspaceType.kind === 'ssh'
-        ? new SshFileSystem(project.defaultWorkspaceType.proxy, targetPath)
-        : new LocalFileSystem(targetPath)),
+    fs: fs ?? new LocalFileSystem(targetPath),
   };
 }
 

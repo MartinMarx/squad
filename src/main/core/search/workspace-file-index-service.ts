@@ -35,10 +35,7 @@ const CRAWL_IGNORED_DIRS = new Set([
   '.conductor',
   '.cursor',
   '.claude',
-  '.amp',
   '.codex',
-  '.aider',
-  '.continue',
   '.cody',
   '.windsurf',
 ]);

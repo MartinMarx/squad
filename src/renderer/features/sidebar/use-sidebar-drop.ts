@@ -73,7 +73,6 @@ export function useSidebarDrop() {
 
             const name = basenameFromAnyPath(filePath);
             return await projectManager.createProject(
-              { type: 'local' },
               {
                 mode: 'pick',
                 name,

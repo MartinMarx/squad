@@ -1,66 +1,14 @@
-import ampcodeIcon from '@/assets/images/ampcode.png';
-import antigravityIcon from '@/assets/images/antigravity.png';
-import atlassianIcon from '@/assets/images/atlassian.png';
-import augmentcodeIcon from '@/assets/images/Auggie.svg?raw';
-import autohandIcon from '@/assets/images/autohand.svg?raw';
-import charmIcon from '@/assets/images/charm.png';
 import claudeIcon from '@/assets/images/claude.png';
-import clineIcon from '@/assets/images/cline.png';
-import codebuffIcon from '@/assets/images/codebuff.png';
-import continueIcon from '@/assets/images/continue.png';
 import cursorlogoIcon from '@/assets/images/cursor.svg?raw';
-import devinIcon from '@/assets/images/devin.png';
-import factorydroidIcon from '@/assets/images/droid.svg?raw';
-import geminiIcon from '@/assets/images/gemini.png';
-import ghcopilotIcon from '@/assets/images/gh-copilot.svg?raw';
-import gooseIcon from '@/assets/images/goose.png';
-import hermesIcon from '@/assets/images/hermesagent.jpg';
-import julesIcon from '@/assets/images/jules.svg?raw';
-import junieIcon from '@/assets/images/junie-color.png';
-import kilocodeIcon from '@/assets/images/kilocode.png';
-import kimiIcon from '@/assets/images/kimi.png';
-import kiroIcon from '@/assets/images/kiro.png';
-import lettaIcon from '@/assets/images/letta.svg?raw';
-import mistralIcon from '@/assets/images/mistral.png';
 import openaiIcon from '@/assets/images/openai.svg?raw';
-import opencodeIcon from '@/assets/images/opencode.png';
-import piIcon from '@/assets/images/pi.png';
-import qwenIcon from '@/assets/images/qwen.png';
-import xaiIcon from '@/assets/images/xai.svg?raw';
 import { AGENT_PROVIDERS, type AgentProviderId } from '@shared/agent-provider-registry';
 
 export type UiAgent = AgentProviderId;
 
 const ICONS: Record<string, string> = {
-  'Auggie.svg': augmentcodeIcon,
-  'qwen.png': qwenIcon,
-  'charm.png': charmIcon,
-  'opencode.png': opencodeIcon,
-  'ampcode.png': ampcodeIcon,
   'openai.svg': openaiIcon,
-  'antigravity.png': antigravityIcon,
   'claude.png': claudeIcon,
-  'droid.svg': factorydroidIcon,
-  'gemini.png': geminiIcon,
   'cursor.svg': cursorlogoIcon,
-  'devin.png': devinIcon,
-  'gh-copilot.svg': ghcopilotIcon,
-  'goose.png': gooseIcon,
-  'hermesagent.jpg': hermesIcon,
-  'jules.svg': julesIcon,
-  'junie-color.png': junieIcon,
-  'kimi.png': kimiIcon,
-  'kilocode.png': kilocodeIcon,
-  'kiro.png': kiroIcon,
-  'letta.svg': lettaIcon,
-  'atlassian.png': atlassianIcon,
-  'cline.png': clineIcon,
-  'continue.png': continueIcon,
-  'codebuff.png': codebuffIcon,
-  'mistral.png': mistralIcon,
-  'pi.png': piIcon,
-  'autohand.svg': autohandIcon,
-  'xai.svg': xaiIcon,
 };
 
 export type AgentMeta = {

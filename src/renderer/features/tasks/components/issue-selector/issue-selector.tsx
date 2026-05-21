@@ -44,14 +44,7 @@ function getStatusColorClass(status?: string) {
   return 'bg-foreground-passive';
 }
 
-export function IssueIdentifier({
-  identifier,
-  provider,
-}: {
-  identifier: string;
-  provider?: Issue['provider'];
-}) {
-  if (provider === 'asana') return null;
+export function IssueIdentifier({ identifier }: { identifier: string }) {
   return (
     <span className="text-muted-foreground group-hover:text-muted-foreground shrink-0 font-mono text-xs font-medium whitespace-nowrap">
       {identifier}
@@ -118,7 +111,7 @@ export function IssueRow({ issue, linkedTo }: { issue: Issue; linkedTo?: LinkedI
         <TooltipTrigger render={<StatusDot status={issue.status} />} />
         <TooltipContent>{issue.status}</TooltipContent>
       </Tooltip>
-      <IssueIdentifier identifier={issue.identifier} provider={issue.provider} />
+      <IssueIdentifier identifier={issue.identifier} />
       {issue.title ? <span className="truncate text-foreground">{issue.title}</span> : null}
       {linkedTo ? <LinkedIssueIndicator linkedTo={linkedTo} /> : null}
     </span>
@@ -291,7 +284,7 @@ export function SelectedIssueValue({ issue }: { issue: Issue }) {
         <div className="flex items-center gap-2">
           <ProviderLogo provider={issue.provider} className="h-3.5 w-3.5" />
           <span>{`${ISSUE_PROVIDER_META[issue.provider].displayName} issue`}</span>
-          <IssueIdentifier identifier={issue.identifier} provider={issue.provider} />
+          <IssueIdentifier identifier={issue.identifier} />
         </div>
         <Button
           variant="ghost"

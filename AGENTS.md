@@ -15,7 +15,6 @@ ports:
   dev: 3000
 required_env: []
 optional_env:
-  - TELEMETRY_ENABLED
   - EMDASH_DB_FILE
   - EMDASH_DISABLE_NATIVE_DB
   - EMDASH_DISABLE_CLONE_CACHE
@@ -41,7 +40,6 @@ Start here. Load only the linked `agents/` docs that are relevant to the task.
 - Renderer/UI changes: `agents/architecture/renderer.md`
 - Shared types or provider metadata: `agents/architecture/shared.md`
 - Worktree behavior or `.emdash.json`: `agents/workflows/worktrees.md`
-- SSH or remote project work: `agents/workflows/remote-development.md`
 - Provider integration or CLI behavior: `agents/integrations/providers.md`
 - MCP changes: `agents/integrations/mcp.md`
 
@@ -49,7 +47,6 @@ Start here. Load only the linked `agents/` docs that are relevant to the task.
 
 - Database and migrations: `agents/risky-areas/database.md`
 - PTY/session orchestration: `agents/risky-areas/pty.md`
-- SSH and shell escaping: `agents/risky-areas/ssh.md`
 - Auto-update and packaging: `agents/risky-areas/updater.md`
 
 ## Conventions

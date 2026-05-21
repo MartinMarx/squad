@@ -15,7 +15,6 @@ The main process is organized into domain modules under `src/main/core/`. Each d
 - **fs** — Filesystem operations with provider pattern (`local-fs.ts`, `ssh-fs.ts`)
 - **git** — Git operations (`git-service.ts`, `git-repo-utils.ts`, `detectGitInfo.ts`)
 - **github** — GitHub auth, PRs, issues, repos (via `gh` CLI)
-- **jira** — Jira integration
 - **linear** — Linear integration
 - **mcp** — MCP service, adapters, config IO, catalog
 - **projects** — Project management with provider pattern (`local-project-provider.ts`), worktree service, project settings, CRUD operations
@@ -32,7 +31,7 @@ The main process is organized into domain modules under `src/main/core/`. Each d
 ## Other Main Process Areas
 
 - `src/main/app/` — Menu, protocol handler, window creation
-- `src/main/lib/` — Logger, telemetry, events, result type, updater error
+- `src/main/lib/` — Logger, events, result type, updater error
 - `src/main/db/` — Database schema and initialization
 - `src/main/utils/` — Shell environment, shell escaping, child process env, external links
 - `src/main/core/agent-hooks/` — Hook server, event enrichment, OS notifications, hook config writer for Claude/Codex

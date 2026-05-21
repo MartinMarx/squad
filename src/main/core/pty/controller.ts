@@ -73,12 +73,7 @@ export const ptyController = createRPCController({
   },
 
   /**
-   * Upload local files into the task's working directory on a remote SSH host
-   * and return their remote paths.  Uses the SFTP subsystem of the already-
-   * connected ssh2 client — no local ssh/scp binaries are involved.
-   *
-   * The session ID encodes the project and scope (`projectId:scopeId:leafId`),
-   * where `scopeId` is a task ID for conversation uploads.
+   * Upload local files into the task workspace directory and return their paths.
    */
   uploadFiles: async (args: { sessionId: string; localPaths: string[] }) => {
     try {

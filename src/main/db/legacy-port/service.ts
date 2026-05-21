@@ -205,7 +205,6 @@ export async function runLegacyPort(
         appDb: appTarget.db,
         legacyDb,
         remap,
-        allowedLegacyConnectionIds: selection.allowedLegacySshConnectionIds,
       });
       const projectsSummary = await portProjects({
         appDb: appTarget.db,

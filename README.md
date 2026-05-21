@@ -31,13 +31,9 @@
 
 <br />
 
-Emdash is a provider-agnostic desktop app that lets you run multiple coding agents in parallel, each isolated in its own git worktree, either locally or over SSH on a remote machine. We call it an Agentic Development Environment (ADE).
+Emdash is a provider-agnostic desktop app that lets you run multiple coding agents in parallel, each isolated in its own git worktree on your local machine. We call it an Agentic Development Environment (ADE).
 
-Emdash supports 27 CLI agents, including Claude Code, Codex, OpenCode, Gemini and Amp. Users can directly pass Linear, GitHub, Jira, or Asana tickets to an agent, review diffs, test changes, create PRs, see CI/CD checks, and merge.
-
-**Develop on remote servers via SSH**
-
-Connect to remote machines via SSH/SFTP to work with remote codebases. Emdash supports SSH agent and key authentication, with secure credential storage in your OS keychain. Run agents on remote projects using the same parallel workflow as local development. [Learn more](https://www.emdash.sh/cloud)
+Emdash supports Claude Code, Codex, and Cursor. Users can pass Linear or GitHub issues to an agent, review diffs, test changes, create PRs, see CI/CD checks, and merge.
 
 <div align="center" style="margin:24px 0;">
 
@@ -72,37 +68,11 @@ Connect to remote machines via SSH/SFTP to work with remote codebases. Emdash su
 
 ### Supported CLI Providers
 
-Emdash currently supports 27 CLI providers, and we are adding new ones regularly. If you miss one, let us know or create a PR.
-
 | CLI Provider | Status | Install / Setup |
 | ----------- | ------ | ----------- |
-| [Amp](https://ampcode.com/manual#install) | ✅ Supported | <code>npm install -g @sourcegraph/amp@latest</code> |
-| [Auggie](https://docs.augmentcode.com/cli/overview) | ✅ Supported | <code>npm install -g @augmentcode/auggie</code> |
-| [Autohand Code](https://autohand.ai/code/) | ✅ Supported | <code>npm install -g autohand-cli</code> |
-| [Charm](https://github.com/charmbracelet/crush) | ✅ Supported | <code>npm install -g @charmland/crush</code> |
 | [Claude Code](https://docs.anthropic.com/claude/docs/claude-code) | ✅ Supported | <code>curl -fsSL https://claude.ai/install.sh &#124; bash</code> |
-| [Cline](https://docs.cline.bot/cline-cli/overview) | ✅ Supported | <code>npm install -g cline</code> |
-| [Codebuff](https://www.codebuff.com/docs/help/quick-start) | ✅ Supported | <code>npm install -g codebuff</code> |
 | [Codex](https://github.com/openai/codex) | ✅ Supported | <code>npm install -g @openai/codex</code> |
-| [Continue](https://docs.continue.dev/guides/cli) | ✅ Supported | <code>npm i -g @continuedev/cli</code> |
 | [Cursor](https://cursor.com/cli) | ✅ Supported | <code>curl https://cursor.com/install -fsS &#124; bash</code> |
-| [Devin](https://cli.devin.ai/docs) | ✅ Supported | <code>curl -fsSL https://cli.devin.ai/install.sh &#124; bash</code> |
-| [Droid](https://docs.factory.ai/cli/getting-started/quickstart) | ✅ Supported | <code>curl -fsSL https://app.factory.ai/cli &#124; sh</code> |
-| [Gemini](https://github.com/google-gemini/gemini-cli) | ✅ Supported | <code>npm install -g @google/gemini-cli</code> |
-| [GitHub Copilot](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli) | ✅ Supported | <code>npm install -g @github/copilot</code> |
-| [Goose](https://block.github.io/goose/docs/quickstart/) | ✅ Supported | <code>curl -fsSL https://github.com/block/goose/releases/download/stable/download_cli.sh &#124; bash</code> |
-| [Hermes Agent](https://hermes-agent.nousresearch.com/docs/) | ✅ Supported | <code>curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh &#124; bash</code> |
-| [Jules](https://jules.google/docs/cli/reference/) | ✅ Supported | <code>npm install -g @google/jules</code> |
-| [Junie](https://junie.jetbrains.com/docs/junie-cli.html) | ✅ Supported | <code>curl -fsSL https://junie.jetbrains.com/install.sh &#124; bash</code> |
-| [Kilocode](https://kilo.ai/docs/cli) | ✅ Supported | <code>npm install -g @kilocode/cli</code> |
-| [Kimi](https://www.kimi.com/code/docs/en/kimi-cli/guides/getting-started.html) | ✅ Supported | <code>uv tool install kimi-cli</code> |
-| [Kiro (AWS)](https://kiro.dev/docs/cli/) | ✅ Supported | <code>curl -fsSL https://cli.kiro.dev/install &#124; bash</code> |
-| [Letta](https://docs.letta.com/letta-code/cli) | ✅ Supported | <code>npm install -g @letta-ai/letta-code</code> |
-| [Mistral Vibe](https://github.com/mistralai/mistral-vibe) | ✅ Supported | <code>curl -LsSf https://mistral.ai/vibe/install.sh &#124; bash</code> |
-| [OpenCode](https://opencode.ai/docs/cli/) | ✅ Supported | <code>npm install -g opencode-ai</code> |
-| [Pi](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) | ✅ Supported | <code>npm install -g @mariozechner/pi-coding-agent</code> |
-| [Qwen Code](https://github.com/QwenLM/qwen-code) | ✅ Supported | <code>npm install -g @qwen-code/qwen-code</code> |
-| [Rovo Dev](https://support.atlassian.com/rovo/docs/install-and-run-rovo-dev-cli-on-your-device/) | ✅ Supported | <code>acli rovodev auth login</code> |
 
 ### Issues
 
@@ -111,36 +81,13 @@ Emdash allows you to pass issues, tickets, and support threads straight to your 
 | Tool | Status | Authentication |
 | ----------- | ------ | ----------- |
 | [Linear](https://linear.app) | ✅ Supported | Connect with Linear OAuth via the official MCP server. |
-| [Jira](https://www.atlassian.com/software/jira) | ✅ Supported | Provide your site URL, email, and Atlassian API token. |
 | [GitHub Issues](https://docs.github.com/en/issues) | ✅ Supported | Connect your GitHub account or authenticate via GitHub CLI (`gh auth login`). |
-| [GitLab Issues](https://docs.gitlab.com/user/project/issues/) | ✅ Supported | Provide your GitLab instance URL and a personal access token with `read_api` scope. |
-| [Asana](https://asana.com/) | ✅ Supported | Connect with an Asana personal access token. |
-| [Forgejo Issues](https://forgejo.org/) | ✅ Supported | Provide your Forgejo instance URL and API token. |
-| [Plain Threads](https://www.plain.com/) | ✅ Supported | Connect with a Plain API key. |
 
 # Contributing
 
 Contributions welcome! See the [Contributing Guide](CONTRIBUTING.md) to get started, and join our [Discord](https://discord.gg/f2fv7YxuR2) to discuss.
 
 # FAQ
-
-<details>
-<summary><b>What telemetry do you collect and can I disable it?</b></summary>
-
-> We send **anonymous, allow‑listed events** (app start/close, feature usage names, app/platform versions) to PostHog.  
-> We **do not** send code, file paths, repo names, prompts, or PII.
->
-> **Disable telemetry:**
->
-> - In the app: **Settings → General → Privacy & Telemetry** (toggle off)
-> - Or via env var before launch:
->
-> ```bash
-> TELEMETRY_ENABLED=false
-> ```
->
-> Full details: see [Telemetry](https://emdash.sh/docs/telemetry).
-</details>
 
 <details>
 <summary><b>Where is my data stored?</b></summary>
@@ -153,7 +100,7 @@ Contributions welcome! See the [Contributing Guide](CONTRIBUTING.md) to get star
 > Linux:   ~/.config/emdash/emdash.db
 > ```
 >
-> **Privacy Note:** While Emdash itself stores data locally, **when you use any coding agent (Claude Code, Codex, Qwen, etc.), your code and prompts are sent to that provider's cloud API servers** for processing. Each provider has their own data handling and retention policies.
+> **Privacy Note:** While Emdash itself stores data locally, **when you use any coding agent (Claude Code, Codex, or Cursor), your code and prompts are sent to that provider's cloud API servers** for processing. Each provider has their own data handling and retention policies.
 >
 > You can reset the local DB by deleting it (quit the app first). The file is recreated on next launch.
 </details>
@@ -178,25 +125,6 @@ Contributions welcome! See the [Contributing Guide](CONTRIBUTING.md) to get star
 > - **Local DB:** to store your app state in SQLite on your machine.
 >
 > Emdash itself does **not** send your code or chats to any servers. Third‑party CLIs may transmit data per their policies.
-</details>
-
-
-<details>
-<summary><b>Can I work with remote projects over SSH?</b></summary>
-
-> **Yes!** Emdash supports remote development via SSH.
->
-> **Setup:**
-> 1. Go to **Settings → SSH Connections** and add your server details
-> 2. Choose authentication: SSH agent (recommended), private key, or password
-> 3. Add a remote project and specify the path on the server
->
-> **Requirements:**
-> - SSH access to the remote server
-> - Git installed on the remote server
-> - For agent auth: SSH agent running with your key loaded (`ssh-add -l`)
->
-> See [Remote Projects](https://emdash.sh/docs/remote-projects) for detailed setup instructions and [Bring Your Own Infrastructure](https://emdash.sh/docs/bring-your-own-infrastructure) for technical details.
 </details>
 
 [![Follow @emdashsh](https://img.shields.io/twitter/follow/emdashsh?style=social&label=Follow%20%40emdashsh)](https://x.com/emdashsh)

@@ -3,7 +3,6 @@ import { withCompensation } from '@main/core/utils/compensation';
 import { db } from '@main/db/client';
 import { terminals } from '@main/db/schema';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import type { CreateTerminalParams, Terminal } from '@shared/terminals';
 import { resolveTask } from '../projects/utils';
 import { mapTerminalRowToTerminal } from './core';
@@ -42,11 +41,6 @@ export async function createTerminal(params: CreateTerminalParams): Promise<Term
     },
   });
 
-  telemetryService.capture('terminal_created', {
-    terminal_id: terminalId,
-    project_id: params.projectId,
-    task_id: params.taskId,
-  });
 
   return terminal;
 }

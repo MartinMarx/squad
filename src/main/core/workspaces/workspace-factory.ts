@@ -1,21 +1,15 @@
 import { eq } from 'drizzle-orm';
 import { LocalConversationProvider } from '@main/core/conversations/impl/local-conversation';
-import { SshConversationProvider } from '@main/core/conversations/impl/ssh-conversation';
 import type { ConversationProvider } from '@main/core/conversations/types';
 import { GitHubAuthExecutionContext } from '@main/core/execution-context/github-auth-execution-context';
 import { LocalExecutionContext } from '@main/core/execution-context/local-execution-context';
-import { SshExecutionContext } from '@main/core/execution-context/ssh-execution-context';
 import { LocalFileSystem } from '@main/core/fs/impl/local-fs';
-import { SshFileSystem } from '@main/core/fs/impl/ssh-fs';
 import { GitFetchService } from '@main/core/git/git-fetch-service';
 import { GitService } from '@main/core/git/impl/git-service';
-import { RemoteStatusFingerprintPoller } from '@main/core/git/remote-status-fingerprint-poller';
 import { GitRepositoryService } from '@main/core/git/repository-service';
 import { githubConnectionService } from '@main/core/github/services/github-connection-service';
 import { workspaceFileIndexService } from '@main/core/search/workspace-file-index-service';
-import type { SshClientProxy } from '@main/core/ssh/ssh-client-proxy';
 import { LocalTerminalProvider } from '@main/core/terminals/impl/local-terminal-provider';
-import { SshTerminalProvider } from '@main/core/terminals/impl/ssh-terminal-provider';
 import type { TerminalProvider } from '@main/core/terminals/terminal-provider';
 import type { Workspace } from '@main/core/workspaces/workspace';
 import { LifecycleScriptService } from '@main/core/workspaces/workspace-lifecycle-service';
@@ -30,9 +24,7 @@ import type { ProjectSettingsProvider } from '../projects/settings/provider';
 import { TimeoutSignal, withTimeout } from '../projects/utils';
 import { TEARDOWN_SCRIPT_WAIT_MS } from '../tasks/provision-task-error';
 
-export type WorkspaceType =
-  | { kind: 'local' }
-  | { kind: 'ssh'; proxy: SshClientProxy; connectionId: string };
+export type WorkspaceType = { kind: 'local' };
 
 type WorkspaceFactoryContext = {
   task: Pick<Task, 'id' | 'name'>;
@@ -56,8 +48,8 @@ type WorkspaceFactoryContext = {
 
 /**
  * Returns a factory function suitable for passing to `WorkspaceRegistry.acquire`.
- * Handles all transport-specific construction (local vs SSH) and wires lifecycle
- * script hooks. Provider-specific hooks (e.g. git watcher) are passed via `extraHooks`.
+ * Handles workspace construction and wires lifecycle script hooks.
+ * Provider-specific hooks (e.g. git watcher) are passed via `extraHooks`.
  */
 export function createWorkspaceFactory(
   workspaceId: string,
@@ -67,14 +59,9 @@ export function createWorkspaceFactory(
   return async () => {
     const workDir = context.workDir;
 
-    // Transport-specific FS and exec
-    const workspaceFs =
-      type.kind === 'ssh' ? new SshFileSystem(type.proxy, workDir) : new LocalFileSystem(workDir);
+    const workspaceFs = new LocalFileSystem(workDir);
+    const ctx = new LocalExecutionContext();
 
-    const ctx =
-      type.kind === 'ssh' ? new SshExecutionContext(type.proxy) : new LocalExecutionContext();
-
-    // Settings (shared)
     const projectSettings = await context.settings.get();
     const defaultBranch = await context.settings.getDefaultBranch();
     const bootstrapTaskEnvVars = getTaskEnvVars({
@@ -93,29 +80,15 @@ export function createWorkspaceFactory(
     const shellSetup = taskLevelSettings.shellSetup ?? projectSettings.shellSetup;
     const scripts = taskLevelSettings.scripts;
 
-    // Transport-specific workspace terminal provider (used only by lifecycle scripts)
-    const workspaceTerminals =
-      type.kind === 'ssh'
-        ? new SshTerminalProvider({
-            projectId: context.projectId,
-            scopeId: workspaceId,
-            taskPath: workDir,
-            tmux: tmuxEnabled,
-            shellSetup,
-            ctx,
-            proxy: type.proxy,
-            connectionId: type.connectionId,
-            taskEnvVars: bootstrapTaskEnvVars,
-          })
-        : new LocalTerminalProvider({
-            projectId: context.projectId,
-            scopeId: workspaceId,
-            taskPath: workDir,
-            tmux: tmuxEnabled,
-            shellSetup,
-            ctx,
-            taskEnvVars: bootstrapTaskEnvVars,
-          });
+    const workspaceTerminals = new LocalTerminalProvider({
+      projectId: context.projectId,
+      scopeId: workspaceId,
+      taskPath: workDir,
+      tmux: tmuxEnabled,
+      shellSetup,
+      ctx,
+      taskEnvVars: bootstrapTaskEnvVars,
+    });
 
     const lifecycleService = new LifecycleScriptService({
       projectId: context.projectId,
@@ -123,10 +96,7 @@ export function createWorkspaceFactory(
       terminals: workspaceTerminals,
     });
 
-    const baseGitCtx =
-      type.kind === 'ssh'
-        ? new SshExecutionContext(type.proxy, { root: workDir })
-        : new LocalExecutionContext({ root: workDir });
+    const baseGitCtx = new LocalExecutionContext({ root: workDir });
     const authGitCtx = new GitHubAuthExecutionContext(baseGitCtx, () =>
       githubConnectionService.getToken()
     );
@@ -142,10 +112,6 @@ export function createWorkspaceFactory(
         async () => (await githubConnectionService.getToken()) !== null,
         () => repository.getBaseRemote()
       );
-    const statusPoller =
-      type.kind === 'ssh'
-        ? new RemoteStatusFingerprintPoller(context.projectId, workspaceId, gitService)
-        : null;
 
     const workspace: Workspace = {
       id: workspaceId,
@@ -187,7 +153,6 @@ export function createWorkspaceFactory(
         if (ownsFetchService) {
           fetchService.start();
         }
-        statusPoller?.start();
         void workspaceFileIndexService.onWorkspaceCreated(workspaceId, ws);
         if (scripts?.setup) {
           void ws.lifecycleService.prepareAndRunLifecycleScript({
@@ -215,7 +180,6 @@ export function createWorkspaceFactory(
       onCreate: context.extraHooks?.onCreate,
 
       onDestroy: async (ws) => {
-        statusPoller?.stop();
         if (ownsFetchService) {
           fetchService.stop();
         }
@@ -255,7 +219,6 @@ export function createWorkspaceFactory(
       },
 
       onDetach: async (ws) => {
-        statusPoller?.stop();
         await context.extraHooks?.onDetach?.(ws);
       },
     };
@@ -272,40 +235,12 @@ type TaskProviderOpts = {
 };
 
 /**
- * Creates task-scoped conversation and terminal providers for the given transport type.
- * The exec function is derived internally from the WorkspaceType.
+ * Creates task-scoped conversation and terminal providers.
  */
 export function buildTaskProviders(
-  type: WorkspaceType,
+  _type: WorkspaceType,
   opts: TaskProviderOpts
 ): { conversations: ConversationProvider; terminals: TerminalProvider } {
-  if (type.kind === 'ssh') {
-    const ctx = new SshExecutionContext(type.proxy);
-    return {
-      conversations: new SshConversationProvider({
-        projectId: opts.projectId,
-        taskPath: opts.taskPath,
-        taskId: opts.taskId,
-        tmux: opts.tmuxEnabled,
-        shellSetup: opts.shellSetup,
-        ctx,
-        proxy: type.proxy,
-        taskEnvVars: opts.taskEnvVars,
-      }),
-      terminals: new SshTerminalProvider({
-        projectId: opts.projectId,
-        scopeId: opts.taskId,
-        taskPath: opts.taskPath,
-        tmux: opts.tmuxEnabled,
-        shellSetup: opts.shellSetup,
-        ctx,
-        proxy: type.proxy,
-        connectionId: type.connectionId,
-        taskEnvVars: opts.taskEnvVars,
-      }),
-    };
-  }
-
   const ctx = new LocalExecutionContext();
   return {
     conversations: new LocalConversationProvider({

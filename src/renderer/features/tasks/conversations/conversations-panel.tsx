@@ -5,7 +5,6 @@ import { useTabGroupContext } from '@renderer/features/tasks/tabs/tab-group-cont
 import {
   useConversations,
   useTaskViewContext,
-  useWorkspace,
   useWorkspaceViewModel,
 } from '@renderer/features/tasks/task-view-context';
 import { PaneSizingProvider } from '@renderer/lib/pty/pane-sizing-context';
@@ -19,10 +18,8 @@ export const ConversationsPanel = observer(function ConversationsPanel() {
   const { taskId } = useTaskViewContext();
   const taskView = useWorkspaceViewModel();
   const conversations = useConversations();
-  const workspace = useWorkspace();
   const { groupId, tabManager: tm } = useTabGroupContext();
   const isActive = useIsActiveTask(taskId);
-  const remoteConnectionId = workspace.sshConnectionId;
 
   const autoFocus = isActive && taskView.focusedRegion === 'main';
 
@@ -118,7 +115,6 @@ export const ConversationsPanel = observer(function ConversationsPanel() {
                     className="h-full w-full"
                     onInterruptPress={onInterruptPress}
                     mapShiftEnterToCtrlJ
-                    remoteConnectionId={remoteConnectionId}
                   />
                 </div>
               ) : null}
