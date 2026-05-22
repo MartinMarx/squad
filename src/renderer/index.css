@@ -3,10 +3,57 @@
 @import '@xterm/xterm/css/xterm.css';
 @import 'allotment/dist/style.css';
 
-@custom-variant dark (&:is(.dark *));
-@custom-variant dark-black (&:is(.dark-black *));
 @custom-variant emlight (&:is(.emlight *));
 @custom-variant emdark (&:is(.emdark *));
+
+/* Theme-independent design tokens: motion, z-index, spacing, weight,
+   radius, plus the macOS traffic-light leading inset. Theme-dependent
+   tokens (color, elevation, vibrancy surfaces) live in the .emlight
+   and .emdark blocks below. */
+:root {
+  /* Motion — Apple-standard curves */
+  --duration-instant: 0ms;
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --duration-slow: 320ms;
+  --duration-glacial: 500ms;
+
+  --ease-out: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-in-out: cubic-bezier(0.86, 0, 0.07, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-linear: linear;
+
+  /* Z-index — 100-spaced so integrations can slip in between layers */
+  --z-base: 0;
+  --z-sidebar: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-popover: 400;
+  --z-modal: 500;
+  --z-toast: 600;
+  --z-tooltip: 700;
+
+  /* Font weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Reserved leading inset on macOS frameless title bar so renderer
+     content never lands under the traffic lights. */
+  --titlebar-leading-inset: 78px;
+
+  /* Explicit radius scale — keeps current --radius working but adds
+     the missing rungs (xs, xl, 2xl). */
+  --radius-token-xs: 4px;
+  --radius-token-sm: 6px;
+  --radius-token-md: 8px;
+  --radius-token-lg: 10px;
+  --radius-token-xl: 12px;
+  --radius-token-2xl: 16px;
+  --radius-token-full: 9999px;
+}
 
 @theme inline {
   --font-sans:
@@ -79,6 +126,17 @@
   --color-border-2: var(--border-2);
   --color-border-destructive: var(--border-destructive);
   --color-border-primary: var(--border-primary);
+  --color-border-strong: var(--border-strong);
+  --color-border-focus-ring: var(--border-focus-ring);
+
+  /* Vibrancy / overlay surfaces (semi-transparent — see DESIGN_BRIEF.md). */
+  --color-background-sidebar: var(--background-sidebar);
+  --color-background-overlay: var(--background-overlay);
+  --color-background-titlebar: var(--background-titlebar);
+
+  /* "Special" accent — reserved for merged-PR moments etc. */
+  --color-accent-special: var(--accent-special);
+  --color-accent-special-foreground: var(--accent-special-foreground);
 
   --color-status-in-progress: var(--status-in-progress);
   --color-status-in-review: var(--status-in-review);
@@ -108,9 +166,44 @@
   --color-foreground-conflict: var(--foreground-conflict);
   --color-foreground-merged: var(--foreground-merged);
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  /* Radius scale — explicit even-pixel progression. */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+
+  /* Elevation — values defined per theme below. */
+  --shadow-0: var(--shadow-0);
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+  --shadow-4: var(--shadow-4);
+
+  /* Apple-standard motion curves and durations. */
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+  --ease-spring: var(--ease-spring);
+  --ease-linear: var(--ease-linear);
+
+  --duration-instant: var(--duration-instant);
+  --duration-fast: var(--duration-fast);
+  --duration-normal: var(--duration-normal);
+  --duration-slow: var(--duration-slow);
+  --duration-glacial: var(--duration-glacial);
+
+  /* Z-index scale (100-spaced). */
+  --z-base: var(--z-base);
+  --z-sidebar: var(--z-sidebar);
+  --z-dropdown: var(--z-dropdown);
+  --z-sticky: var(--z-sticky);
+  --z-fixed: var(--z-fixed);
+  --z-popover: var(--z-popover);
+  --z-modal: var(--z-modal);
+  --z-toast: var(--z-toast);
+  --z-tooltip: var(--z-tooltip);
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -379,8 +472,8 @@
     --primary-button-foreground: white;
     --primary-button-border: transparent;
 
-    --accent: var(--stoik-violin-2);
-    --accent-foreground: var(--stoik-violin-9);
+    --accent: var(--stoik-blue-3);
+    --accent-foreground: var(--stoik-blue-11);
 
     --border: var(--neutral-5);
     --border-1: var(--neutral-8);
@@ -388,7 +481,7 @@
     --border-destructive: var(--red-8);
     --border-primary: var(--stoik-blue-9);
 
-    --ring: hsl(0 0% 3.9%);
+    --ring: var(--border-focus-ring);
     --radius: 0.5rem;
 
     --selection: var(--stoik-blue-5);
@@ -431,12 +524,12 @@
     --foreground-diff-deleted: var(--red-9);
 
     /* State / indicator tokens */
-    --foreground-success: var(--green-9);
+    --foreground-success: var(--green-11);
     --background-success: var(--green-3);
     --background-success-hover: var(--green-4);
     --border-success: var(--green-7);
 
-    --foreground-error: var(--red-9);
+    --foreground-error: var(--red-11);
     --background-error: var(--red-3);
     --background-error-hover: var(--red-4);
 
@@ -445,13 +538,43 @@
     --background-warning-hover: var(--amber-4);
     --border-warning: var(--amber-7);
 
-    --foreground-info: var(--stoik-blue-9);
+    --foreground-info: var(--stoik-blue-11);
     --background-info: var(--stoik-blue-2);
     --background-info-hover: var(--stoik-blue-3);
     --border-info: var(--stoik-blue-6);
 
     --foreground-conflict: var(--orange-9);
     --foreground-merged: var(--stoik-violin-9);
+
+    /* Elevation — light-mode shadows. */
+    --shadow-0: none;
+    --shadow-1:
+      0 1px 2px color-mix(in srgb, black 6%, transparent),
+      0 1px 1px color-mix(in srgb, black 4%, transparent);
+    --shadow-2:
+      0 4px 8px color-mix(in srgb, black 6%, transparent),
+      0 2px 4px color-mix(in srgb, black 4%, transparent);
+    --shadow-3:
+      0 12px 24px color-mix(in srgb, black 10%, transparent),
+      0 4px 8px color-mix(in srgb, black 6%, transparent);
+    --shadow-4:
+      0 24px 48px color-mix(in srgb, black 16%, transparent),
+      0 8px 16px color-mix(in srgb, black 10%, transparent);
+
+    /* Vibrancy-friendly background tokens (semi-transparent). Overlay is
+       intentionally LOW opacity so backdrop-blur has real content to blur
+       (not just a solid gray-on-gray). */
+    --background-sidebar: color-mix(in srgb, var(--neutral-2) 88%, transparent);
+    --background-overlay: color-mix(in srgb, white 55%, transparent);
+    --background-titlebar: var(--background);
+
+    /* Brand discipline — "special" violin accent for merged-PR etc. */
+    --accent-special: var(--stoik-violin-3);
+    --accent-special-foreground: var(--stoik-violin-11);
+
+    /* Stronger border step + branded focus ring. */
+    --border-strong: var(--neutral-9);
+    --border-focus-ring: var(--stoik-blue-9);
   }
 
   .emdark {
@@ -684,8 +807,8 @@
     --primary-button-foreground: white;
     --primary-button-border: var(--stoik-blue-7);
 
-    --accent: var(--stoik-violin-3);
-    --accent-foreground: var(--stoik-violin-12);
+    --accent: var(--stoik-blue-3);
+    --accent-foreground: var(--stoik-blue-11);
 
     --border: var(--neutral-6);
     --border-1: var(--neutral-7);
@@ -693,7 +816,7 @@
     --border-destructive: var(--red-8);
     --border-primary: var(--stoik-blue-9);
 
-    --ring: hsl(0 0% 3.9%);
+    --ring: var(--border-focus-ring);
     --radius: 0.5rem;
 
     --selection: var(--stoik-blue-9);
@@ -739,12 +862,12 @@
     --foreground-diff-deleted: var(--red-9);
 
     /* State / indicator tokens */
-    --foreground-success: var(--green-9);
+    --foreground-success: var(--green-11);
     --background-success: var(--green-3);
     --background-success-hover: var(--green-4);
     --border-success: var(--green-7);
 
-    --foreground-error: var(--red-9);
+    --foreground-error: var(--red-11);
     --background-error: var(--red-3);
     --background-error-hover: var(--red-4);
 
@@ -753,13 +876,47 @@
     --background-warning-hover: var(--amber-4);
     --border-warning: var(--amber-7);
 
-    --foreground-info: var(--stoik-blue-10);
+    --foreground-info: var(--stoik-blue-11);
     --background-info: var(--stoik-blue-3);
     --background-info-hover: var(--stoik-blue-4);
     --border-info: var(--stoik-blue-7);
 
     --foreground-conflict: var(--orange-9);
     --foreground-merged: var(--stoik-violin-11);
+
+    /* Elevation — dark-mode shadows pair drop with a top hairline
+       highlight because shadow alone doesn't communicate elevation
+       on dark backgrounds. */
+    --shadow-0: none;
+    --shadow-1:
+      0 1px 2px color-mix(in srgb, black 40%, transparent),
+      inset 0 0.5px 0 color-mix(in srgb, white 6%, transparent);
+    --shadow-2:
+      0 4px 12px color-mix(in srgb, black 50%, transparent),
+      inset 0 0.5px 0 color-mix(in srgb, white 8%, transparent);
+    --shadow-3:
+      0 12px 32px color-mix(in srgb, black 60%, transparent),
+      inset 0 0.5px 0 color-mix(in srgb, white 10%, transparent);
+    --shadow-4:
+      0 24px 56px color-mix(in srgb, black 70%, transparent),
+      inset 0 0.5px 0 color-mix(in srgb, white 12%, transparent);
+
+    /* Dark mode sidebar: opaque + slightly darker than main panel (Apple/
+       Linear convention in dark is sidebar ≤ main, never lighter). The
+       earlier vibrancy-through approach rendered ~25% lighter than main
+       which read as weird. Light mode keeps vibrancy bleed (looks fine
+       since vibrancy material is darker than white). */
+    --background-sidebar: color-mix(in srgb, var(--neutral-1) 88%, black);
+    --background-overlay: color-mix(in srgb, var(--neutral-2) 50%, transparent);
+    --background-titlebar: var(--background);
+
+    /* Brand discipline. */
+    --accent-special: var(--stoik-violin-3);
+    --accent-special-foreground: var(--stoik-violin-11);
+
+    /* Stronger border step + branded focus ring. */
+    --border-strong: var(--neutral-10);
+    --border-focus-ring: var(--stoik-blue-9);
   }
 }
 
@@ -777,7 +934,12 @@
     overflow: hidden;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    /* Transparent so the BrowserWindow's macOS vibrancy material can reach
+       any surface that doesn't paint its own --background. Opaque surfaces
+       (Workspace main panel, modals, onboarding shell, error boundary,
+       welcome overlay) all paint their own background. */
+    background: transparent;
   }
 
   ::selection {

@@ -12,6 +12,7 @@ import {
   Terminal,
 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+import type * as React from 'react';
 import { ProjectAvatar } from '@renderer/features/projects/components/project-avatar';
 import {
   getProjectStore,
@@ -39,7 +40,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@renderer/lib/ui/popove
 import { Separator } from '@renderer/lib/ui/separator';
 import { BoundShortcut } from '@renderer/lib/ui/shortcut';
 import { Toggle } from '@renderer/lib/ui/toggle';
-import { ToggleGroup, ToggleGroupItem } from '@renderer/lib/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/lib/ui/tooltip';
 import { formatDiffLineCount } from '@renderer/utils/format-diff-line-count';
 import { cn } from '@renderer/utils/utils';
@@ -333,76 +333,106 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
             </TooltipContent>
           </Tooltip>
           <Separator orientation="vertical" className="h-5 self-center!" />
-          <ToggleGroup
-            value={taskView.isSidebarCollapsed ? [] : [taskView.sidebarTab]}
-            onValueChange={([tab]) => {
-              if (!tab) {
-                taskView.setSidebarCollapsed(true);
-              } else {
-                taskView.setSidebarTab(tab as SidebarTab);
-                taskView.setSidebarCollapsed(false);
+          <div className="flex items-center">
+            <SidebarTabToggle
+              tab="changes"
+              active={!taskView.isSidebarCollapsed && taskView.sidebarTab === 'changes'}
+              taskView={taskView}
+              tooltip={
+                <>
+                  Changes <BoundShortcut settingsKey="sidebarChanges" variant="badge" />
+                </>
               }
-            }}
-            size="icon-sm"
-            className="border-none bg-transparent"
-          >
-            <Tooltip>
-              <TooltipTrigger>
-                <ToggleGroupItem
-                  value="changes"
-                  aria-label="Changes"
-                  className={cn('w-auto! min-w-7! gap-0', hasDiffStats && 'w-full px-2!')}
-                >
-                  <FileDiff className="size-3.5" />
-                  <span
-                    className={cn(
-                      'overflow-hidden transition-[max-width,padding-left] duration-500 ease-in-out flex items-center tabular-nums text-xs leading-none gap-1',
-                      hasDiffStats ? 'max-w-20 pl-1' : 'max-w-0 pl-0'
-                    )}
-                  >
-                    {linesAdded > 0 && (
-                      <span className="text-foreground-diff-added">
-                        +{formatDiffLineCount(linesAdded)}
-                      </span>
-                    )}
-                    {linesDeleted > 0 && (
-                      <span className="text-foreground-diff-deleted">
-                        -{formatDiffLineCount(linesDeleted)}
-                      </span>
-                    )}
+              className={cn('w-auto! min-w-7! gap-0', hasDiffStats && 'w-full px-2!')}
+            >
+              <FileDiff className="size-3.5" />
+              <span
+                className={cn(
+                  'overflow-hidden transition-[max-width,padding-left] duration-500 ease-in-out flex items-center tabular-nums text-xs leading-none gap-1',
+                  hasDiffStats ? 'max-w-20 pl-1' : 'max-w-0 pl-0'
+                )}
+              >
+                {linesAdded > 0 && (
+                  <span className="text-foreground-diff-added">
+                    +{formatDiffLineCount(linesAdded)}
                   </span>
-                </ToggleGroupItem>
-              </TooltipTrigger>
-              <TooltipContent>
-                Changes <BoundShortcut settingsKey="sidebarChanges" variant="badge" />
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger>
-                <ToggleGroupItem size="icon-sm" value="files" aria-label="Files">
-                  <FolderOpen className="size-3.5" />
-                </ToggleGroupItem>
-              </TooltipTrigger>
-              <TooltipContent>
-                Files <BoundShortcut settingsKey="sidebarFiles" variant="badge" />
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger>
-                <ToggleGroupItem size="icon-sm" value="conversations" aria-label="Conversations">
-                  <Clock className="size-3.5" />
-                </ToggleGroupItem>
-              </TooltipTrigger>
-              <TooltipContent>
-                Conversations <BoundShortcut settingsKey="sidebarConversations" variant="badge" />
-              </TooltipContent>
-            </Tooltip>
-          </ToggleGroup>
+                )}
+                {linesDeleted > 0 && (
+                  <span className="text-foreground-diff-deleted">
+                    -{formatDiffLineCount(linesDeleted)}
+                  </span>
+                )}
+              </span>
+            </SidebarTabToggle>
+            <SidebarTabToggle
+              tab="files"
+              active={!taskView.isSidebarCollapsed && taskView.sidebarTab === 'files'}
+              taskView={taskView}
+              tooltip={
+                <>
+                  Files <BoundShortcut settingsKey="sidebarFiles" variant="badge" />
+                </>
+              }
+            >
+              <FolderOpen className="size-3.5" />
+            </SidebarTabToggle>
+            <SidebarTabToggle
+              tab="conversations"
+              active={!taskView.isSidebarCollapsed && taskView.sidebarTab === 'conversations'}
+              taskView={taskView}
+              tooltip={
+                <>
+                  Conversations <BoundShortcut settingsKey="sidebarConversations" variant="badge" />
+                </>
+              }
+            >
+              <Clock className="size-3.5" />
+            </SidebarTabToggle>
+          </div>
         </div>
       }
     />
   );
 });
+
+function SidebarTabToggle({
+  tab,
+  active,
+  taskView,
+  tooltip,
+  className,
+  children,
+}: {
+  tab: SidebarTab;
+  active: boolean;
+  taskView: ReturnType<typeof useWorkspaceViewModel>;
+  tooltip: React.ReactNode;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger>
+        <Toggle
+          size="sm"
+          pressed={active}
+          className={cn('h-7 w-7 min-w-7 border-none px-0', className)}
+          onPressedChange={(pressed) => {
+            if (pressed) {
+              taskView.setSidebarTab(tab);
+              taskView.setSidebarCollapsed(false);
+            } else {
+              taskView.setSidebarCollapsed(true);
+            }
+          }}
+        >
+          {children}
+        </Toggle>
+      </TooltipTrigger>
+      <TooltipContent>{tooltip}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 function LinkedIssueBadge({ issue }: { issue: Issue }) {
   return (

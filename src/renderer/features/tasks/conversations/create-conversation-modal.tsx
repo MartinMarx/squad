@@ -14,6 +14,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from '@renderer/lib/ui/field';
 import { Switch } from '@renderer/lib/ui/switch';
 import { nextDefaultConversationTitle } from './conversation-title-utils';
+import { rememberNewConversationDefaults } from './quick-new-conversation';
 import { useEffectiveProvider } from './use-effective-provider';
 
 export const CreateConversationModal = observer(function CreateConversationModal({
@@ -50,6 +51,7 @@ export const CreateConversationModal = observer(function CreateConversationModal
         provider: providerId,
         title,
       });
+      void rememberNewConversationDefaults(providerId, skipPermissions);
       onSuccess({ conversationId: id });
     } catch {
       setError('Failed to create conversation');

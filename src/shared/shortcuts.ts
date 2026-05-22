@@ -100,14 +100,14 @@ export const APP_SHORTCUTS = defineShortcuts({
     category: 'Task View',
   },
   tabNext: {
-    defaultHotkey: 'Mod+Alt+ArrowRight',
+    defaultHotkey: 'Control+Tab',
     label: 'Next Tab',
     description: 'Switch to the next tab',
     category: 'Tab Navigation',
     conflictBehavior: 'allow',
   },
   tabPrev: {
-    defaultHotkey: 'Mod+Alt+ArrowLeft',
+    defaultHotkey: 'Control+Shift+Tab',
     label: 'Previous Tab',
     description: 'Switch to the previous tab',
     category: 'Tab Navigation',
@@ -123,7 +123,13 @@ export const APP_SHORTCUTS = defineShortcuts({
   newConversation: {
     defaultHotkey: 'Mod+T',
     label: 'New Conversation',
-    description: 'Create a new conversation in the current task',
+    description: 'Create a new conversation using the last-used agent and permission settings',
+    category: 'Task View',
+  },
+  newConversationWithOptions: {
+    defaultHotkey: 'Mod+Shift+T',
+    label: 'New Conversation…',
+    description: 'Open the new conversation dialog to choose agent and permission settings',
     category: 'Task View',
   },
   openNotebook: {
@@ -133,7 +139,7 @@ export const APP_SHORTCUTS = defineShortcuts({
     category: 'Task View',
   },
   newTerminal: {
-    defaultHotkey: 'Mod+Shift+T',
+    defaultHotkey: 'Mod+Shift+`',
     label: 'New Terminal',
     description: 'Create a new terminal in the current task',
     category: 'Task View',

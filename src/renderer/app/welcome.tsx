@@ -58,7 +58,7 @@ export function WelcomeScreen({ onGetStarted }: WelcomeScreenProps) {
         animate="visible"
       >
         <motion.div
-          className="rounded-md border border-border/40 bg-white p-1.5 shadow-lg ring-1 shadow-black/5 ring-black/5 dark:shadow-white/5 dark:ring-white/10"
+          className="rounded-md border border-border/40 bg-white p-1.5 shadow-lg ring-1 shadow-black/5 ring-black/5 emdark:shadow-white/5 emdark:ring-white/10"
           variants={itemVariants}
         >
           <img src={IconLight} alt="Squad" className="h-12 w-12 rounded-sm" />

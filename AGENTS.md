@@ -55,6 +55,7 @@ Start here. Load only the linked `agents/` docs that are relevant to the task.
 - Renderer patterns (modals, views, PTY frontend, React Query contexts): `agents/conventions/renderer-patterns.md`
 - TypeScript and React norms: `agents/conventions/typescript.md`
 - Config files and repo rules: `agents/conventions/config-files.md`
+- UI work (rework in progress): `agents/conventions/ui-work.md`
 - Never do re exports always import from the original source
 
 ### State Guard Conventions (renderer stores)
@@ -84,10 +85,11 @@ Start here. Load only the linked `agents/` docs that are relevant to the task.
 
 - Run `pnpm run format`, `pnpm run lint`, `pnpm run typecheck`, and `pnpm test` before merging.
 - Do not hand-edit numbered Drizzle migrations or `drizzle/meta/`.
+- For any UI change in `src/renderer/`: invoke the `frontend-design` skill, use semantic tokens (no hardcoded hex / rgba / px shadows), avoid Tailwind `dark:` variants, and verify both `emlight` and `emdark`. See `agents/conventions/ui-work.md` for the full rules.
 - New RPC methods go in the appropriate `src/main/core/*/controller.ts` and are auto-registered via `src/main/rpc.ts`.
-- Only use manual IPC in `electron-api.d.ts` for methods requiring `event.sender`.
-- New modals must be registered in `src/renderer/core/modal/registry.ts`.
-- New views must be registered in `src/renderer/core/view/registry.ts`.
+- Only use manual IPC in `src/renderer/globals.d.ts` for methods requiring `event.sender`.
+- New modals must be registered in `src/renderer/app/modal-registry.ts`.
+- New views must be registered in `src/renderer/app/view-registry.ts`.
 - Treat `src/main/core/pty/`, `src/main/core/ssh/`, and `src/main/db/` as high risk.
 - Avoid editing `dist/`, `release/`, and `build/` unless the task is explicitly about packaging or signing behavior.
 - The docs app in `docs/` is separate from the Electron renderer and also defaults to port `3000`.

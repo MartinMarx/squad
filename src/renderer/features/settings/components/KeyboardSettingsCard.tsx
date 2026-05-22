@@ -190,7 +190,7 @@ const KeyboardSettingsCard: React.FC = () => {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="min-w-[80px] justify-end px-0 hover:bg-transparent dark:hover:bg-transparent"
+                            className="min-w-[80px] justify-end px-0 hover:bg-transparent"
                             onClick={() => startCapture(key)}
                             disabled={loading || saving}
                           >

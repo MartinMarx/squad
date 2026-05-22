@@ -14,6 +14,7 @@ import {
   useWorkspaceSlots,
 } from '@renderer/lib/layout/navigation-provider';
 import { useShowModal } from '@renderer/lib/modal/modal-provider';
+import { sidebarStore } from '@renderer/lib/stores/app-state';
 import { cn } from '@renderer/utils/utils';
 import { selectCurrentPr } from '@shared/pull-requests';
 import { StatusIcon } from '../../lib/components/pr-status-icon';
@@ -103,7 +104,7 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
     >
       <SidebarMenuRow
         className={cn(
-          'group/row flex h-12 items-center justify-between gap-1 px-1 py-0',
+          'group/row relative flex h-12 items-center justify-between gap-1 px-1 py-0',
           rowVariant === 'pinned' ? 'pl-2' : 'pl-8'
         )}
         isActive={isActive}
@@ -135,7 +136,34 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
         <div className="flex shrink-0 items-center self-center">
           <TaskSidebarAgentStatus task={task} />
         </div>
+        <SidebarJumpIndicator projectId={projectId} taskId={taskId} rowVariant={rowVariant} />
       </SidebarMenuRow>
     </TaskContextMenu>
+  );
+});
+
+const SidebarJumpIndicator = observer(function SidebarJumpIndicator({
+  projectId,
+  taskId,
+  rowVariant,
+}: {
+  projectId: string;
+  taskId: string;
+  rowVariant: 'underProject' | 'pinned';
+}) {
+  const index = sidebarStore.jumpIndexFor(projectId, taskId);
+  if (index === null) return null;
+  const modifierHeld = sidebarStore.jumpIndicatorVisible;
+  return (
+    <kbd
+      aria-hidden
+      className={cn(
+        'pointer-events-none absolute top-1/2 -translate-y-1/2 rounded bg-background-tertiary-2 px-1 text-[10px] font-medium text-foreground-muted ring-1 ring-foreground/10',
+        rowVariant === 'pinned' ? 'left-0.5' : 'left-2',
+        modifierHeld ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-100'
+      )}
+    >
+      {index}
+    </kbd>
   );
 });

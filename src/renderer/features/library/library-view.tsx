@@ -77,9 +77,9 @@ export function LibraryMainPanel() {
                   type="button"
                   onClick={() => onTabChange(item.id)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-normal text-foreground-muted transition-colors hover:bg-background-1 hover:text-foreground',
+                    'flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-sm font-normal text-foreground-muted transition-all duration-fast ease-out hover:bg-background-1 hover:text-foreground',
                     isActive &&
-                      'bg-background-2 text-foreground hover:bg-background-2 hover:text-foreground'
+                      'bg-background-1 text-foreground font-medium hover:bg-background-1 hover:text-foreground'
                   )}
                 >
                   <span className="text-left">{item.label}</span>

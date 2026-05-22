@@ -1,6 +1,7 @@
 export type KeyEventLike = {
   type: string;
   key: string;
+  code?: string;
   shiftKey?: boolean;
   ctrlKey?: boolean;
   metaKey?: boolean;
@@ -92,6 +93,57 @@ export function shouldPasteToTerminal(event: KeyEventLike, isMacPlatform: boolea
   // Ctrl+Shift+V is the standard paste shortcut in Linux terminals
   // Only apply on non-Mac platforms (Linux/Windows with Linux-style terminals)
   if (!isMacPlatform && ctrl && shift && !meta && !alt) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Detect key combos that the app uses as global shortcuts (tab navigation,
+ * new conversation, sidebar quick-jump, etc). When `attachCustomKeyEventHandler`
+ * returns false for these, xterm leaves the event alone so it bubbles up to
+ * the window-level hotkey listeners.
+ *
+ * Anything matched here is intentionally taken away from the running CLI agent
+ * inside the terminal. Add new shortcut combos here whenever a new app-level
+ * binding overlaps with terminal-reachable keys.
+ */
+export function shouldReleaseEventToApp(event: KeyEventLike): boolean {
+  if (event.type !== 'keydown') return false;
+
+  const ctrl = event.ctrlKey === true;
+  const meta = event.metaKey === true;
+  const alt = event.altKey === true;
+  const shift = event.shiftKey === true;
+  const key = event.key;
+
+  // Tab navigation: Ctrl+Tab / Ctrl+Shift+Tab
+  if (ctrl && !meta && !alt && key === 'Tab') return true;
+
+  // Alt+Shift+1..9 — sidebar worktree quick-jump.
+  // On macOS Alt+Shift+digit produces special characters (⁄™£¢∞§¶•ª), so we
+  // match by event.code (Digit1..Digit9) rather than event.key. Plain Alt+digit
+  // and Alt+letter combos stay with the terminal (word nav, etc.).
+  if (alt && shift && !ctrl && !meta) {
+    if (event.code && /^Digit[1-9]$/.test(event.code)) return true;
+    if (/^[1-9]$/.test(key)) return true;
+  }
+
+  // Any Cmd/Meta-modified key on macOS, or Ctrl+Shift combos commonly used as
+  // app shortcuts on Linux/Windows. The terminal rarely needs these.
+  if (meta) {
+    // Cmd+ArrowLeft/Right are already mapped to readline Ctrl+A/E elsewhere —
+    // let that handler run.
+    if (!ctrl && !alt && !shift && (key === 'ArrowLeft' || key === 'ArrowRight')) {
+      return false;
+    }
+    // Cmd+Backspace is mapped to Ctrl+U elsewhere — let that handler run.
+    if (!ctrl && !alt && !shift && key === 'Backspace') return false;
+    // Cmd+C copy / Cmd+V paste — let the existing copy/paste handlers run.
+    if (!ctrl && !alt && !shift && (key === 'c' || key === 'C' || key === 'v' || key === 'V')) {
+      return false;
+    }
     return true;
   }
 

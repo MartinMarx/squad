@@ -110,7 +110,7 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({ path, className, borderl
             <button
               type="button"
               className={cn(
-                'group flex items-center w-full border-r border-border rounded-r-none px-2 text-xs transition-colors hover:bg-background-1 hover:text-foreground min-w-0',
+                'group flex items-center w-full border-r border-border rounded-r-none px-2 text-xs transition-colors hover:bg-background-2 hover:text-foreground min-w-0',
                 borderless && 'border-none  pr-1'
               )}
               onClick={() => {
@@ -125,7 +125,7 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({ path, className, borderl
                   src={icons[buttonAppId]}
                   alt={labels[buttonAppId] || buttonAppId}
                   className={`size-3.5 rounded ${
-                    getAppById(buttonAppId)?.invertInDark ? 'dark:invert' : ''
+                    getAppById(buttonAppId)?.invertInDark ? 'emdark:invert' : ''
                   }`}
                 />
               )}
@@ -152,7 +152,7 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({ path, className, borderl
             render={
               <SelectTrigger
                 showChevron={false}
-                className="group flex size-6 shrink-0 items-center justify-center border-none bg-transparent transition-colors hover:bg-background-1 hover:text-foreground"
+                className="group flex size-6 shrink-0 items-center justify-center border-none bg-transparent transition-colors hover:bg-background-2 hover:text-foreground"
                 aria-label="Open in options"
               >
                 <ChevronDown className="size-3.5" />
@@ -170,7 +170,7 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({ path, className, borderl
                   <img
                     src={icons[app.id]}
                     alt={labels[app.id] || app.label}
-                    className={`h-4 w-4 rounded ${app.invertInDark ? 'dark:invert' : ''}`}
+                    className={`h-4 w-4 rounded ${app.invertInDark ? 'emdark:invert' : ''}`}
                   />
                 )}
                 {labels[app.id] || app.label}
