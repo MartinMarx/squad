@@ -1,6 +1,7 @@
 import { Command } from 'cmdk';
 import { FolderOpen } from 'lucide-react';
 import { useObserver } from 'mobx-react-lite';
+import { ProjectAvatar } from '@renderer/features/projects/components/project-avatar';
 import {
   asMounted,
   getProjectManagerStore,
@@ -56,7 +57,11 @@ export function PaletteProjectsGroup({
           }}
           className={PALETTE_ITEM_CLASS}
         >
-          <FolderOpen size={14} className="shrink-0 text-foreground/40" />
+          <ProjectAvatar
+            projectId={p.id}
+            className="size-3.5 shrink-0"
+            fallback={<FolderOpen size={14} className="shrink-0 text-foreground/40" />}
+          />
           <span className="flex-1 truncate">{p.name}</span>
         </Command.Item>
       ))}

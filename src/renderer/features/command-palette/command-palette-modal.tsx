@@ -3,6 +3,7 @@ import { Command } from 'cmdk';
 import { Activity, FolderOpen, GitBranch, MessageSquare, type LucideIcon } from 'lucide-react';
 import { useObserver } from 'mobx-react-lite';
 import React, { useEffect, useMemo, useState } from 'react';
+import { ProjectAvatar } from '@renderer/features/projects/components/project-avatar';
 import { useAppSettingsKey } from '@renderer/features/settings/use-app-settings-key';
 import { conversationRegistry } from '@renderer/features/tasks/stores/conversation-registry';
 import { getTaskStore, getTaskView } from '@renderer/features/tasks/stores/task-selectors';
@@ -79,11 +80,20 @@ function PaletteItem({
 }) {
   const action = item.kind === 'action' ? (item as PaletteAction) : null;
   const ActionIcon = action?.icon;
-  const iconNode = ActionIcon ? (
-    <ActionIcon size={14} className="shrink-0 text-foreground/40" />
-  ) : (
-    KIND_ICON[item.kind]
-  );
+  let iconNode: React.ReactNode;
+  if (ActionIcon) {
+    iconNode = <ActionIcon size={14} className="shrink-0 text-foreground/40" />;
+  } else if (item.kind === 'project') {
+    iconNode = (
+      <ProjectAvatar
+        projectId={item.id}
+        className="size-3.5 shrink-0"
+        fallback={<FolderOpen size={14} className="shrink-0 text-foreground/40" />}
+      />
+    );
+  } else {
+    iconNode = KIND_ICON[item.kind];
+  }
   return (
     <Command.Item value={value} onSelect={onSelect} className={cn(PALETTE_ITEM_CLASS, 'group')}>
       {iconNode}

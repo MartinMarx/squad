@@ -1,6 +1,7 @@
 import { ChevronRight, FolderClosed, Loader2, Plus, Trash2, TriangleAlert } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect } from 'react';
+import { ProjectAvatar } from '@renderer/features/projects/components/project-avatar';
 import {
   isUnregisteredProject,
   type UnregisteredProject,
@@ -111,7 +112,13 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
                   sidebarStore.toggleProjectExpanded(projectId);
                 }}
               >
-                <FolderClosed className="absolute h-4 w-4 opacity-100 transition-opacity duration-150 group-hover/row:opacity-0" />
+                <ProjectAvatar
+                  projectId={projectId}
+                  className="absolute h-4 w-4 opacity-100 transition-opacity duration-150 group-hover/row:opacity-0"
+                  fallback={
+                    <FolderClosed className="absolute h-4 w-4 opacity-100 transition-opacity duration-150 group-hover/row:opacity-0" />
+                  }
+                />
                 <ChevronRight
                   className={cn(
                     'absolute h-4 w-4 transition-all duration-150 opacity-0 group-hover/row:opacity-100',

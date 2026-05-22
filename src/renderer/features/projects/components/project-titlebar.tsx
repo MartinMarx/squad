@@ -1,5 +1,14 @@
-import { ChevronDown, Ellipsis, ExternalLink, GithubIcon, Globe, Trash2 } from 'lucide-react';
+import {
+  ChevronDown,
+  Ellipsis,
+  ExternalLink,
+  FolderClosed,
+  GithubIcon,
+  Globe,
+  Trash2,
+} from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+import { ProjectAvatar } from '@renderer/features/projects/components/project-avatar';
 import {
   asMounted,
   getProjectManagerStore,
@@ -47,6 +56,11 @@ const MountedProjectTitlebarLeft = observer(function ProjectTitlebarLeft({
         <DropdownMenuTrigger
           render={
             <button className="group flex items-center gap-1.5 text-sm text-foreground-muted hover:text-foreground">
+              <ProjectAvatar
+                projectId={projectId}
+                className="size-3.5 shrink-0"
+                fallback={<FolderClosed className="size-3.5 shrink-0" />}
+              />
               <span className="text-sm">{displayName}</span>
               <ChevronDown className="size-3.5" />
             </button>

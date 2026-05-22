@@ -1,6 +1,7 @@
 import { Activity, ArrowLeft, Check, Copy, Folder, GitBranch } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { ProjectAvatar } from '@renderer/features/projects/components/project-avatar';
 import AgentLogo from '@renderer/lib/components/agent-logo';
 import { agentMeta } from '@renderer/lib/providers/meta';
 import { appState } from '@renderer/lib/stores/app-state';
@@ -122,7 +123,11 @@ const ProjectRow = observer(function ProjectRow({ group }: { group: Group }) {
   return (
     <div className="flex flex-col">
       <div className="flex items-center gap-2 rounded-md px-2 py-1">
-        <Folder size={12} className="shrink-0 text-foreground/40" />
+        <ProjectAvatar
+          projectId={group.projectId}
+          className="size-3 shrink-0"
+          fallback={<Folder size={12} className="shrink-0 text-foreground/40" />}
+        />
         <span className="flex-1 truncate text-xs font-medium text-foreground">
           {group.projectName}
         </span>

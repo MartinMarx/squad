@@ -4,6 +4,7 @@ import {
   ChevronDown,
   Clock,
   FileDiff,
+  FolderClosed,
   FolderOpen,
   GitBranch,
   Pin,
@@ -11,6 +12,7 @@ import {
   Terminal,
 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+import { ProjectAvatar } from '@renderer/features/projects/components/project-avatar';
 import {
   getProjectStore,
   projectDisplayName,
@@ -78,9 +80,14 @@ const PendingTaskTitlebar = observer(function PendingTaskTitlebar({
           <span className="flex items-center gap-1">
             <button
               type="button"
-              className="text-sm text-foreground-passive hover:text-foreground"
+              className="flex items-center gap-1.5 text-sm text-foreground-passive hover:text-foreground"
               onClick={() => navigate('project', { projectId })}
             >
+              <ProjectAvatar
+                projectId={projectId}
+                className="size-3.5 shrink-0"
+                fallback={<FolderClosed className="size-3.5 shrink-0" />}
+              />
               {projectName}
             </button>
             <span className="text-sm text-foreground-passive">/</span>
@@ -133,9 +140,14 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
         <div className="flex items-center gap-1 px-2">
           <button
             type="button"
-            className="text-sm text-foreground-passive hover:text-foreground"
+            className="flex items-center gap-1.5 text-sm text-foreground-passive hover:text-foreground"
             onClick={() => navigate('project', { projectId })}
           >
+            <ProjectAvatar
+              projectId={projectId}
+              className="size-3.5 shrink-0"
+              fallback={<FolderClosed className="size-3.5 shrink-0" />}
+            />
             {projectName}
           </button>
           <span className="text-sm text-foreground-passive">/</span>

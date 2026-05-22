@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ChevronRight, FolderOpen } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useState } from 'react';
+import { ProjectAvatar } from '@renderer/features/projects/components/project-avatar';
 import {
   getProjectManagerStore,
   getRepositoryStore,
@@ -252,7 +253,15 @@ export const CreateTaskModal = observer(function CreateTaskModal({
           onChange={setSelectedProjectId}
           trigger={
             <ComboboxTrigger className="flex h-6 items-center gap-2 rounded-md border border-border px-2.5 py-1 text-sm outline-none">
-              <FolderOpen className="text-muted-foreground size-3.5 shrink-0" />
+              {selectedProjectId ? (
+                <ProjectAvatar
+                  projectId={selectedProjectId}
+                  className="size-3.5 shrink-0"
+                  fallback={<FolderOpen className="text-muted-foreground size-3.5 shrink-0" />}
+                />
+              ) : (
+                <FolderOpen className="text-muted-foreground size-3.5 shrink-0" />
+              )}
               <ComboboxValue placeholder="Select a project" />
             </ComboboxTrigger>
           }
