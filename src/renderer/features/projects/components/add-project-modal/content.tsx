@@ -63,17 +63,17 @@ export function PickExistingPanel({
 export function CreateNewPanel({
   state,
   showGithubAuthDisclaimer,
-  onOpenAccountSettings,
+  onOpenIntegrationSettings,
 }: {
   state: NewModeState;
   showGithubAuthDisclaimer: boolean;
-  onOpenAccountSettings: () => void;
+  onOpenIntegrationSettings: () => void;
 }) {
   const repositoryNameId = useId();
   const projectNameId = useId();
 
   if (showGithubAuthDisclaimer) {
-    return <GithubAuthDisclaimer onOpenAccountSettings={onOpenAccountSettings} />;
+    return <GithubAuthDisclaimer onOpenIntegrationSettings={onOpenIntegrationSettings} />;
   }
 
   return (

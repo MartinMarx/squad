@@ -2,7 +2,6 @@ import { createOAuthDeviceAuth } from '@octokit/auth-oauth-device';
 import { Octokit } from '@octokit/rest';
 import { LocalExecutionContext } from '@main/core/execution-context/local-execution-context';
 import { encryptedAppSecretsStore } from '@main/core/secrets/encrypted-app-secrets-store';
-import { executeOAuthFlow } from '@main/core/shared/oauth-flow';
 import { TTLCache } from '@main/core/utils/ttl-cache';
 import { KV } from '@main/db/kv';
 import { events } from '@main/lib/events';
@@ -13,14 +12,12 @@ import {
   githubAuthErrorChannel,
   githubAuthSuccessChannel,
 } from '@shared/events/githubEvents';
-import type { GitHubConnectResponse, GitHubStatusOptions, GitHubUser } from '@shared/github';
+import type { GitHubStatusOptions, GitHubUser } from '@shared/github';
 import { extractGhCliToken } from './gh-cli-token';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-export type AuthResult = GitHubConnectResponse;
 
 export interface DeviceCodeResult {
   success: boolean;
@@ -34,9 +31,9 @@ export interface DeviceCodeResult {
 
 /**
  * Manages GitHub authentication tokens regardless of how they were obtained
- * (Squad Account OAuth, Device Flow, or extracted from gh CLI).
+ * (Device Flow, or extracted from gh CLI).
  */
-export type TokenSource = 'secure_storage' | 'cli' | 'squad_oauth' | 'device_flow' | null;
+export type TokenSource = 'secure_storage' | 'cli' | 'device_flow' | null;
 
 export interface GitHubConnectionService {
   getToken(): Promise<string | null>;
@@ -49,7 +46,6 @@ export interface GitHubConnectionService {
   isAuthenticated(): Promise<boolean>;
   getCurrentUser(): Promise<GitHubUser | null>;
   getUserInfo(token: string): Promise<GitHubUser | null>;
-  startOAuthFlow(authServerBaseUrl: string): Promise<AuthResult>;
   startDeviceFlowAuth(): Promise<DeviceCodeResult>;
   storeToken(token: string, source?: Exclude<TokenSource, null>): Promise<void>;
   cancelAuth(): void;
@@ -78,12 +74,7 @@ export class GitHubConnectionServiceImpl implements GitHubConnectionService {
   }>(5 * 60 * 1000);
 
   private parseTokenSource(raw: unknown): Exclude<TokenSource, null> | null {
-    return raw === 'cli' ||
-      raw === 'secure_storage' ||
-      raw === 'squad_oauth' ||
-      raw === 'device_flow'
-      ? raw
-      : null;
+    return raw === 'cli' || raw === 'secure_storage' || raw === 'device_flow' ? raw : null;
   }
 
   private async getStoredTokenSource(): Promise<Exclude<TokenSource, null> | null> {
@@ -231,32 +222,6 @@ export class GitHubConnectionServiceImpl implements GitHubConnectionService {
       };
     } catch {
       return null;
-    }
-  }
-
-  async startOAuthFlow(authServerBaseUrl: string): Promise<AuthResult> {
-    try {
-      const raw = await executeOAuthFlow({
-        authorizeUrl: `${authServerBaseUrl}/auth/github`,
-        exchangeUrl: `${authServerBaseUrl}/api/v1/auth/electron/exchange`,
-        successRedirectUrl: `${authServerBaseUrl}/auth/success`,
-        errorRedirectUrl: `${authServerBaseUrl}/auth/error`,
-      });
-
-      const accessToken = raw.accessToken as string;
-      if (!accessToken) {
-        return { success: false, error: 'No access token in response' };
-      }
-
-      await this.storeToken(accessToken, 'squad_oauth');
-      const user = await this.getUserInfo(accessToken);
-      return { success: true, token: accessToken, user: user || undefined };
-    } catch (error) {
-      log.warn('GitHub OAuth flow failed:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'OAuth authentication failed',
-      };
     }
   }
 

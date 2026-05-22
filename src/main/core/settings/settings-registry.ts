@@ -13,9 +13,9 @@ type SettingsDefaultsMap = {
 
 export const SETTINGS_DEFAULTS = {
   project: {
-    pushOnCreate: true,
-    branchPrefix: 'squad',
-    appendRandomBranchSuffix: true,
+    pushOnCreate: false,
+    branchPrefix: 'feature',
+    appendRandomBranchSuffix: false,
     tmuxByDefault: false,
   },
   localProject: () => ({

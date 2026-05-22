@@ -13,8 +13,6 @@ function githubAuthSourceLabel(tokenSource: string | null): string {
   switch (tokenSource) {
     case 'cli':
       return 'GitHub CLI';
-    case 'squad_oauth':
-      return 'OAuth';
     case 'device_flow':
       return 'device flow';
     case 'secure_storage':

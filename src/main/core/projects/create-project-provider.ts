@@ -8,6 +8,7 @@ import { GitFetchService } from '@main/core/git/git-fetch-service';
 import { GitService } from '@main/core/git/impl/git-service';
 import { GitRepositoryService } from '@main/core/git/repository-service';
 import { githubConnectionService } from '@main/core/github/services/github-connection-service';
+import { appSettingsService } from '@main/core/settings/settings-service';
 import { safePathSegment } from '@shared/path-name';
 import type { LocalProject } from '@shared/projects';
 import { ProjectProvider, type ProjectProviderTransport } from './project-provider';
@@ -81,6 +82,9 @@ function buildProvider(
     projectSettings: settings,
     ctx,
     host: worktreeHost,
+    cursorTrust: {
+      getTaskSettings: () => appSettingsService.get('tasks'),
+    },
   });
   const gitFetchService = new GitFetchService(repoGit, hasGitHubToken, () =>
     repository.getBaseRemote()

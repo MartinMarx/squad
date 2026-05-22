@@ -7,18 +7,27 @@ function workspaceSlug(absoluteWorktreePath: string): string {
   return absoluteWorktreePath.replace(/^\//, '').replaceAll('/', '-');
 }
 
+export interface CursorWorkspaceTrustDeps {
+  getTaskSettings: () => Promise<{ autoTrustWorktrees: boolean }>;
+}
+
 /**
  * `cursor-agent` prompts on first launch in an unfamiliar workspace and remembers
  * trust via `~/.cursor/projects/<slug>/.workspace-trusted`. Each squad worktree
  * gets a fresh path, so without this every new task hits the prompt.
  *
- * No-op when `~/.cursor` is absent (user doesn't have Cursor installed).
+ * Gated on the `tasks.autoTrustWorktrees` setting. No-op when `~/.cursor` is
+ * absent (user doesn't have Cursor installed).
  */
 export async function markWorktreeAsCursorTrusted(
   absoluteWorktreePath: string,
+  deps: CursorWorkspaceTrustDeps,
   cursorDir: string = path.join(os.homedir(), '.cursor')
 ): Promise<void> {
   if (!path.isAbsolute(absoluteWorktreePath)) return;
+
+  const { autoTrustWorktrees } = await deps.getTaskSettings();
+  if (!autoTrustWorktrees) return;
 
   try {
     await fs.access(cursorDir);

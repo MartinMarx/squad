@@ -221,7 +221,7 @@ export const AddProjectModal = observer(function AddProjectModal({
           <CreateNewPanel
             state={newState}
             showGithubAuthDisclaimer={showGithubAuthDisclaimer}
-            onOpenAccountSettings={() => navigate('settings', { tab: 'account' })}
+            onOpenIntegrationSettings={() => navigate('settings', { tab: 'integrations' })}
           />
         )}
         {mode === 'clone' && <ClonePanel state={cloneState} />}

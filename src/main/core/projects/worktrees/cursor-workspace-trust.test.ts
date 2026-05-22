@@ -4,6 +4,9 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { markWorktreeAsCursorTrusted } from './cursor-workspace-trust';
 
+const trustedDeps = { getTaskSettings: () => Promise.resolve({ autoTrustWorktrees: true }) };
+const untrustedDeps = { getTaskSettings: () => Promise.resolve({ autoTrustWorktrees: false }) };
+
 describe('markWorktreeAsCursorTrusted', () => {
   let tmpHome: string;
 
@@ -19,7 +22,11 @@ describe('markWorktreeAsCursorTrusted', () => {
     const cursorDir = path.join(tmpHome, '.cursor');
     fs.mkdirSync(cursorDir, { recursive: true });
 
-    await markWorktreeAsCursorTrusted('/Users/me/squad/worktrees/foo/bar-baz', cursorDir);
+    await markWorktreeAsCursorTrusted(
+      '/Users/me/squad/worktrees/foo/bar-baz',
+      trustedDeps,
+      cursorDir
+    );
 
     const slug = 'Users-me-squad-worktrees-foo-bar-baz';
     const marker = path.join(cursorDir, 'projects', slug, '.workspace-trusted');
@@ -29,7 +36,7 @@ describe('markWorktreeAsCursorTrusted', () => {
   it('no-ops when ~/.cursor is absent', async () => {
     const cursorDir = path.join(tmpHome, '.cursor');
 
-    await markWorktreeAsCursorTrusted('/Users/me/x', cursorDir);
+    await markWorktreeAsCursorTrusted('/Users/me/x', trustedDeps, cursorDir);
 
     expect(fs.existsSync(cursorDir)).toBe(false);
   });
@@ -38,7 +45,16 @@ describe('markWorktreeAsCursorTrusted', () => {
     const cursorDir = path.join(tmpHome, '.cursor');
     fs.mkdirSync(cursorDir, { recursive: true });
 
-    await markWorktreeAsCursorTrusted('relative/path', cursorDir);
+    await markWorktreeAsCursorTrusted('relative/path', trustedDeps, cursorDir);
+
+    expect(fs.existsSync(path.join(cursorDir, 'projects'))).toBe(false);
+  });
+
+  it('skips when autoTrustWorktrees is disabled', async () => {
+    const cursorDir = path.join(tmpHome, '.cursor');
+    fs.mkdirSync(cursorDir, { recursive: true });
+
+    await markWorktreeAsCursorTrusted('/Users/me/squad/worktrees/foo', untrustedDeps, cursorDir);
 
     expect(fs.existsSync(path.join(cursorDir, 'projects'))).toBe(false);
   });

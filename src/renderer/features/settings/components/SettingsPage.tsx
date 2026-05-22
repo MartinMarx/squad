@@ -1,7 +1,6 @@
 import React from 'react';
 import { PageHeader } from '@renderer/lib/components/page-header';
 import { cn } from '@renderer/utils/utils';
-import { AccountTab } from './AccountTab';
 import { CliAgentsList } from './CliAgentsList';
 import DefaultAgentSettingsCard from './DefaultAgentSettingsCard';
 import HiddenToolsSettingsCard from './HiddenToolsSettingsCard';
@@ -22,7 +21,6 @@ import ThemeCard from './ThemeCard';
 
 export type SettingsPageTab =
   | 'general'
-  | 'account'
   | 'clis-models'
   | 'integrations'
   | 'repository'
@@ -47,7 +45,6 @@ export function SettingsPage({
     label: string;
   }> = [
     { id: 'general', label: 'General' },
-    { id: 'account', label: 'Account' },
     { id: 'clis-models', label: 'Agents' },
     { id: 'integrations', label: 'Integrations' },
     { id: 'repository', label: 'Repository' },
@@ -79,11 +76,6 @@ export function SettingsPage({
           component: <NotificationSettingsCard />,
         },
       ],
-    },
-    account: {
-      title: 'Account',
-      description: 'Manage your Squad account.',
-      sections: [{ component: <AccountTab /> }],
     },
     'clis-models': {
       title: 'Agents',

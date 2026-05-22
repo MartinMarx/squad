@@ -24,8 +24,8 @@ const RepositorySettingsCard: React.FC = () => {
   } = useAppSettingsKey('localProject');
 
   const branchPrefix = project?.branchPrefix ?? '';
-  const appendRandomBranchSuffix = project?.appendRandomBranchSuffix ?? true;
-  const pushOnCreate = project?.pushOnCreate ?? true;
+  const appendRandomBranchSuffix = project?.appendRandomBranchSuffix ?? false;
+  const pushOnCreate = project?.pushOnCreate ?? false;
   const writeAgentConfigToGitIgnore = localProject?.writeAgentConfigToGitIgnore ?? true;
   const projectBusy = projectLoading || projectSaving;
   const localProjectBusy = localProjectLoading || localProjectSaving;
@@ -50,7 +50,7 @@ const RepositorySettingsCard: React.FC = () => {
           />
           <ResetToDefaultButton
             visible={isProjectFieldOverridden('branchPrefix')}
-            defaultLabel="squad"
+            defaultLabel="feature"
             onReset={() => resetProjectField('branchPrefix')}
             disabled={projectBusy}
           />
@@ -66,7 +66,7 @@ const RepositorySettingsCard: React.FC = () => {
           <>
             <ResetToDefaultButton
               visible={isProjectFieldOverridden('appendRandomBranchSuffix')}
-              defaultLabel="on"
+              defaultLabel="off"
               onReset={() => resetProjectField('appendRandomBranchSuffix')}
               disabled={projectBusy}
             />
@@ -86,7 +86,7 @@ const RepositorySettingsCard: React.FC = () => {
           <>
             <ResetToDefaultButton
               visible={isProjectFieldOverridden('pushOnCreate')}
-              defaultLabel="on"
+              defaultLabel="off"
               onReset={() => resetProjectField('pushOnCreate')}
               disabled={projectBusy}
             />
