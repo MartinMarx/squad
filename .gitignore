@@ -59,7 +59,9 @@ Thumbs.db
 # AI assistant instructions
 .notes/
 .notes
-.claude/
+# Ignore per-user Claude state but keep project-shared skills tracked.
+.claude/*
+!.claude/skills/
 
 # Checkouts directory
 .checkouts/
