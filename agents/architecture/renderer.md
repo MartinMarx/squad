@@ -2,49 +2,69 @@
 
 ## Main Entry Points
 
-- `src/renderer/App.tsx`: top-level provider composition
-- `src/renderer/views/Workspace.tsx`: main post-onboarding shell
-- `src/renderer/components/MainContent.tsx`: switches between views (projects, tasks, settings, skills, MCP, home)
-- `src/renderer/core/ipc.ts`: typed RPC client (`rpc`) and event emitter (`events`) used throughout renderer
+- `src/renderer/App.tsx`: top-level provider composition + `AppView` state (`onboarding` | `welcome` | `workspace`)
+- `src/renderer/main.tsx`: bootstrap (Monaco pool init, RPC wiring, navigation snapshot restore, `ReactDOM.createRoot`)
+- `src/renderer/app/workspace.tsx`: main post-onboarding shell (left sidebar + main content with title-bar slot)
+- `src/renderer/app/view-registry.ts`: registry of top-level views with `WrapView` / `TitlebarSlot` / `MainPanel` slots and optional `canActivate` guards
+- `src/renderer/app/modal-registry.ts`: registry of all modals (size + position)
+- `src/renderer/lib/ipc.ts`: typed RPC client (`rpc`) and event emitter (`events`) used throughout renderer
 
-## View Areas (`src/renderer/views/`)
+## Top-level Views (`src/renderer/app/view-registry.ts`)
 
-- `projects/` — project management: active project, pending project, create task modal, settings panel, task panel, branch selector, titlebar
-- `tasks/` — task experience:
-  - `conversations/` — conversation panel and tabs
-  - `diff-viewer/` — file changes panel, diff views (file, stacked), PR section, git state providers
-  - `editor/` — Monaco code editor, file tree, editor providers, conflict dialog
-  - `terminals/` — terminal panel and tabs
-  - `hooks/` — task-scoped hooks (use-task, use-conversations, use-terminals, use-task-view-navigation)
-- `settings/` — settings view
-- `home-view.tsx`, `mcp-view.tsx`, `skills-view.tsx`, `Welcome.tsx`
+| ID | File |
+|---|---|
+| `home` | `src/renderer/app/home-view.tsx` |
+| `library` | `src/renderer/features/library/library-view.tsx` |
+| `skills` | `src/renderer/features/skills/skills-view.tsx` |
+| `mcp` | `src/renderer/features/mcp/mcp-view.tsx` |
+| `project` | `src/renderer/features/projects/view.tsx` |
+| `task` | `src/renderer/features/tasks/view.tsx` |
+| `settings` | `src/renderer/features/settings/settings-view.tsx` |
 
-## Component Areas (`src/renderer/components/`)
+## Feature Areas (`src/renderer/features/`)
 
-- `sidebar/` — app sidebar
-- `diff/` — diff-related components
+- `command-palette/` — `cmdk`-backed command palette modal and command registration
+- `integrations/` — GitHub, Linear, and other integration UI + provider
+- `library/` — prompts library (prompt modal + library view)
+- `mcp/` — MCP server management view, modal, settings card
+- `onboarding/` — onboarding step components (`sign-in`, `import`)
+- `projects/` — project root view, task list, project titlebar, settings, add-project flow
+- `settings/` — app settings view, GitHub/Linear connect modals
+- `sidebar/` — left sidebar (virtualized list, drag-and-drop, search, agent status)
 - `skills/` — skills catalog and management
-- `mcp/` — MCP server management
-- `kanban/` — kanban board
-- `integrations/` — integration management
-- `ssh/` — SSH connection UI
-- `FileExplorer/` — file tree navigation
-- `settings/` — settings components
-- `projects/` — project-related components
-- `ui/` — shared UI primitives
+- `tasks/` — task experience:
+  - `conversations/` — agent conversation panel + tabs (create-conversation modal)
+  - `diff-view/` — file changes panel, diff viewer (file + stacked), PR section, create-PR modal
+  - `editor/` — Monaco editor, file tree, conflict dialog
+  - `terminals/` — xterm panels with tabs
+  - `notebook/` — notebook view
+  - `tabs/` — tab bar primitives
+  - `hooks/`, `stores/`, `view/`, `task-view-context.tsx` — task-scoped state + selectors
 
-## Supporting Structure
+## Library (`src/renderer/lib/`)
 
-- Context providers: `src/renderer/contexts/`
-- Hooks: `src/renderer/hooks/`
-- Client-side state helpers, stores, and utilities: `src/renderer/lib/`
-- Core infrastructure: `src/renderer/core/` (IPC client, modals, project state, PTY helpers, view management)
+- `ui/` — shared UI primitives (~50 components: button, dialog, input, popover, dropdown, select, tooltip, …)
+- `components/` — app-shell components (error-boundary, app-keyboard-shortcuts, monaco-keyboard-bridge, confirm-action-dialog, github-device-flow-modal, unsaved-changes-dialog)
+- `providers/` — theme provider, GitHub context, integrations, feature-flag override
+- `layout/` — workspace layout, navigation provider, layout provider, panel drag store
+- `theme/` — theme model + toggle logic
+- `hooks/` — shared hooks
+- `stores/` — MobX stores (`app-state`, `view-state-cache`, …)
+- `commands/` — command registry, shortcut binding, app commands
+- `editor/`, `monaco/` — editor primitives, Monaco model registry and pools
+- `pty/` — renderer-side PTY frontend
+- `modal/` — modal renderer and provider primitives
+- `ipc.ts` — typed RPC client + event emitter
+
+## Legacy (`src/renderer/_legacy/`)
+
+Quarantined area for code on its way out. Don't add anything here; prefer migration over expansion.
 
 ## When Editing Here
 
 - Check `agents/conventions/renderer-patterns.md` for modal, view, PTY frontend, and context patterns.
-- Call RPC methods via the typed `rpc` client from `src/renderer/core/ipc.ts` (e.g., `rpc.tasks.create(...)`).
-- New modals must be registered in `src/renderer/core/modal/registry.ts`.
-- New views must be registered in `src/renderer/core/view/registry.ts`.
-- Only methods in `src/renderer/types/electron-api.d.ts` use direct `window.electronAPI` calls (PTY ops, fsList, openIn).
+- Call RPC methods via the typed `rpc` client from `src/renderer/lib/ipc.ts` (e.g., `rpc.tasks.create(...)`).
+- New modals must be registered in `src/renderer/app/modal-registry.ts`.
+- New views must be registered in `src/renderer/app/view-registry.ts`.
+- `window.electronAPI` is declared in `src/renderer/globals.d.ts` and exposes only `invoke`, `eventSend`, `eventOn`, `getPathForFile`. Use it directly only for IPC channels that need `event.sender` (PTY start/input/resize/kill, fsList, openIn); prefer the typed `rpc` client for everything else.
 - If you change user-visible workflows, update the matching page in `docs/` when appropriate.
