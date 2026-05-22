@@ -1,3 +1,4 @@
+import { quickCreateConversation } from '@renderer/features/tasks/conversations/quick-new-conversation';
 import {
   getRegisteredTaskData,
   getTaskGitStore,
@@ -38,6 +39,7 @@ export function createTaskCommandProvider(projectId: string, taskId: string): Co
       const taskData = getRegisteredTaskData(projectId, taskId);
 
       const newConversationDef = taskDef('task.newConversation');
+      const newConversationWithOptionsDef = taskDef('task.newConversationWithOptions');
       const openNotebookDef = taskDef('task.openNotebook');
       const sidebarChangesDef = taskDef('task.sidebarChanges');
       const sidebarConversationsDef = taskDef('task.sidebarConversations');
@@ -61,6 +63,32 @@ export function createTaskCommandProvider(projectId: string, taskId: string): Co
           description: newConversationDef.description,
           shortcutKey: newConversationDef.shortcutKey,
           group: newConversationDef.group,
+          execute() {
+            void quickCreateConversation(projectId, taskId).then((result) => {
+              if (result) {
+                taskView?.tabGroupManager.openConversation(result.conversationId);
+                taskView?.setFocusedRegion('main');
+                return;
+              }
+              // Fall back to the modal when the fast path can't determine a
+              // valid provider (e.g. no agents installed yet).
+              showModal('createConversationModal', {
+                projectId,
+                taskId,
+                onSuccess: ({ conversationId }) => {
+                  taskView?.tabGroupManager.openConversation(conversationId);
+                  taskView?.setFocusedRegion('main');
+                },
+              });
+            });
+          },
+        },
+        {
+          id: newConversationWithOptionsDef.id,
+          label: newConversationWithOptionsDef.label,
+          description: newConversationWithOptionsDef.description,
+          shortcutKey: newConversationWithOptionsDef.shortcutKey,
+          group: newConversationWithOptionsDef.group,
           execute() {
             showModal('createConversationModal', {
               projectId,

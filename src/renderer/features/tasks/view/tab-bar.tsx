@@ -20,6 +20,7 @@ import { PaneDropZone } from './tab-bar/draggable-tab';
 import { FileTabItem } from './tab-bar/file-tab-item';
 import { NotebookTabItem } from './tab-bar/notebook-tab-item';
 import { TabBarActions } from './tab-bar/tab-bar-actions';
+import { TabBarNewMenu } from './tab-bar/tab-bar-new-menu';
 
 function makeTabRenderers(
   tabManager: ReturnType<typeof useTabGroupContext>['tabManager'],
@@ -94,6 +95,7 @@ export const TabBar = observer(function TabBar() {
     <div className="task-tab-bar flex h-[41px] shrink-0 items-center justify-between border-b border-border bg-background-secondary">
       <div ref={scrollContainerRef} className="flex h-full w-full overflow-x-auto">
         {resolvedTabs.map((tab) => tabRenderers[tab.kind](tab as never))}
+        {resolvedTabs.length > 0 && <TabBarNewMenu />}
         <PaneDropZone groupId={groupId} />
       </div>
       <TabBarActions />

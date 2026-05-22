@@ -68,14 +68,14 @@ export function useTabShortcuts(
     () => {
       store?.setNextTabActive();
     },
-    { enabled: enabled && tabNextHotkey !== null, conflictBehavior: 'allow' }
+    { enabled: enabled && tabNextHotkey !== null, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     getHotkeyRegistration('tabPrev', keyboard),
     () => {
       store?.setPreviousTabActive();
     },
-    { enabled: enabled && tabPrevHotkey !== null, conflictBehavior: 'allow' }
+    { enabled: enabled && tabPrevHotkey !== null, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     getHotkeyRegistration('tabClose', keyboard),
@@ -83,7 +83,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.closeActiveTab();
     },
-    { enabled: enabled && tabCloseHotkey !== null, conflictBehavior: 'allow' }
+    { enabled: enabled && tabCloseHotkey !== null, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[0],
@@ -91,7 +91,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(0);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[1],
@@ -99,7 +99,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(1);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[2],
@@ -107,7 +107,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(2);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[3],
@@ -115,7 +115,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(3);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[4],
@@ -123,7 +123,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(4);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[5],
@@ -131,7 +131,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(5);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[6],
@@ -139,7 +139,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(6);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[7],
@@ -147,7 +147,7 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(7);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
   useHotkey(
     TAB_INDEX_HOTKEYS[8],
@@ -155,6 +155,6 @@ export function useTabShortcuts(
       e.preventDefault();
       store?.setTabActiveIndex(8);
     },
-    { enabled, conflictBehavior: 'allow' }
+    { enabled, conflictBehavior: 'allow', ignoreInputs: false }
   );
 }

@@ -42,6 +42,10 @@ export const SETTINGS_DEFAULTS = {
   },
   theme: null,
   defaultAgent: DEFAULT_AGENT_ID,
+  lastNewConversationDefaults: {
+    provider: null,
+    autoApprove: false,
+  },
   keyboard: {},
   openIn: {
     default: 'terminal' as const,

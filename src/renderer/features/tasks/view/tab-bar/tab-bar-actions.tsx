@@ -1,5 +1,5 @@
 import { useHotkey } from '@tanstack/react-hotkeys';
-import { BookOpen, Columns2, FileSearch, MessageSquarePlus } from 'lucide-react';
+import { BookOpen, Columns2, FileSearch } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useAppSettingsKey } from '@renderer/features/settings/use-app-settings-key';
 import {
@@ -19,7 +19,6 @@ export const TabBarActions = observer(function TabBarActions() {
   const { groupId, tabManager } = useTabGroupContext();
   const { tabGroupManager } = taskView;
   const showCommandPalette = useShowModal('commandPaletteModal');
-  const showCreateConversationModal = useShowModal('createConversationModal');
 
   const isFocusedPane =
     taskView.focusedRegion === 'main' && tabGroupManager.activeGroupId === groupId;
@@ -52,26 +51,6 @@ export const TabBarActions = observer(function TabBarActions() {
 
   return (
     <div className="flex h-full shrink-0 items-center px-2">
-      <Tooltip>
-        <TooltipTrigger>
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            onClick={() =>
-              showCreateConversationModal({
-                projectId,
-                taskId,
-                onSuccess: ({ conversationId }) => tabManager.openConversation(conversationId),
-              })
-            }
-          >
-            <MessageSquarePlus className="size-3.5" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          New Conversations <BoundShortcut settingsKey="newConversation" variant="badge" />
-        </TooltipContent>
-      </Tooltip>
       <Tooltip>
         <TooltipTrigger>
           <Button

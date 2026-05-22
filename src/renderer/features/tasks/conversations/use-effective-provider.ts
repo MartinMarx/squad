@@ -18,9 +18,12 @@ export function useEffectiveProvider(): EffectiveProvider {
   const [providerOverride, setProviderOverride] = useState<AgentProviderId | null>(null);
 
   const { value: defaultAgentValue } = useAppSettingsKey('defaultAgent');
-  const defaultProviderId: AgentProviderId = isValidProviderId(defaultAgentValue)
+  const { value: lastUsedValue } = useAppSettingsKey('lastNewConversationDefaults');
+  const lastUsedProvider = lastUsedValue?.provider ?? null;
+  const fallbackAgentId: AgentProviderId = isValidProviderId(defaultAgentValue)
     ? defaultAgentValue
     : 'claude';
+  const defaultProviderId: AgentProviderId = lastUsedProvider ?? fallbackAgentId;
 
   const dependencyResource = appState.dependencies.local;
   const availabilityKnown = dependencyResource.data !== null;

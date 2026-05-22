@@ -19,6 +19,7 @@ import {
   shouldKillLineFromTerminal,
   shouldMapShiftEnterToCtrlJ,
   shouldPasteToTerminal,
+  shouldReleaseEventToApp,
 } from './pty-keybindings';
 import { buildTerminalFontFamily } from './terminal-font';
 
@@ -462,6 +463,13 @@ export function usePty(
             sendInput('\x05');
             return false;
           }
+        }
+
+        // Release app-level shortcut combos (Ctrl+Tab, Cmd+T, Alt+1..9, …) so
+        // they bubble up to the window-level hotkey listeners instead of being
+        // swallowed by the embedded CLI agent.
+        if (shouldReleaseEventToApp(event)) {
+          return false;
         }
 
         return true;

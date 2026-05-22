@@ -110,7 +110,7 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({ path, className, borderl
             <button
               type="button"
               className={cn(
-                'group flex items-center w-full border-r border-border rounded-r-none px-2 text-xs transition-colors hover:bg-background-1 hover:text-foreground min-w-0',
+                'group flex items-center w-full border-r border-border rounded-r-none px-2 text-xs transition-colors hover:bg-background-2 hover:text-foreground min-w-0',
                 borderless && 'border-none  pr-1'
               )}
               onClick={() => {
@@ -152,7 +152,7 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({ path, className, borderl
             render={
               <SelectTrigger
                 showChevron={false}
-                className="group flex size-6 shrink-0 items-center justify-center border-none bg-transparent transition-colors hover:bg-background-1 hover:text-foreground"
+                className="group flex size-6 shrink-0 items-center justify-center border-none bg-transparent transition-colors hover:bg-background-2 hover:text-foreground"
                 aria-label="Open in options"
               >
                 <ChevronDown className="size-3.5" />

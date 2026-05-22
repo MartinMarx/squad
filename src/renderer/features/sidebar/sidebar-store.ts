@@ -40,12 +40,15 @@ export class SidebarStore implements Snapshottable<SidebarSnapshot> {
   taskOrderByProject: Record<string, string[]> = {};
   expandedProjectIds = observable.set<string>();
   taskSortBy: SidebarTaskSortBy = 'created-at';
+  /** Whether the user is currently holding the indicator modifier (Alt/Option). */
+  jumpIndicatorVisible = false;
 
   constructor(private readonly projectManager: ProjectManagerStore) {
     makeAutoObservable(this, {
       expandedProjectIds: false,
       sidebarRows: computed,
       pinnedSidebarEntries: computed,
+      flatVisibleTasks: computed,
     });
 
     // Auto-expand a project when its task count goes from 0 to >0.
@@ -132,6 +135,33 @@ export class SidebarStore implements Snapshottable<SidebarSnapshot> {
     }
     pairs.sort((a, b) => this.compareSidebarTasks(a.task, b.task));
     return pairs.map(({ projectId, task }) => ({ projectId, taskId: task.data.id }));
+  }
+
+  /**
+   * Ordered flat list of task rows currently visible in the sidebar: pinned
+   * tasks first, then tasks from expanded projects in their displayed order.
+   * Drives the Option+N quick-jump shortcuts (only the first 9 are reachable).
+   */
+  get flatVisibleTasks(): { projectId: string; taskId: string }[] {
+    const result: { projectId: string; taskId: string }[] = [];
+    for (const entry of this.pinnedSidebarEntries) result.push(entry);
+    for (const row of this.sidebarRows) {
+      if (row.kind === 'task') result.push({ projectId: row.projectId, taskId: row.taskId });
+    }
+    return result;
+  }
+
+  /** 1-based index of this task in `flatVisibleTasks`, or null if not visible / past 9. */
+  jumpIndexFor(projectId: string, taskId: string): number | null {
+    const idx = this.flatVisibleTasks.findIndex(
+      (e) => e.projectId === projectId && e.taskId === taskId
+    );
+    if (idx === -1 || idx >= 9) return null;
+    return idx + 1;
+  }
+
+  setJumpIndicatorVisible(visible: boolean): void {
+    this.jumpIndicatorVisible = visible;
   }
 
   /**

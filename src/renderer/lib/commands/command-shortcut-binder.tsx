@@ -26,6 +26,7 @@ function SingleKeyBinder({ shortcutKey }: { shortcutKey: ShortcutSettingsKey }) 
     },
     {
       enabled: getEffectiveHotkey(shortcutKey, keyboard) !== null,
+      ignoreInputs: false,
       ...(isAllow ? { conflictBehavior: 'allow' as const } : {}),
     }
   );

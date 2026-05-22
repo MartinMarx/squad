@@ -14,6 +14,7 @@ import {
   useWorkspaceSlots,
 } from '@renderer/lib/layout/navigation-provider';
 import { useShowModal } from '@renderer/lib/modal/modal-provider';
+import { sidebarStore } from '@renderer/lib/stores/app-state';
 import { cn } from '@renderer/utils/utils';
 import { selectCurrentPr } from '@shared/pull-requests';
 import { PrBadge } from '../../lib/components/pr-badge';
@@ -93,7 +94,7 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
     >
       <SidebarMenuRow
         className={cn(
-          'group/row flex items-center justify-between px-1 h-8 gap-1',
+          'group/row relative flex items-center justify-between px-1 h-8 gap-1',
           rowVariant === 'pinned' ? 'pl-2' : 'pl-8'
         )}
         isActive={isActive}
@@ -116,8 +117,38 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
           <RenderPrBadge task={task} />
         </div>
         <TaskSidebarAgentStatus task={task} />
+        <SidebarJumpIndicator projectId={projectId} taskId={taskId} rowVariant={rowVariant} />
       </SidebarMenuRow>
     </TaskContextMenu>
+  );
+});
+
+const SidebarJumpIndicator = observer(function SidebarJumpIndicator({
+  projectId,
+  taskId,
+  rowVariant,
+}: {
+  projectId: string;
+  taskId: string;
+  rowVariant: 'underProject' | 'pinned';
+}) {
+  const index = sidebarStore.jumpIndexFor(projectId, taskId);
+  if (index === null) return null;
+  // Visible when the user is holding Option+Shift (any row in range gets a
+  // badge), or when hovering this specific row. CSS handles the per-row hover
+  // via the `group/row` class on the parent SidebarMenuRow.
+  const modifierHeld = sidebarStore.jumpIndicatorVisible;
+  return (
+    <kbd
+      aria-hidden
+      className={cn(
+        'pointer-events-none absolute top-1/2 -translate-y-1/2 rounded bg-background-tertiary-2 px-1 text-[10px] font-medium text-foreground-muted ring-1 ring-foreground/10',
+        rowVariant === 'pinned' ? 'left-0.5' : 'left-2',
+        modifierHeld ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-100'
+      )}
+    >
+      {index}
+    </kbd>
   );
 });
 

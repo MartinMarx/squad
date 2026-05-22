@@ -30,14 +30,20 @@ export function reorderTabIds(state: TabOrderState, fromIndex: number, toIndex: 
 
 export function setNextTabActive(state: TabOrderState): void {
   if (!state.activeTabId) return;
-  const next = state.tabOrder[state.tabOrder.indexOf(state.activeTabId) + 1];
-  if (next) state.activeTabId = next;
+  const count = state.tabOrder.length;
+  if (count === 0) return;
+  const idx = state.tabOrder.indexOf(state.activeTabId);
+  if (idx === -1) return;
+  state.activeTabId = state.tabOrder[(idx + 1) % count];
 }
 
 export function setPreviousTabActive(state: TabOrderState): void {
   if (!state.activeTabId) return;
-  const prev = state.tabOrder[state.tabOrder.indexOf(state.activeTabId) - 1];
-  if (prev) state.activeTabId = prev;
+  const count = state.tabOrder.length;
+  if (count === 0) return;
+  const idx = state.tabOrder.indexOf(state.activeTabId);
+  if (idx === -1) return;
+  state.activeTabId = state.tabOrder[(idx - 1 + count) % count];
 }
 
 export function setTabActiveIndex(state: TabOrderState, index: number): void {

@@ -51,6 +51,11 @@ export const themeSchema = z
 
 export const defaultAgentSchema = z.optional(z.enum(AGENT_PROVIDER_IDS)).default(DEFAULT_AGENT_ID);
 
+export const lastNewConversationDefaultsSchema = z.object({
+  provider: z.enum(AGENT_PROVIDER_IDS).nullable(),
+  autoApprove: z.boolean(),
+});
+
 export const keyboardSettingsSchema = z
   .optional(
     z.object(
@@ -114,6 +119,7 @@ export const APP_SETTINGS_SCHEMA_MAP = {
   tasks: taskSettingsSchema,
   agentAutoApproveDefaults: agentAutoApproveDefaultsSchema,
   defaultAgent: defaultAgentSchema,
+  lastNewConversationDefaults: lastNewConversationDefaultsSchema,
   keyboard: keyboardSettingsSchema,
   notifications: notificationSettingsSchema,
   theme: themeSchema,
@@ -131,6 +137,7 @@ export const appSettingsSchema = z.object({
   tasks: taskSettingsSchema,
   agentAutoApproveDefaults: agentAutoApproveDefaultsSchema,
   defaultAgent: defaultAgentSchema,
+  lastNewConversationDefaults: lastNewConversationDefaultsSchema,
   keyboard: keyboardSettingsSchema,
   notifications: notificationSettingsSchema,
   theme: themeSchema,
