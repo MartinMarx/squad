@@ -899,8 +899,12 @@
       0 24px 56px color-mix(in srgb, black 70%, transparent),
       inset 0 0.5px 0 color-mix(in srgb, white 12%, transparent);
 
-    /* Vibrancy-friendly background tokens (semi-transparent for dark). */
-    --background-sidebar: color-mix(in srgb, var(--neutral-2) 80%, transparent);
+    /* Dark mode sidebar: opaque + slightly darker than main panel (Apple/
+       Linear convention in dark is sidebar ≤ main, never lighter). The
+       earlier vibrancy-through approach rendered ~25% lighter than main
+       which read as weird. Light mode keeps vibrancy bleed (looks fine
+       since vibrancy material is darker than white). */
+    --background-sidebar: color-mix(in srgb, var(--neutral-1) 88%, black);
     --background-overlay: color-mix(in srgb, var(--neutral-2) 72%, transparent);
     --background-titlebar: var(--background);
 
