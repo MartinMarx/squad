@@ -472,8 +472,8 @@
     --primary-button-foreground: white;
     --primary-button-border: transparent;
 
-    --accent: var(--stoik-violin-2);
-    --accent-foreground: var(--stoik-violin-9);
+    --accent: var(--stoik-blue-3);
+    --accent-foreground: var(--stoik-blue-11);
 
     --border: var(--neutral-5);
     --border-1: var(--neutral-8);
@@ -801,8 +801,8 @@
     --primary-button-foreground: white;
     --primary-button-border: var(--stoik-blue-7);
 
-    --accent: var(--stoik-violin-3);
-    --accent-foreground: var(--stoik-violin-12);
+    --accent: var(--stoik-blue-3);
+    --accent-foreground: var(--stoik-blue-11);
 
     --border: var(--neutral-6);
     --border-1: var(--neutral-7);
