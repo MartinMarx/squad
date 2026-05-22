@@ -8,7 +8,7 @@ import { log } from '@main/lib/logger';
 import type { AgentProviderId } from '@shared/agent-provider-registry';
 import { makeClaudeHookCommand, makeCodexHookCommand } from './agent-notify-command';
 
-const EMDASH_MARKER = 'EMDASH_HOOK_PORT';
+const SQUAD_MARKER = 'SQUAD_HOOK_PORT';
 
 const CLAUDE_SETTINGS_PATH = '.claude/settings.local.json';
 const CODEX_CONFIG_PATH = '.codex/config.toml';
@@ -32,11 +32,11 @@ const LEGACY_CODEX_NOTIFY_COMMAND = [
   '-c',
   'curl -sf -X POST ' +
     "-H 'Content-Type: application/json' " +
-    '-H "X-Emdash-Token: $EMDASH_HOOK_TOKEN" ' +
-    '-H "X-Emdash-Pty-Id: $EMDASH_PTY_ID" ' +
-    '-H "X-Emdash-Event-Type: notification" ' +
+    '-H "X-Squad-Token: $SQUAD_HOOK_TOKEN" ' +
+    '-H "X-Squad-Pty-Id: $SQUAD_PTY_ID" ' +
+    '-H "X-Squad-Event-Type: notification" ' +
     '-d "$1" ' +
-    '"http://127.0.0.1:$EMDASH_HOOK_PORT/hook" || true',
+    '"http://127.0.0.1:$SQUAD_HOOK_PORT/hook" || true',
   '_',
 ];
 
@@ -136,7 +136,7 @@ export class HookConfigWriter {
   }
 
   private buildHookEntries(existing: unknown[], command: string): unknown[] {
-    const userEntries = existing.filter((entry) => !JSON.stringify(entry).includes(EMDASH_MARKER));
+    const userEntries = existing.filter((entry) => !JSON.stringify(entry).includes(SQUAD_MARKER));
     return [...userEntries, { hooks: [{ type: 'command', command }] }];
   }
 
@@ -162,7 +162,7 @@ export class HookConfigWriter {
       command.toLowerCase() === 'powershell.exe' &&
       noProfile === '-NoProfile' &&
       fileFlag === '-File' &&
-      scriptPath.endsWith('emdash-codex-notify.ps1')
+      scriptPath.endsWith('squad-codex-notify.ps1')
     );
   }
 

@@ -19,7 +19,7 @@ const { values } = parseArgs({
 });
 
 if (!values['app-bundle']) {
-  fail('--app-bundle is required (e.g. --app-bundle "Emdash.app")');
+  fail('--app-bundle is required (e.g. --app-bundle "Squad.app")');
 }
 
 const appBundle = values['app-bundle'];

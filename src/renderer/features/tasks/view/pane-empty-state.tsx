@@ -1,9 +1,9 @@
 import { FileSearch, MessageSquare } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTaskViewContext } from '@renderer/features/tasks/task-view-context';
-import { EmdashLogo } from '@renderer/lib/emdash-logo';
 import { useArrowKeyNavigation } from '@renderer/lib/hooks/use-arrow-key-navigation';
 import { useShowModal } from '@renderer/lib/modal/modal-provider';
+import { SquadLogo } from '@renderer/lib/squad-logo';
 import { BoundShortcut } from '@renderer/lib/ui/shortcut';
 import { cn } from '@renderer/utils/utils';
 import type { ShortcutSettingsKey } from '@shared/shortcuts';
@@ -31,7 +31,7 @@ export function PaneEmptyState() {
 
   return (
     <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-3">
-      <EmdashLogo height={32} className="text-background-2" />
+      <SquadLogo height={32} className="text-background-2" />
       <div className="mx-auto mt-10 flex w-full max-w-xs flex-col gap-0.5">
         <PaneEmptyStateAction
           isSelected={selectedIndex === 0}

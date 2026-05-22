@@ -65,8 +65,8 @@ export function ProjectConfigImportModal({
   );
   const description =
     migrations.length === 1 && selectedMigration
-      ? `Found configuration file from ${selectedMigration.label} that can be imported into Emdash.`
-      : 'Found configuration files that can be imported into Emdash.';
+      ? `Found configuration file from ${selectedMigration.label} that can be imported into Squad.`
+      : 'Found configuration files that can be imported into Squad.';
 
   const disabled = !selectedMigration || status === 'importing' || status === 'imported';
 
@@ -159,7 +159,7 @@ export function ProjectConfigImportModal({
               <label className="flex items-center gap-3 rounded-md text-sm">
                 <RadioGroupItem value="shared" className="translate-y-px" />
                 <span className="flex min-w-0 flex-row gap-1.5">
-                  <p>.emdash.json</p>
+                  <p>.squad.json</p>
                   <p className="text-foreground-muted">– commit to share with team</p>
                 </span>
               </label>

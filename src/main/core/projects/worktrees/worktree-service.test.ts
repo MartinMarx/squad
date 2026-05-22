@@ -80,7 +80,7 @@ describe('WorktreeService', () => {
 
   describe('checkoutBranchWorktree', () => {
     it('ignores stale worktree-list entries under the pool', async () => {
-      const branchName = 'emdash/openrouter-embedding-3hvp5';
+      const branchName = 'squad/openrouter-embedding-3hvp5';
       const stalePath = path.join(poolDir, 'backend', branchName);
       await git(['branch', branchName], { cwd: repoDir });
       await git(['worktree', 'add', stalePath, branchName], { cwd: repoDir });

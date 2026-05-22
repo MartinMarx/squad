@@ -45,9 +45,9 @@ type AccountServiceHooks = {
 
 const accountKV = new KV<AccountKVSchema>('account');
 
-export class EmdashAccountService implements Hookable<AccountServiceHooks> {
+export class SquadAccountService implements Hookable<AccountServiceHooks> {
   private readonly _hooks = new HookCore<AccountServiceHooks>((name, e) =>
-    log.error(`EmdashAccountService: ${String(name)} hook error`, e)
+    log.error(`SquadAccountService: ${String(name)} hook error`, e)
   );
   private cachedProfile: CachedProfile | null = null;
   private sessionToken: string | null = null;
@@ -90,7 +90,7 @@ export class EmdashAccountService implements Hookable<AccountServiceHooks> {
     }
   }
 
-  /**  make provider optional and remove default in case emdash starts supporting more providers */
+  /**  make provider optional and remove default in case squad starts supporting more providers */
   async signIn(provider: string = 'github'): Promise<SignInResult> {
     const { baseUrl } = ACCOUNT_CONFIG.authServer;
 
@@ -199,4 +199,4 @@ export class EmdashAccountService implements Hookable<AccountServiceHooks> {
   }
 }
 
-export const emdashAccountService = new EmdashAccountService();
+export const squadAccountService = new SquadAccountService();

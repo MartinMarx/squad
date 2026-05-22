@@ -4,27 +4,27 @@ import { basenameFromAnyPath, safePathSegment } from './path-name';
 describe('path-name helpers', () => {
   describe('basenameFromAnyPath', () => {
     it('extracts a project name from a Windows path', () => {
-      expect(basenameFromAnyPath('E:\\my_work\\github_pro\\emdash')).toBe('emdash');
+      expect(basenameFromAnyPath('E:\\my_work\\github_pro\\squad')).toBe('squad');
     });
 
     it('extracts a project name from a POSIX path', () => {
-      expect(basenameFromAnyPath('/home/admin/github_pro/emdash')).toBe('emdash');
+      expect(basenameFromAnyPath('/home/admin/github_pro/squad')).toBe('squad');
     });
 
     it('ignores trailing path separators', () => {
-      expect(basenameFromAnyPath('E:\\my_work\\github_pro\\emdash\\')).toBe('emdash');
-      expect(basenameFromAnyPath('/home/admin/github_pro/emdash/')).toBe('emdash');
+      expect(basenameFromAnyPath('E:\\my_work\\github_pro\\squad\\')).toBe('squad');
+      expect(basenameFromAnyPath('/home/admin/github_pro/squad/')).toBe('squad');
     });
   });
 
   describe('safePathSegment', () => {
     it('keeps normal project names unchanged', () => {
-      expect(safePathSegment('emdash')).toBe('emdash');
+      expect(safePathSegment('squad')).toBe('squad');
     });
 
     it('collapses path-shaped project names to a safe single segment', () => {
-      expect(safePathSegment('E:\\my_work\\github_pro\\emdash')).toBe('emdash');
-      expect(safePathSegment('../emdash')).toBe('emdash');
+      expect(safePathSegment('E:\\my_work\\github_pro\\squad')).toBe('squad');
+      expect(safePathSegment('../squad')).toBe('squad');
     });
 
     it('falls back when no safe segment remains', () => {

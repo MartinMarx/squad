@@ -1,4 +1,4 @@
-<img alt="Emdash banner" src="https://github.com/user-attachments/assets/a2ecaf3c-9d84-40ca-9a8e-d4f612cc1c6f" />
+<img alt="Squad banner" src="https://github.com/user-attachments/assets/a2ecaf3c-9d84-40ca-9a8e-d4f612cc1c6f" />
 
 
 <div align="center" style="margin:24px 0;">
@@ -6,34 +6,34 @@
 <br />
 
 [![Apache 2.0 License](https://img.shields.io/badge/License-Apache_2.0-555555.svg?labelColor=333333&color=666666)](./LICENSE.md)
-[![Downloads](https://img.shields.io/github/downloads/generalaction/emdash/total?labelColor=333333&color=666666)](https://github.com/generalaction/emdash/releases)
-[![GitHub Stars](https://img.shields.io/github/stars/generalaction/emdash?labelColor=333333&color=666666)](https://github.com/generalaction/emdash)
-[![Last Commit](https://img.shields.io/github/last-commit/generalaction/emdash?labelColor=333333&color=666666)](https://github.com/generalaction/emdash/commits/main)
-[![Commit Activity](https://img.shields.io/github/commit-activity/m/generalaction/emdash?labelColor=333333&color=666666)](https://github.com/generalaction/emdash/graphs/commit-activity)
+[![Downloads](https://img.shields.io/github/downloads/generalaction/squad/total?labelColor=333333&color=666666)](https://github.com/generalaction/squad/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/generalaction/squad?labelColor=333333&color=666666)](https://github.com/generalaction/squad)
+[![Last Commit](https://img.shields.io/github/last-commit/generalaction/squad?labelColor=333333&color=666666)](https://github.com/generalaction/squad/commits/main)
+[![Commit Activity](https://img.shields.io/github/commit-activity/m/generalaction/squad?labelColor=333333&color=666666)](https://github.com/generalaction/squad/graphs/commit-activity)
 <br>
 [![Discord](https://img.shields.io/badge/Discord-join-%235462eb?labelColor=%235462eb&logo=discord&logoColor=%23f5f5f5)](https://discord.gg/f2fv7YxuR2)
 <a href="https://www.ycombinator.com"><img src="https://img.shields.io/badge/Y%20Combinator-W26-orange" alt="Y Combinator W26"></a>
-[![Follow @emdashsh on X](https://img.shields.io/twitter/follow/emdashsh?logo=X&color=%23f5f5f5)](https://twitter.com/intent/follow?screen_name=emdashsh)
+[![Follow @squadsh on X](https://img.shields.io/twitter/follow/squadsh?logo=X&color=%23f5f5f5)](https://twitter.com/intent/follow?screen_name=squadsh)
 
 <br />
 
-  <a href="https://emdash.sh/download" style="display:inline-block; margin-right:8px; text-decoration:none; outline:none; border:none;">
-    <img src="https://emdash.sh/media/readme/downloadforwindows.png" alt="Download for Windows" height="40">
+  <a href="https://squad.sh/download" style="display:inline-block; margin-right:8px; text-decoration:none; outline:none; border:none;">
+    <img src="https://squad.sh/media/readme/downloadforwindows.png" alt="Download for Windows" height="40">
   </a>
-  <a href="https://emdash.sh/download" style="display:inline-block; margin-right:8px; text-decoration:none; outline:none; border:none;">
-    <img src="https://emdash.sh/media/readme/downloadformacos.png" alt="Download for macOS" height="40">
+  <a href="https://squad.sh/download" style="display:inline-block; margin-right:8px; text-decoration:none; outline:none; border:none;">
+    <img src="https://squad.sh/media/readme/downloadformacos.png" alt="Download for macOS" height="40">
   </a>
-  <a href="https://emdash.sh/download" style="display:inline-block; text-decoration:none; outline:none; border:none;">
-    <img src="https://emdash.sh/media/readme/downloadforlinux.png" alt="Download for Linux" height="40">
+  <a href="https://squad.sh/download" style="display:inline-block; text-decoration:none; outline:none; border:none;">
+    <img src="https://squad.sh/media/readme/downloadforlinux.png" alt="Download for Linux" height="40">
   </a>
 
 </div>
 
 <br />
 
-Emdash is a provider-agnostic desktop app that lets you run multiple coding agents in parallel, each isolated in its own git worktree on your local machine. We call it an Agentic Development Environment (ADE).
+Squad is a provider-agnostic desktop app that lets you run multiple coding agents in parallel, each isolated in its own git worktree on your local machine. We call it an Agentic Development Environment (ADE).
 
-Emdash supports Claude Code, Codex, and Cursor. Users can pass Linear or GitHub issues to an agent, review diffs, test changes, create PRs, see CI/CD checks, and merge.
+Squad supports Claude Code, Codex, and Cursor. Users can pass Linear or GitHub issues to an agent, review diffs, test changes, create PRs, see CI/CD checks, and merge.
 
 <div align="center" style="margin:24px 0;">
 
@@ -41,26 +41,13 @@ Emdash supports Claude Code, Codex, and Cursor. Users can pass Linear or GitHub 
 
 </div>
 
-<img alt="Emdash product" src="https://emdash.sh/media/blog/public-v1-beta/v1beta.jpg" />
+<img alt="Squad product" src="https://squad.sh/media/blog/public-v1-beta/v1beta.jpg" />
 
 # Installation
 
-### macOS
-- Homebrew: `brew install --cask emdash`
-- Apple Silicon: https://releases.emdash.sh/emdash-arm64.dmg
-- Intel x64: https://releases.emdash.sh/emdash-x64.dmg
+Download the latest installer for your platform from the GitHub releases page:
 
-### Windows
-- Installer (x64): https://releases.emdash.sh/emdash-x64.msi
-- Portable (x64): https://releases.emdash.sh/emdash-x64.exe
-
-### Linux
-- AppImage (x64): https://releases.emdash.sh/emdash-x86_64.AppImage
-- Debian package (x64): https://releases.emdash.sh/emdash-amd64.deb
-
-### Release Overview
-
-**[Latest Releases (macOS • Windows • Linux)](https://github.com/generalaction/emdash/releases/latest)**
+**[Latest Releases (macOS • Windows • Linux)](https://github.com/generalaction/squad/releases/latest)**
 
 # Providers
 
@@ -76,7 +63,7 @@ Emdash supports Claude Code, Codex, and Cursor. Users can pass Linear or GitHub 
 
 ### Issues
 
-Emdash allows you to pass issues, tickets, and support threads straight to your coding agent.
+Squad allows you to pass issues, tickets, and support threads straight to your coding agent.
 
 | Tool | Status | Authentication |
 | ----------- | ------ | ----------- |
@@ -95,12 +82,12 @@ Contributions welcome! See the [Contributing Guide](CONTRIBUTING.md) to get star
 > **App data is local‑first**. We store app state in a local **SQLite** database:
 >
 > ```
-> macOS:   ~/Library/Application Support/emdash/emdash.db
-> Windows: %APPDATA%\emdash\emdash.db
-> Linux:   ~/.config/emdash/emdash.db
+> macOS:   ~/Library/Application Support/squad/squad.db
+> Windows: %APPDATA%\squad\squad.db
+> Linux:   ~/.config/squad/squad.db
 > ```
 >
-> **Privacy Note:** While Emdash itself stores data locally, **when you use any coding agent (Claude Code, Codex, or Cursor), your code and prompts are sent to that provider's cloud API servers** for processing. Each provider has their own data handling and retention policies.
+> **Privacy Note:** While Squad itself stores data locally, **when you use any coding agent (Claude Code, Codex, or Cursor), your code and prompts are sent to that provider's cloud API servers** for processing. Each provider has their own data handling and retention policies.
 >
 > You can reset the local DB by deleting it (quit the app first). The file is recreated on next launch.
 </details>
@@ -108,7 +95,7 @@ Contributions welcome! See the [Contributing Guide](CONTRIBUTING.md) to get star
 <details>
 <summary><b>How do I add a new provider?</b></summary>
 
-> Emdash is **provider‑agnostic** and built to add CLIs quickly.
+> Squad is **provider‑agnostic** and built to add CLIs quickly.
 >
 > - Open a PR following the **Contributing Guide** (`CONTRIBUTING.md`).
 > - Include: provider name, how it’s invoked (CLI command), auth notes, and minimal setup steps.
@@ -118,15 +105,15 @@ Contributions welcome! See the [Contributing Guide](CONTRIBUTING.md) to get star
 </details>
 
 <details>
-<summary><b>What permissions does Emdash need?</b></summary>
+<summary><b>What permissions does Squad need?</b></summary>
 
 > - **Filesystem/Git:** to read/write your repo and create **Git worktrees** for isolation.  
 > - **Network:** only for provider CLIs you choose to use (e.g., Codex, Claude) and optional GitHub actions.  
 > - **Local DB:** to store your app state in SQLite on your machine.
 >
-> Emdash itself does **not** send your code or chats to any servers. Third‑party CLIs may transmit data per their policies.
+> Squad itself does **not** send your code or chats to any servers. Third‑party CLIs may transmit data per their policies.
 </details>
 
-[![Follow @emdashsh](https://img.shields.io/twitter/follow/emdashsh?style=social&label=Follow%20%40emdashsh)](https://x.com/emdashsh)
+[![Follow @squadsh](https://img.shields.io/twitter/follow/squadsh?style=social&label=Follow%20%40squadsh)](https://x.com/squadsh)
 [![Follow @rabanspiegel](https://img.shields.io/twitter/follow/rabanspiegel?style=social&label=Follow%20%40rabanspiegel)](https://x.com/rabanspiegel)
 [![Follow @arnestrickmann](https://img.shields.io/twitter/follow/arnestrickmann?style=social&label=Follow%20%40arnestrickmann)](https://x.com/arnestrickmann)

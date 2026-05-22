@@ -1,10 +1,10 @@
 import { FolderOpen, Github, Plus, type LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Titlebar } from '@renderer/lib/components/titlebar/Titlebar';
-import { EmdashShimmerLogo } from '@renderer/lib/emdash-shimmer-logo';
 import { useArrowKeyNavigation } from '@renderer/lib/hooks/use-arrow-key-navigation';
 import { useTheme } from '@renderer/lib/hooks/useTheme';
 import { useShowModal } from '@renderer/lib/modal/modal-provider';
+import { SquadShimmerLogo } from '@renderer/lib/squad-shimmer-logo';
 import { ActionListItem } from '@renderer/lib/ui/action-list-item';
 
 const PROJECT_ACTIONS = [
@@ -51,7 +51,7 @@ export function HomeMainPanel() {
       <div className="container mx-auto flex min-h-full max-w-6xl flex-1 flex-col justify-center px-8 py-8">
         <div className="mb-3 text-center">
           <div className="mb-3 flex items-center justify-center">
-            <EmdashShimmerLogo
+            <SquadShimmerLogo
               height={32}
               color={isDark ? 'var(--color-background-2)' : 'var(--color-foreground)'}
               shimmerColor={isDark ? 'white' : 'var(--color-foreground-passive)'}

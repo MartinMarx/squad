@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { EmdashAccountService } from './emdash-account-service';
+import { SquadAccountService } from './squad-account-service';
 
 const mockCredGet = vi.fn();
 const mockCredSet = vi.fn();
@@ -39,21 +39,21 @@ vi.mock('../provider-token-registry', () => ({
 
 vi.mock('../config', () => ({
   ACCOUNT_CONFIG: {
-    authServer: { baseUrl: 'https://auth.test.emdash.sh', authTimeoutMs: 5000 },
+    authServer: { baseUrl: 'https://auth.test.squad.sh', authTimeoutMs: 5000 },
   },
 }));
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
-describe('EmdashAccountService', () => {
-  let service: EmdashAccountService;
+describe('SquadAccountService', () => {
+  let service: SquadAccountService;
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockKvGet.mockResolvedValue(null);
     mockKvSet.mockResolvedValue(undefined);
-    service = new EmdashAccountService();
+    service = new SquadAccountService();
   });
 
   describe('getSession()', () => {
@@ -256,7 +256,7 @@ describe('EmdashAccountService', () => {
       const result = await service.checkServerHealth();
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://auth.test.emdash.sh/health',
+        'https://auth.test.squad.sh/health',
         expect.objectContaining({ signal: expect.any(AbortSignal) })
       );
     });

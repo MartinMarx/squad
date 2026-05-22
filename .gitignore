@@ -79,5 +79,5 @@ tooling/db/dev.db-shm
 
 # Isolated better-sqlite3 for system Node (installed by pnpm run db:setup / postinstall)
 tooling/node-deps/node_modules/
-.pi/extensions/emdash-hook.ts
-.opencode/plugins/emdash-notifications.js
+.pi/extensions/squad-hook.ts
+.opencode/plugins/squad-notifications.js

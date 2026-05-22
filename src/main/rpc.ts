@@ -23,7 +23,6 @@ import { providerSettingsController } from './core/settings/provider-settings-co
 import { skillsController } from './core/skills/controller';
 import { taskController } from './core/tasks/controller';
 import { terminalsController } from './core/terminals/controller';
-import { updateController } from './core/updates/controller';
 import { viewStateController } from './core/view-state/controller';
 import { workspaceController } from './core/workspaces/controller';
 import { projectSettingsController } from './core/workspaces/project-settings-controller';
@@ -37,7 +36,6 @@ export const rpcRouter = createRPCRouter({
   providerSettings: providerSettingsController,
   repository: repositoryController,
   fs: filesController,
-  update: updateController,
   pty: ptyController,
   resourceMonitor: resourceMonitorController,
   github: githubController,

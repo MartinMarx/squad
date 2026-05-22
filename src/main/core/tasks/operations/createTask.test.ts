@@ -70,7 +70,7 @@ describe('createTask', () => {
 
     mocks.getAppSetting.mockImplementation((key: string) => {
       if (key === 'project') {
-        return Promise.resolve({ branchPrefix: 'emdash', appendRandomBranchSuffix: true });
+        return Promise.resolve({ branchPrefix: 'squad', appendRandomBranchSuffix: true });
       }
       if (key === 'philosophers') {
         return Promise.resolve({ unlocked: [] });
@@ -203,7 +203,7 @@ describe('createTask', () => {
       projectId: 'project-1',
       name: 'plato',
       sourceBranch: { type: 'local', branch: 'main' },
-      strategy: { kind: 'new-branch', taskBranch: 'emdash/plato', pushBranch: false },
+      strategy: { kind: 'new-branch', taskBranch: 'squad/plato', pushBranch: false },
     });
 
     expect(result.success).toBe(true);

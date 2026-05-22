@@ -36,12 +36,12 @@ jobs:
           node --experimental-strip-types scripts/release/build.ts
           --platform linux --arch x64
 
-      - uses: ./.github/actions/upload-r2
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
         with:
-          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
-          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          r2-bucket: ${{ secrets.R2_BUCKET }}
+          name: squad-linux
+          path: release/squad-*.*
+          if-no-files-found: error
 
   release-win:
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
@@ -97,13 +97,12 @@ jobs:
         shell: bash
         run: node --experimental-strip-types scripts/release/verify-win.ts
 
-      - name: Upload to R2
-        uses: ./.github/actions/upload-r2
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
         with:
-          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
-          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          r2-bucket: ${{ secrets.R2_BUCKET }}
+          name: squad-win
+          path: release/squad-*.*
+          if-no-files-found: error
 
   release-mac:
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
@@ -148,12 +147,11 @@ jobs:
           APPLE_API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-        run: node --experimental-strip-types scripts/release/notarize-mac.ts --app-bundle "Emdash.app"
+        run: node --experimental-strip-types scripts/release/notarize-mac.ts --app-bundle "Squad.app"
 
-      - name: Upload to R2
-        uses: ./.github/actions/upload-r2
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
         with:
-          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
-          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          r2-bucket: ${{ secrets.R2_BUCKET }}
+          name: squad-mac
+          path: release/squad-*.*
+          if-no-files-found: error

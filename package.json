@@ -1,5 +1,5 @@
 {
-  "name": "emdash",
+  "name": "squad",
   "version": "1.1.23",
   "description": "A cross-platform Electron app that orchestrates multiple coding agents in parallel",
   "keywords": [
@@ -11,8 +11,8 @@
   ],
   "license": "Apache-2.0",
   "author": {
-    "name": "Emdash Contributors",
-    "email": "support@emdash.sh"
+    "name": "Squad Contributors",
+    "email": "support@squad.sh"
   },
   "type": "module",
   "main": "./out/main/index.js",
@@ -23,14 +23,14 @@
     "dev:main": "electron-vite dev --watch main",
     "dev:renderer": "electron-vite dev --watch renderer",
     "db:generate": "drizzle-kit generate",
-    "db:dev": "mkdir -p tooling/db && EMDASH_DB_FILE=$(pwd)/tooling/db/dev.db electron-vite dev",
+    "db:dev": "mkdir -p tooling/db && SQUAD_DB_FILE=$(pwd)/tooling/db/dev.db electron-vite dev",
     "db:dev:reset": "rm -f tooling/db/dev.db tooling/db/dev.db-wal tooling/db/dev.db-shm",
     "db:setup": "npm install --prefix tooling/node-deps",
     "db:fixtures": "vitest run --project fixtures",
     "test:migrations": "vitest run --project migrations",
     "db:reset": "pnpm run db:reset:3 && pnpm run db:reset:4",
-    "db:reset:3": "rm -f \"$HOME/Library/Application Support/emdash/emdash3.db\" \"$HOME/Library/Application Support/emdash/emdash3.db-wal\" \"$HOME/Library/Application Support/emdash/emdash3.db-shm\" \"$HOME/.config/emdash/emdash3.db\" \"$HOME/.config/emdash/emdash3.db-wal\" \"$HOME/.config/emdash/emdash3.db-shm\"",
-    "db:reset:4": "rm -f \"$HOME/Library/Application Support/emdash/emdash4.db\" \"$HOME/Library/Application Support/emdash/emdash4.db-wal\" \"$HOME/Library/Application Support/emdash/emdash4.db-shm\" \"$HOME/.config/emdash/emdash4.db\" \"$HOME/.config/emdash/emdash4.db-wal\" \"$HOME/.config/emdash/emdash4.db-shm\"",
+    "db:reset:3": "rm -f \"$HOME/Library/Application Support/squad/squad3.db\" \"$HOME/Library/Application Support/squad/squad3.db-wal\" \"$HOME/Library/Application Support/squad/squad3.db-shm\" \"$HOME/.config/squad/squad3.db\" \"$HOME/.config/squad/squad3.db-wal\" \"$HOME/.config/squad/squad3.db-shm\"",
+    "db:reset:4": "rm -f \"$HOME/Library/Application Support/squad/squad4.db\" \"$HOME/Library/Application Support/squad/squad4.db-wal\" \"$HOME/Library/Application Support/squad/squad4.db-shm\" \"$HOME/.config/squad/squad4.db\" \"$HOME/.config/squad/squad4.db-wal\" \"$HOME/.config/squad/squad4.db-shm\"",
     "test": "vitest run --project node --project main-db --project migrations --project browser",
     "build": "electron-vite build",
     "build:main": "electron-vite build --filter main",
@@ -117,7 +117,6 @@
     "date-fns": "^4.1.0",
     "devicon": "^2.17.0",
     "drizzle-orm": "^0.32.1",
-    "electron-updater": "^6.3.9",
     "fix-path": "^4.0.0",
     "framer-motion": "^12.33.0",
     "glob": "^13.0.6",

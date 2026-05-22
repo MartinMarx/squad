@@ -269,34 +269,34 @@ describe('GitService.isFileCleanlyTracked', () => {
   it('returns true when the file is tracked and unchanged', async () => {
     const svc = makeService(
       makeExec({
-        'ls-files --error-unmatch -- .emdash.json': '.emdash.json\n',
-        'diff --quiet -- .emdash.json': '',
-        'diff --cached --quiet -- .emdash.json': '',
+        'ls-files --error-unmatch -- .squad.json': '.squad.json\n',
+        'diff --quiet -- .squad.json': '',
+        'diff --cached --quiet -- .squad.json': '',
       })
     );
 
-    await expect(svc.isFileCleanlyTracked('.emdash.json')).resolves.toBe(true);
+    await expect(svc.isFileCleanlyTracked('.squad.json')).resolves.toBe(true);
   });
 
   it('returns false when the file is not tracked', async () => {
     const svc = makeService(makeExec({}));
 
-    await expect(svc.isFileCleanlyTracked('.emdash.json')).resolves.toBe(false);
+    await expect(svc.isFileCleanlyTracked('.squad.json')).resolves.toBe(false);
   });
 
   it('returns false when the file has unstaged changes', async () => {
     const exec: MockExec = async (_cmd, args = []) => {
       const key = args.join(' ');
-      if (key === 'ls-files --error-unmatch -- .emdash.json') {
-        return { stdout: '.emdash.json\n', stderr: '' };
+      if (key === 'ls-files --error-unmatch -- .squad.json') {
+        return { stdout: '.squad.json\n', stderr: '' };
       }
-      if (key === 'diff --quiet -- .emdash.json') {
+      if (key === 'diff --quiet -- .squad.json') {
         throw Object.assign(new Error('diff found changes'), { code: 1 });
       }
       throw new Error(`Unexpected git command: git ${key}`);
     };
 
-    await expect(makeService(exec).isFileCleanlyTracked('.emdash.json')).resolves.toBe(false);
+    await expect(makeService(exec).isFileCleanlyTracked('.squad.json')).resolves.toBe(false);
   });
 });
 

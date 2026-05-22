@@ -1,14 +1,14 @@
 import { join } from 'node:path';
 import { config as dotenvConfig } from 'dotenv';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
-import dockIcon from '@/assets/images/emdash/icon-dock.png?asset';
+import dockIcon from '@/assets/images/squad/icon-dock.png?asset';
 import { PRODUCT_NAME } from '@shared/app-identity';
 import { registerRPCRouter } from '@shared/ipc/rpc';
 import { setupApplicationMenu } from './app/menu';
 import { registerAppScheme, setupAppProtocol } from './app/protocol';
 import { createMainWindow } from './app/window';
 import { providerTokenRegistry } from './core/account/provider-token-registry';
-import { emdashAccountService } from './core/account/services/emdash-account-service';
+import { squadAccountService } from './core/account/services/squad-account-service';
 import { agentHookService } from './core/agent-hooks/agent-hook-service';
 import { appService } from './core/app/service';
 import { localDependencyManager } from './core/dependencies/dependency-manager';
@@ -26,7 +26,6 @@ import {
 import { searchService } from './core/search/search-service';
 import { workspaceFileIndexService } from './core/search/workspace-file-index-service';
 import { appSettingsService } from './core/settings/settings-service';
-import { updateService } from './core/updates/update-service';
 import { viewStateService } from './core/view-state/view-state-service';
 import { initializeDatabase } from './db/initialize';
 import { log } from './lib/logger';
@@ -44,7 +43,7 @@ if (process.platform === 'linux') {
 registerAppScheme();
 
 app.setName(PRODUCT_NAME);
-app.setPath('userData', join(app.getPath('appData'), 'emdash'));
+app.setPath('userData', join(app.getPath('appData'), 'squad'));
 
 app.on('second-instance', () => {
   const win = BrowserWindow.getAllWindows()[0];
@@ -111,12 +110,12 @@ void app.whenReady().then(async () => {
     log.error('Failed to start agent event service:', e);
   });
 
-  emdashAccountService.loadSessionToken().catch((e) => {
+  squadAccountService.loadSessionToken().catch((e) => {
     log.warn('Failed to load account session token:', e);
   });
 
   providerTokenRegistry.register('github', (token) =>
-    githubConnectionService.storeToken(token, 'emdash_oauth')
+    githubConnectionService.storeToken(token, 'squad_oauth')
   );
 
   registerRPCRouter(rpcRouter, ipcMain);
@@ -130,21 +129,12 @@ void app.whenReady().then(async () => {
   setupAppProtocol(join(app.getAppPath(), 'out', 'renderer'));
   setupApplicationMenu();
   createMainWindow();
-
-  try {
-    await updateService.initialize();
-  } catch (error) {
-    if (app.isPackaged) {
-      log.error('Failed to initialize auto-update service:', error);
-    }
-  }
 });
 
 app.on('before-quit', (event) => {
   event.preventDefault();
   agentHookService.dispose();
   stopResourceSampler();
-  updateService.dispose();
   prSyncScheduler.dispose();
   void gitWatcherRegistry.dispose();
   void projectManager.dispose().catch((e) => {

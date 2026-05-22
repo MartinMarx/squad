@@ -5,10 +5,8 @@ import { NavigationHistoryStore } from './navigation-history-store';
 import { NavigationStore } from './navigation-store';
 import { ResourceMonitorStore } from './resource-monitor-store';
 import { snapshotRegistry, type SnapshotRegistry } from './snapshot-registry';
-import { UpdateStore } from './update-store';
 
 class AppState {
-  readonly update: UpdateStore;
   readonly projects: ProjectManagerStore;
   readonly sidebar: SidebarStore;
   readonly snapshots: SnapshotRegistry;
@@ -19,7 +17,6 @@ class AppState {
 
   constructor() {
     this.snapshots = snapshotRegistry;
-    this.update = new UpdateStore();
     this.projects = new ProjectManagerStore();
     this.sidebar = new SidebarStore(this.projects);
     this.history = new NavigationHistoryStore();

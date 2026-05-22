@@ -1,5 +1,5 @@
 {
-  description = "Nix dev shell for the Emdash Electron workspace";
+  description = "Nix dev shell for the Squad Electron workspace";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -82,10 +82,10 @@
             pkgs.patchelf
           ];
         cleanSrc = lib.cleanSource ./.;
-        emdashPackage =
+        squadPackage =
           if pkgs.stdenv.isLinux then
             pkgs.stdenv.mkDerivation rec {
-              pname = "emdash";
+              pname = "squad";
               version = packageJson.version;
               src = cleanSrc;
               pnpmDeps =
@@ -117,7 +117,7 @@
                 pkgs.libutempter
               ];
               env = {
-                HOME = "$TMPDIR/emdash-home";
+                HOME = "$TMPDIR/squad-home";
                 npm_config_build_from_source = "true";
                 npm_config_manage_package_manager_versions = "false";
                 # Skip Electron binary download during pnpm install
@@ -127,7 +127,7 @@
               buildPhase = ''
                 runHook preBuild
 
-                mkdir -p "$TMPDIR/emdash-home"
+                mkdir -p "$TMPDIR/squad-home"
                 pnpm config set manage-package-manager-versions false
 
                 # Build the app (renderer + main)
@@ -154,38 +154,38 @@
                   exit 1
                 fi
 
-                install -d $out/share/emdash
-                cp -R "$unpackedDir" $out/share/emdash/
+                install -d $out/share/squad
+                cp -R "$unpackedDir" $out/share/squad/
 
                 if ls "$distDir"/*.AppImage >/dev/null 2>&1; then
                   for image in "$distDir"/*.AppImage; do
-                    install -Dm755 "$image" "$out/share/emdash/$(basename "$image")"
+                    install -Dm755 "$image" "$out/share/squad/$(basename "$image")"
                   done
                 fi
 
                 install -d $out/bin
-                cat <<EOF > $out/bin/emdash
+                cat <<EOF > $out/bin/squad
 #!${pkgs.bash}/bin/bash
 set -euo pipefail
 
-APP_ROOT="$out/share/emdash/linux-unpacked"
-exec "\$APP_ROOT/emdash" "\$@"
+APP_ROOT="$out/share/squad/linux-unpacked"
+exec "\$APP_ROOT/squad" "\$@"
 EOF
-                chmod +x $out/bin/emdash
+                chmod +x $out/bin/squad
 
                 runHook postInstall
               '';
 
               meta = {
-                description = "Emdash – multi-agent orchestration desktop app";
-                homepage = "https://emdash.sh";
+                description = "Squad – multi-agent orchestration desktop app";
+                homepage = "https://squad.sh";
                 license = lib.licenses.asl20;
                 platforms = [ "x86_64-linux" ];
               };
             }
           else
-            pkgs.writeShellScriptBin "emdash" ''
-              echo "The packaged Emdash app is currently only available for Linux when using Nix." >&2
+            pkgs.writeShellScriptBin "squad" ''
+              echo "The packaged Squad app is currently only available for Linux when using Nix." >&2
               exit 1
             '';
       in {
@@ -193,18 +193,18 @@ EOF
           packages = sharedEnv;
 
           shellHook = ''
-            echo "Emdash dev shell ready"
+            echo "Squad dev shell ready"
             echo "Node: $(node --version)"
             echo "Run 'pnpm run d' for the full dev loop."
           '';
         };
 
-        packages.emdash = emdashPackage;
-        packages.default = emdashPackage;
+        packages.squad = squadPackage;
+        packages.default = squadPackage;
 
         apps.default = {
           type = "app";
-          program = "${emdashPackage}/bin/emdash";
+          program = "${squadPackage}/bin/squad";
         };
       });
 }

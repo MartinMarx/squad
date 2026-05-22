@@ -194,7 +194,7 @@ export function useProjectSettingsForm({
         });
         toast({
           title: 'Team config shared',
-          description: '.emdash.json was written successfully.',
+          description: '.squad.json was written successfully.',
         });
         onSuccess();
       },

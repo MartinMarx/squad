@@ -26,7 +26,6 @@ async function bootstrap() {
   wirePrCacheInvalidation();
   wireCommitHistoryInvalidation();
 
-  appState.update.start();
   appState.resourceMonitor.start();
   initSoundPlayer();
 

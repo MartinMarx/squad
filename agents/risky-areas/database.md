@@ -16,7 +16,7 @@
 ## Current Behavior
 
 - database path is resolved by main-process db path helpers
-- `EMDASH_DB_FILE` overrides the default location
+- `SQUAD_DB_FILE` overrides the default location
 - database initialization happens in `src/main/db/initialize.ts`
 
 ## Development Workflow
@@ -44,7 +44,7 @@ tooling/
 
 Use `pnpm run db:dev` instead of `pnpm run dev` when working on migrations.
 This writes to `tooling/db/dev.db` (gitignored) instead of your personal
-emdash database, so schema experiments cannot corrupt your real app data.
+squad database, so schema experiments cannot corrupt your real app data.
 
 ```bash
 pnpm run db:dev        # start app with isolated dev database

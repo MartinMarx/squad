@@ -93,15 +93,15 @@ describe('buildAgentEnv provider env forwarding', () => {
       hook: { port: 1234, ptyId: 'claude:conv-1', token: 'real-token' },
       providerVars: {
         ANTHROPIC_BASE_URL: 'https://example.test',
-        EMDASH_HOOK_PORT: '9999',
-        EMDASH_PTY_ID: 'wrong',
-        EMDASH_HOOK_TOKEN: 'wrong-token',
+        SQUAD_HOOK_PORT: '9999',
+        SQUAD_PTY_ID: 'wrong',
+        SQUAD_HOOK_TOKEN: 'wrong-token',
       },
     });
 
     expect(env.ANTHROPIC_BASE_URL).toBe('https://example.test');
-    expect(env.EMDASH_HOOK_PORT).toBe('1234');
-    expect(env.EMDASH_PTY_ID).toBe('claude:conv-1');
-    expect(env.EMDASH_HOOK_TOKEN).toBe('real-token');
+    expect(env.SQUAD_HOOK_PORT).toBe('1234');
+    expect(env.SQUAD_PTY_ID).toBe('claude:conv-1');
+    expect(env.SQUAD_HOOK_TOKEN).toBe('real-token');
   });
 });

@@ -14,12 +14,12 @@ type SettingsDefaultsMap = {
 export const SETTINGS_DEFAULTS = {
   project: {
     pushOnCreate: true,
-    branchPrefix: 'emdash',
+    branchPrefix: 'squad',
     appendRandomBranchSuffix: true,
     tmuxByDefault: false,
   },
   localProject: () => ({
-    defaultProjectsDirectory: join(homedir(), 'emdash', 'repositories'),
+    defaultProjectsDirectory: join(homedir(), 'squad', 'repositories'),
     defaultWorktreeDirectory: getDefaultLocalWorktreeDirectory(),
     writeAgentConfigToGitIgnore: true,
   }),

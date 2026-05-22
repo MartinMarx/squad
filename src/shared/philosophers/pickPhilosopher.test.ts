@@ -11,13 +11,13 @@ describe('pickPhilosopher', () => {
   it('returns the first philosopher whose branch is unused', () => {
     const result = pickPhilosopher({
       catalog,
-      takenBranchNames: new Set(['emdash/plato']),
-      branchPrefix: 'emdash',
+      takenBranchNames: new Set(['squad/plato']),
+      branchPrefix: 'squad',
     });
     expect(result).toEqual({
       slug: 'aristo',
       displayName: 'Aristotle',
-      branchName: 'emdash/aristo',
+      branchName: 'squad/aristo',
     });
   });
 
@@ -37,25 +37,25 @@ describe('pickPhilosopher', () => {
   it('falls back to suffixed slug when base slug branch is taken', () => {
     const result = pickPhilosopher({
       catalog: [{ slug: 'plato', displayName: 'Plato' }],
-      takenBranchNames: new Set(['emdash/plato']),
-      branchPrefix: 'emdash',
+      takenBranchNames: new Set(['squad/plato']),
+      branchPrefix: 'squad',
     });
     expect(result).toEqual({
       slug: 'plato-2',
       displayName: 'Plato',
-      branchName: 'emdash/plato-2',
+      branchName: 'squad/plato-2',
     });
   });
 
   it('returns error when every candidate is taken', () => {
     const taken = new Set<string>();
-    for (let n = 2; n <= 99; n++) taken.add(`emdash/plato-${n}`);
-    taken.add('emdash/plato');
+    for (let n = 2; n <= 99; n++) taken.add(`squad/plato-${n}`);
+    taken.add('squad/plato');
 
     const result = pickPhilosopher({
       catalog: [{ slug: 'plato', displayName: 'Plato' }],
       takenBranchNames: taken,
-      branchPrefix: 'emdash',
+      branchPrefix: 'squad',
     });
     expect(result).toEqual({ type: 'no-philosopher-available' });
   });

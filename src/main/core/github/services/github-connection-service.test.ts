@@ -176,7 +176,7 @@ describe('GitHubConnectionServiceImpl token caching', () => {
 
     expect(status).toEqual({ authenticated: false, user: null, tokenSource: null });
     expect(mockExtractGhCliToken).toHaveBeenCalledTimes(2);
-    expect(mockDeleteSecret).toHaveBeenCalledWith('emdash-github-token');
+    expect(mockDeleteSecret).toHaveBeenCalledWith('squad-github-token');
     expect(mockKvDel).toHaveBeenCalledWith('tokenSource');
   });
 
@@ -195,7 +195,7 @@ describe('GitHubConnectionServiceImpl token caching', () => {
     const status = await service.getStatus({ refresh: true });
 
     expect(status).toEqual({ authenticated: true, user, tokenSource: 'cli' });
-    expect(mockSetSecret).toHaveBeenCalledWith('emdash-github-token', 'gho_cli');
+    expect(mockSetSecret).toHaveBeenCalledWith('squad-github-token', 'gho_cli');
     expect(mockKvSet).toHaveBeenCalledWith('tokenSource', 'cli');
   });
 });

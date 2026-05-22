@@ -46,10 +46,10 @@ describe('HookConfigWriter', () => {
     expect(config.hooks.PermissionRequest[0].hooks[0].command).toContain(
       '{"notification_type":"permission_prompt"}'
     );
-    expect(config.hooks.Stop[0].hooks[0].command).toContain('X-Emdash-Pty-Id');
+    expect(config.hooks.Stop[0].hooks[0].command).toContain('X-Squad-Pty-Id');
   });
 
-  it('preserves unrelated Codex hooks while replacing Emdash-managed entries', async () => {
+  it('preserves unrelated Codex hooks while replacing Squad-managed entries', async () => {
     const fs = new MemoryFs();
     const userFs = new MemoryFs();
     userFs.files.set(
@@ -58,7 +58,7 @@ describe('HookConfigWriter', () => {
         hooks: {
           Stop: [
             { hooks: [{ type: 'command', command: 'echo user hook' }] },
-            { hooks: [{ type: 'command', command: 'echo $EMDASH_HOOK_PORT' }] },
+            { hooks: [{ type: 'command', command: 'echo $SQUAD_HOOK_PORT' }] },
           ],
         },
       })
@@ -73,7 +73,7 @@ describe('HookConfigWriter', () => {
     expect(config.hooks.Stop[1].hooks[0].command).toContain('{"notification_type":"idle_prompt"}');
   });
 
-  it('removes only the legacy Emdash Codex notify key from project-local config', async () => {
+  it('removes only the legacy Squad Codex notify key from project-local config', async () => {
     const fs = new MemoryFs();
     const userFs = new MemoryFs();
     fs.files.set(
@@ -85,11 +85,11 @@ describe('HookConfigWriter', () => {
           '-c',
           'curl -sf -X POST ' +
             "-H 'Content-Type: application/json' " +
-            '-H "X-Emdash-Token: $EMDASH_HOOK_TOKEN" ' +
-            '-H "X-Emdash-Pty-Id: $EMDASH_PTY_ID" ' +
-            '-H "X-Emdash-Event-Type: notification" ' +
+            '-H "X-Squad-Token: $SQUAD_HOOK_TOKEN" ' +
+            '-H "X-Squad-Pty-Id: $SQUAD_PTY_ID" ' +
+            '-H "X-Squad-Event-Type: notification" ' +
             '-d "$1" ' +
-            '"http://127.0.0.1:$EMDASH_HOOK_PORT/hook" || true',
+            '"http://127.0.0.1:$SQUAD_HOOK_PORT/hook" || true',
           '_',
         ],
       })
@@ -115,11 +115,11 @@ describe('HookConfigWriter', () => {
           '-c',
           'curl -sf -X POST ' +
             "-H 'Content-Type: application/json' " +
-            '-H "X-Emdash-Token: $EMDASH_HOOK_TOKEN" ' +
-            '-H "X-Emdash-Pty-Id: $EMDASH_PTY_ID" ' +
-            '-H "X-Emdash-Event-Type: notification" ' +
+            '-H "X-Squad-Token: $SQUAD_HOOK_TOKEN" ' +
+            '-H "X-Squad-Pty-Id: $SQUAD_PTY_ID" ' +
+            '-H "X-Squad-Event-Type: notification" ' +
             '-d "$1" ' +
-            '"http://127.0.0.1:$EMDASH_HOOK_PORT/hook" || true',
+            '"http://127.0.0.1:$SQUAD_HOOK_PORT/hook" || true',
           '_',
         ],
       })

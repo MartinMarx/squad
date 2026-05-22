@@ -10,8 +10,8 @@ import type {
 import { encryptedAppSecretsStore } from '@main/core/secrets/encrypted-app-secrets-store';
 import { KV } from '@main/db/kv';
 
-const LINEAR_OAUTH_TOKENS_SECRET_KEY = 'emdash-linear-oauth-tokens';
-const LEGACY_LINEAR_TOKEN_SECRET_KEY = 'emdash-linear-token';
+const LINEAR_OAUTH_TOKENS_SECRET_KEY = 'squad-linear-oauth-tokens';
+const LEGACY_LINEAR_TOKEN_SECRET_KEY = 'squad-linear-token';
 
 interface LinearOAuthKVSchema extends Record<string, unknown> {
   clientInformation: OAuthClientInformationMixed;
@@ -34,7 +34,7 @@ export class LinearMcpOAuthProvider implements OAuthClientProvider {
   get clientMetadata(): OAuthClientMetadata {
     return {
       redirect_uris: [this.redirectUri.toString()],
-      client_name: 'Emdash',
+      client_name: 'Squad',
       token_endpoint_auth_method: 'none',
       grant_types: ['authorization_code', 'refresh_token'],
       response_types: ['code'],

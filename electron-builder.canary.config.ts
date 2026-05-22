@@ -1,25 +1,12 @@
 import type { Configuration } from 'electron-builder';
-import {
-  APP_ID,
-  ARTIFACT_PREFIX,
-  PRODUCT_NAME,
-  R2_BASE_URL,
-  UPDATE_CHANNEL,
-} from './src/shared/app-identity.canary';
+import { APP_ID, ARTIFACT_PREFIX, PRODUCT_NAME } from './src/shared/app-identity.canary';
 
 const config: Configuration = {
   appId: APP_ID,
   productName: PRODUCT_NAME,
   directories: { output: 'release' },
   artifactName: `${ARTIFACT_PREFIX}-\${arch}.\${ext}`,
-  publish: [
-    {
-      provider: 'generic',
-      url: R2_BASE_URL,
-      channel: UPDATE_CHANNEL,
-    },
-  ],
-  generateUpdatesFilesForAllChannels: false,
+  publish: null,
   files: ['out/**/*', 'node_modules/**/*', 'drizzle/**/*'],
   asarUnpack: [
     'node_modules/better-sqlite3/**',
@@ -36,11 +23,11 @@ const config: Configuration = {
       { target: 'dmg', arch: ['arm64'] },
       { target: 'zip', arch: ['arm64'] },
     ],
-    icon: 'src/assets/images/emdash/emdash-canary.icns',
+    icon: 'src/assets/images/squad/squad-canary.icns',
     notarize: false,
   },
   dmg: {
-    icon: 'src/assets/images/emdash/emdash-canary.icns',
+    icon: 'src/assets/images/squad/squad-canary.icns',
   },
   linux: {
     category: 'Development',
@@ -51,7 +38,7 @@ const config: Configuration = {
     ],
   },
   win: {
-    icon: 'src/assets/images/emdash/app-icon-canary.png',
+    icon: 'src/assets/images/squad/app-icon-canary.png',
     target: [
       { target: 'nsis', arch: ['x64'] },
       { target: 'msi', arch: ['x64'] },
@@ -59,8 +46,8 @@ const config: Configuration = {
     azureSignOptions: {
       publisherName: 'General Action, Inc.',
       endpoint: 'https://eus.codesigning.azure.net/',
-      certificateProfileName: 'emdash-public',
-      codeSigningAccountName: 'emdash',
+      certificateProfileName: 'squad-public',
+      codeSigningAccountName: 'squad',
     },
   },
   msi: {

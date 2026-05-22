@@ -1,7 +1,7 @@
 import { useId } from 'react';
-import { EMDASH_PATHS, NATURAL_HEIGHT, NATURAL_WIDTH } from '@renderer/lib/emdash-logo';
+import { SQUAD_PATHS, NATURAL_HEIGHT, NATURAL_WIDTH } from '@renderer/lib/squad-logo';
 
-export function EmdashShimmerLogo({
+export function SquadShimmerLogo({
   className,
   height = NATURAL_HEIGHT,
   color = 'currentColor',
@@ -53,7 +53,7 @@ export function EmdashShimmerLogo({
           )}
         </linearGradient>
       </defs>
-      {EMDASH_PATHS.map((d) => (
+      {SQUAD_PATHS.map((d) => (
         <path key={d.slice(0, 8)} d={d} />
       ))}
     </svg>

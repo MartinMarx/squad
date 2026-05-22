@@ -18,15 +18,15 @@ const CONV_A2_ID = 'cccc0002-0000-0000-0000-000000000000';
 
 /**
  * Realistic but fully synthetic dataset — no sensitive data.
- * Represents a developer's day-to-day emdash state: two projects,
+ * Represents a developer's day-to-day squad state: two projects,
  * four tasks across various lifecycle statuses, and a couple of conversations.
  */
 export async function baseline(db: AppDb): Promise<void> {
   await db.insert(projects).values([
     {
       id: PROJECT_A_ID,
-      name: 'emdash',
-      path: '/home/dev/projects/emdash',
+      name: 'squad',
+      path: '/home/dev/projects/squad',
       workspaceProvider: 'local',
       baseRef: 'main',
     },
@@ -43,7 +43,7 @@ export async function baseline(db: AppDb): Promise<void> {
     {
       projectId: PROJECT_A_ID,
       remoteName: 'origin',
-      remoteUrl: 'https://github.com/example/emdash.git',
+      remoteUrl: 'https://github.com/example/squad.git',
     },
     {
       projectId: PROJECT_B_ID,
