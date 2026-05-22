@@ -12,6 +12,7 @@ import RepositorySettingsCard from './RepositorySettingsCard';
 import ResourceMonitorSettingsCard from './ResourceMonitorSettingsCard';
 import {
   AutoGenerateTaskNamesRow,
+  AutoRunSetupScriptRow,
   AutoTrustWorktreesRow,
   CreateBranchAndWorktreeRow,
   EnableTmuxRow,
@@ -68,6 +69,9 @@ export function SettingsPage({
         },
         {
           component: <CreateBranchAndWorktreeRow />,
+        },
+        {
+          component: <AutoRunSetupScriptRow />,
         },
         {
           component: <EnableTmuxRow />,

@@ -44,6 +44,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/lib/ui/toolti
 import { formatDiffLineCount } from '@renderer/utils/format-diff-line-count';
 import { cn } from '@renderer/utils/utils';
 import type { Issue } from '@shared/tasks';
+import { AppLifecycleButton } from './components/app-lifecycle-button';
 import { DevServerPills } from './components/dev-server-pills';
 import { IssueSelector, ProviderLogo } from './components/issue-selector/issue-selector';
 import { type SidebarTab } from './types';
@@ -312,6 +313,7 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
       }
       rightSlot={
         <div className="flex items-center gap-2">
+          <AppLifecycleButton projectId={projectId} />
           <DevServerPills projectId={projectId} taskId={taskId} />
           <OpenInMenu path={workspace.path} className="h-7 bg-transparent" borderless />
           <Separator orientation="vertical" className="h-5 self-center!" />

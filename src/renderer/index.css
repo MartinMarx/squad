@@ -114,6 +114,17 @@
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-app-running-bar: app-running-bar 0.9s ease-in-out infinite;
+
+  @keyframes app-running-bar {
+    0%,
+    100% {
+      transform: scaleY(0.4);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
 
   @keyframes accordion-down {
     from {

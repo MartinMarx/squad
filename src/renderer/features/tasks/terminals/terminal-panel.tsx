@@ -91,8 +91,13 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
 
   const handleStopScript = (id: string) => {
     const script = lifecycleScriptsMgr?.tabs.find((s) => s.data.id === id);
-    if (!script) return;
-    void rpc.pty.sendInput(script.session.sessionId, '\x03');
+    if (!script || !script.isRunning) return;
+    // Optimistically flip UI state — Ctrl-C alone is unreliable for `cmd; exit`
+    // chains in interactive shells (the shell aborts the sequence after SIGINT
+    // and never exits), so we kill the PTY outright; the lifecycle service
+    // respawns a fresh shell at the same session id.
+    script.markExited();
+    void rpc.pty.kill(script.session.sessionId);
   };
 
   const emptyState = (

@@ -88,6 +88,32 @@ export const AutoTrustWorktreesRow: React.FC = () => {
   );
 };
 
+export const AutoRunSetupScriptRow: React.FC = () => {
+  const taskSettings = useTaskSettings();
+
+  return (
+    <SettingRow
+      title="Auto-run setup script on new worktree"
+      description="Run the project's setup script automatically when a new worktree is created."
+      control={
+        <>
+          <ResetToDefaultButton
+            visible={taskSettings.isFieldOverridden('autoRunSetupScript')}
+            defaultLabel="on"
+            onReset={taskSettings.resetAutoRunSetupScript}
+            disabled={taskSettings.loading || taskSettings.saving}
+          />
+          <Switch
+            checked={taskSettings.autoRunSetupScript}
+            disabled={taskSettings.loading || taskSettings.saving}
+            onCheckedChange={taskSettings.updateAutoRunSetupScript}
+          />
+        </>
+      }
+    />
+  );
+};
+
 export const CreateBranchAndWorktreeRow: React.FC = () => {
   const taskSettings = useTaskSettings();
 

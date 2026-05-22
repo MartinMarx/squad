@@ -11,7 +11,7 @@ import {
 } from '@renderer/lib/stores/tab-utils';
 import { fsWatchEventChannel } from '@shared/events/fsEvents';
 import { projectSettingsChangedChannel } from '@shared/events/projectEvents';
-import { ptyExitChannel } from '@shared/events/ptyEvents';
+import { lifecycleScriptStartedChannel, ptyExitChannel } from '@shared/events/ptyEvents';
 import { PROJECT_CONFIG_FILE } from '@shared/project-settings';
 import { makePtySessionId } from '@shared/ptySessionId';
 import { createLifecycleScriptTerminalId } from '@shared/terminals';
@@ -29,16 +29,24 @@ export class LifecycleScriptStore {
   data: LifecycleScriptData;
   session: PtySession;
   isRunning = false;
+  hasRun = false;
   private offPtyExit: (() => void) | null = null;
+  private offScriptStarted: (() => void) | null = null;
 
   constructor(data: LifecycleScriptData, projectId: string, workspaceId: string) {
     this.data = data;
     this.session = new PtySession(makePtySessionId(projectId, workspaceId, data.id));
     this.offPtyExit = events.on(ptyExitChannel, () => this.markExited(), this.session.sessionId);
+    this.offScriptStarted = events.on(
+      lifecycleScriptStartedChannel,
+      () => this.markRunning(),
+      this.session.sessionId
+    );
     makeObservable(this, {
       data: observable,
       session: observable,
       isRunning: observable,
+      hasRun: observable,
       markRunning: action,
       markExited: action,
     });
@@ -46,15 +54,19 @@ export class LifecycleScriptStore {
 
   markRunning(): void {
     this.isRunning = true;
+    this.hasRun = true;
   }
 
   markExited(): void {
     this.isRunning = false;
+    this.hasRun = true;
   }
 
   dispose() {
     this.offPtyExit?.();
     this.offPtyExit = null;
+    this.offScriptStarted?.();
+    this.offScriptStarted = null;
     this.session.dispose();
   }
 }

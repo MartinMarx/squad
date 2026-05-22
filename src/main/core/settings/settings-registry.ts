@@ -26,6 +26,7 @@ export const SETTINGS_DEFAULTS = {
   tasks: {
     autoGenerateName: true,
     autoTrustWorktrees: true,
+    autoRunSetupScript: true,
     createBranchAndWorktree: true,
   },
   agentAutoApproveDefaults: {},

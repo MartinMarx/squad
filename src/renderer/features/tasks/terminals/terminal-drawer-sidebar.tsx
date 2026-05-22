@@ -1,7 +1,8 @@
-import { Pause, Play, Plus, Settings, Terminal, X } from 'lucide-react';
+import { Play, Plus, Settings, Square, Terminal, X } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { asMounted, getProjectStore } from '@renderer/features/projects/stores/project-selectors';
+import { AppRunningIndicator } from '@renderer/features/sidebar/app-running-indicator';
 import { type LifecycleScriptsStore } from '@renderer/features/tasks/stores/lifecycle-scripts';
 import { type TerminalTabViewStore } from '@renderer/features/tasks/terminals/terminal-tab-view-store';
 import { useNavigate } from '@renderer/lib/layout/navigation-provider';
@@ -130,31 +131,36 @@ export const TerminalDrawerSidebar = observer(function TerminalDrawerSidebar({
                 isActive={isActive}
                 onSelect={() => onSelectScript(script.data.id)}
                 action={
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <button
-                        className={cn(
-                          'ml-1 shrink-0 flex items-center justify-center size-5 rounded hover:bg-background text-foreground-muted hover:text-foreground',
-                          !isActive && 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
-                        )}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (script.isRunning) {
-                            onStopScript(script.data.id);
-                          } else {
-                            onRunScript(script.data.id);
-                          }
-                        }}
-                      >
-                        {script.isRunning ? (
-                          <Pause className="size-3" />
-                        ) : (
-                          <Play className="size-3" />
-                        )}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>{script.isRunning ? 'Stop' : 'Run'}</TooltipContent>
-                  </Tooltip>
+                  <div className="flex items-center gap-1">
+                    {script.isRunning && <AppRunningIndicator />}
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <button
+                          className={cn(
+                            'ml-1 shrink-0 flex items-center justify-center size-5 rounded hover:bg-background text-foreground-muted hover:text-foreground',
+                            !isActive &&
+                              !script.isRunning &&
+                              'opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
+                          )}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (script.isRunning) {
+                              onStopScript(script.data.id);
+                            } else {
+                              onRunScript(script.data.id);
+                            }
+                          }}
+                        >
+                          {script.isRunning ? (
+                            <Square className="size-3" fill="currentColor" />
+                          ) : (
+                            <Play className="size-3" />
+                          )}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>{script.isRunning ? 'Stop' : 'Run'}</TooltipContent>
+                    </Tooltip>
+                  </div>
                 }
               />
             );
