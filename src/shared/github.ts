@@ -6,7 +6,7 @@ export interface GitHubUser {
   avatar_url: string;
 }
 
-export type GitHubTokenSource = 'secure_storage' | 'cli' | 'squad_oauth' | 'device_flow' | null;
+export type GitHubTokenSource = 'secure_storage' | 'cli' | 'device_flow' | null;
 
 export interface GitHubStatusResponse {
   authenticated: boolean;
@@ -25,12 +25,5 @@ export interface GitHubAuthResponse {
   verification_uri?: string;
   expires_in?: number;
   interval?: number;
-  error?: string;
-}
-
-export interface GitHubConnectResponse {
-  success: boolean;
-  token?: string;
-  user?: GitHubUser;
   error?: string;
 }

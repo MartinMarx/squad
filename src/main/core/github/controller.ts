@@ -1,6 +1,5 @@
 import { homedir } from 'node:os';
 import * as path from 'node:path';
-import { ACCOUNT_CONFIG } from '@main/core/account/config';
 import { GitHubAuthExecutionContext } from '@main/core/execution-context/github-auth-execution-context';
 import { LocalExecutionContext } from '@main/core/execution-context/local-execution-context';
 import { LocalFileSystem } from '@main/core/fs/impl/local-fs';
@@ -9,12 +8,7 @@ import { cloneRepository, initializeNewProject } from '@main/core/git/impl/git-r
 import { githubConnectionService } from '@main/core/github/services/github-connection-service';
 import { repoService } from '@main/core/github/services/repo-service';
 import { log } from '@main/lib/logger';
-import type {
-  GitHubAuthResponse,
-  GitHubConnectResponse,
-  GitHubStatusOptions,
-  GitHubStatusResponse,
-} from '@shared/github';
+import type { GitHubAuthResponse, GitHubStatusOptions, GitHubStatusResponse } from '@shared/github';
 import { createRPCController } from '@shared/ipc/rpc';
 
 export const githubController = createRPCController({
@@ -34,17 +28,6 @@ export const githubController = createRPCController({
     } catch (error) {
       log.error('GitHub authentication failed:', error);
       return { success: false, error: 'Authentication failed' };
-    }
-  },
-
-  connectOAuth: async (): Promise<GitHubConnectResponse> => {
-    try {
-      const { baseUrl } = ACCOUNT_CONFIG.authServer;
-      const result = await githubConnectionService.startOAuthFlow(baseUrl);
-      return result;
-    } catch (error) {
-      log.error('GitHub OAuth connect failed:', error);
-      return { success: false, error: 'OAuth connection failed' };
     }
   },
 

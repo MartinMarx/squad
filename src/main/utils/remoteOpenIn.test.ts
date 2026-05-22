@@ -7,9 +7,9 @@ import {
 
 describe('remoteOpenIn', () => {
   describe('buildRemoteEditorUrl', () => {
-    it('builds VSCodium remote SSH URLs', () => {
-      expect(buildRemoteEditorUrl('vscodium', 'example.com', 'alice', '/repo')).toBe(
-        'vscodium://vscode-remote/ssh-remote+alice%40example.com/repo'
+    it('builds VS Code remote SSH URLs', () => {
+      expect(buildRemoteEditorUrl('vscode', 'example.com', 'alice', '/repo')).toBe(
+        'vscode://vscode-remote/ssh-remote+alice%40example.com/repo'
       );
     });
   });

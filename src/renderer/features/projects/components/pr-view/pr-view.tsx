@@ -264,8 +264,7 @@ export const PullRequestView = observer(function PullRequestView() {
             <Github className="size-4 text-foreground-muted" />
           </span>
           <p className="text-center text-sm font-normal text-foreground-muted">
-            GitHub is not connected. Create a user account and connect your GitHub account to view
-            pull requests.
+            GitHub is not connected. Connect GitHub to view pull requests.
           </p>
           <Button
             type="button"
@@ -273,11 +272,11 @@ export const PullRequestView = observer(function PullRequestView() {
             size="xs"
             onClick={() =>
               navigate('settings', {
-                tab: 'account',
+                tab: 'integrations',
               })
             }
           >
-            Connect User Account
+            Connect GitHub
           </Button>
         </div>
       </div>

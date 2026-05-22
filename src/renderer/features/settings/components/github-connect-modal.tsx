@@ -2,7 +2,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Github, Loader2, Terminal } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@renderer/lib/hooks/use-toast';
-import { rpc } from '@renderer/lib/ipc';
 import { type BaseModalProps } from '@renderer/lib/modal/modal-provider';
 import { useGithubContext } from '@renderer/lib/providers/github-context-provider';
 import { Button } from '@renderer/lib/ui/button';
@@ -15,40 +14,24 @@ import {
 
 const ISSUE_CONNECTION_STATUS_QUERY_KEY = ['issues:connection-status'] as const;
 
-type MethodError = { method: 'oauth' | 'cli'; message: string } | null;
-
 export function GithubConnectModal({ onSuccess, onClose }: BaseModalProps<void>) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { checkStatus } = useGithubContext();
-  const [oauthLoading, setOauthLoading] = useState(false);
+  const { checkStatus, handleGithubConnect } = useGithubContext();
+  const [deviceLoading, setDeviceLoading] = useState(false);
   const [cliLoading, setCliLoading] = useState(false);
-  const [error, setError] = useState<MethodError>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const anyLoading = oauthLoading || cliLoading;
+  const anyLoading = deviceLoading || cliLoading;
 
-  const connectOAuth = async () => {
+  const connectDeviceFlow = async () => {
     setError(null);
-    setOauthLoading(true);
+    setDeviceLoading(true);
     try {
-      const result = await rpc.github.connectOAuth();
-      if (!result.success) {
-        setError({
-          method: 'oauth',
-          message: result.error ?? 'Connection failed. Please try again.',
-        });
-        return;
-      }
-
-      await checkStatus();
-      void queryClient.invalidateQueries({ queryKey: ISSUE_CONNECTION_STATUS_QUERY_KEY });
-      toast({
-        title: 'Connected to GitHub',
-        description: result.user ? `Signed in as ${result.user.login}` : undefined,
-      });
+      await handleGithubConnect();
       onSuccess();
     } finally {
-      setOauthLoading(false);
+      setDeviceLoading(false);
     }
   };
 
@@ -58,10 +41,7 @@ export function GithubConnectModal({ onSuccess, onClose }: BaseModalProps<void>)
     try {
       const status = await checkStatus({ refresh: true });
       if (!status.authenticated || status.tokenSource !== 'cli') {
-        setError({
-          method: 'cli',
-          message: 'No GitHub CLI session found. Run gh auth login first.',
-        });
+        setError('No GitHub CLI session found. Run gh auth login first.');
         return;
       }
 
@@ -86,11 +66,11 @@ export function GithubConnectModal({ onSuccess, onClose }: BaseModalProps<void>)
           <div className="flex items-center gap-3">
             <Github className="text-muted-foreground h-4 w-4 shrink-0" />
             <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-medium text-foreground">GitHub OAuth</h3>
+              <h3 className="text-sm font-medium text-foreground">GitHub device flow</h3>
               <p className="text-muted-foreground mt-0.5 text-xs">Sign in with your browser</p>
             </div>
-            <Button onClick={() => void connectOAuth()} disabled={anyLoading}>
-              {oauthLoading ? (
+            <Button onClick={() => void connectDeviceFlow()} disabled={anyLoading}>
+              {deviceLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Connecting…
@@ -100,7 +80,6 @@ export function GithubConnectModal({ onSuccess, onClose }: BaseModalProps<void>)
               )}
             </Button>
           </div>
-          {error?.method === 'oauth' && <InlineError message={error.message} />}
         </div>
 
         <div className="rounded-lg border border-border p-3">
@@ -127,7 +106,7 @@ export function GithubConnectModal({ onSuccess, onClose }: BaseModalProps<void>)
               )}
             </Button>
           </div>
-          {error?.method === 'cli' && <InlineError message={error.message} />}
+          {error && <InlineError message={error} />}
         </div>
       </DialogContentArea>
       <DialogFooter>

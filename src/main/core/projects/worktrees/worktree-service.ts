@@ -8,7 +8,10 @@ import { DEFAULT_REMOTE_NAME } from '@shared/git-utils';
 import { err, ok, type Result } from '@shared/result';
 import { getEffectiveTaskSettings } from '../settings/effective-task-settings';
 import type { ProjectSettingsProvider } from '../settings/provider';
-import { markWorktreeAsCursorTrusted } from './cursor-workspace-trust';
+import {
+  type CursorWorkspaceTrustDeps,
+  markWorktreeAsCursorTrusted,
+} from './cursor-workspace-trust';
 import type { WorktreeHost } from './hosts/worktree-host';
 
 export type ServeWorktreeError =
@@ -22,6 +25,7 @@ export class WorktreeService {
   private readonly ctx: IExecutionContext;
   private readonly host: WorktreeHost;
   private readonly projectSettings: ProjectSettingsProvider;
+  private readonly cursorTrust?: CursorWorkspaceTrustDeps;
 
   constructor(args: {
     worktreePoolPath: string;
@@ -29,12 +33,14 @@ export class WorktreeService {
     ctx: IExecutionContext;
     host: WorktreeHost;
     projectSettings: ProjectSettingsProvider;
+    cursorTrust?: CursorWorkspaceTrustDeps;
   }) {
     this.worktreePoolPath = args.worktreePoolPath;
     this.repoPath = args.repoPath;
     this.projectSettings = args.projectSettings;
     this.ctx = args.ctx;
     this.host = args.host;
+    this.cursorTrust = args.cursorTrust;
 
     this.ctx.exec('git', ['worktree', 'prune']).catch(() => {});
   }
@@ -208,8 +214,8 @@ export class WorktreeService {
       });
     });
 
-    if (this.ctx.supportsLocalSpawn) {
-      await markWorktreeAsCursorTrusted(targetPath);
+    if (this.ctx.supportsLocalSpawn && this.cursorTrust) {
+      await markWorktreeAsCursorTrusted(targetPath, this.cursorTrust);
     }
 
     return ok(targetPath);
@@ -285,8 +291,8 @@ export class WorktreeService {
       });
     });
 
-    if (this.ctx.supportsLocalSpawn) {
-      await markWorktreeAsCursorTrusted(targetPath);
+    if (this.ctx.supportsLocalSpawn && this.cursorTrust) {
+      await markWorktreeAsCursorTrusted(targetPath, this.cursorTrust);
     }
 
     return ok(targetPath);

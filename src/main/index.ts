@@ -7,14 +7,11 @@ import { registerRPCRouter } from '@shared/ipc/rpc';
 import { setupApplicationMenu } from './app/menu';
 import { registerAppScheme, setupAppProtocol } from './app/protocol';
 import { createMainWindow } from './app/window';
-import { providerTokenRegistry } from './core/account/provider-token-registry';
-import { squadAccountService } from './core/account/services/squad-account-service';
 import { agentHookService } from './core/agent-hooks/agent-hook-service';
 import { appService } from './core/app/service';
 import { localDependencyManager } from './core/dependencies/dependency-manager';
 import { editorBufferService } from './core/editor/editor-buffer-service';
 import { gitWatcherRegistry } from './core/git/git-watcher-registry';
-import { githubConnectionService } from './core/github/services/github-connection-service';
 import { projectManager } from './core/projects/project-manager';
 import { projectSettingsService } from './core/projects/settings/project-settings-service';
 import { promptLibraryService } from './core/prompt-library/service';
@@ -109,14 +106,6 @@ void app.whenReady().then(async () => {
   agentHookService.initialize().catch((e) => {
     log.error('Failed to start agent event service:', e);
   });
-
-  squadAccountService.loadSessionToken().catch((e) => {
-    log.warn('Failed to load account session token:', e);
-  });
-
-  providerTokenRegistry.register('github', (token) =>
-    githubConnectionService.storeToken(token, 'squad_oauth')
-  );
 
   registerRPCRouter(rpcRouter, ipcMain);
 
