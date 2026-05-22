@@ -170,11 +170,7 @@ async function clickLibraryTab(page: Page, tab: 'Prompts' | 'Skills' | 'MCP'): P
   await page.waitForTimeout(350);
 }
 
-async function captureOne(
-  page: Page,
-  app: ElectronApplication,
-  capture: Capture
-): Promise<void> {
+async function captureOne(page: Page, app: ElectronApplication, capture: Capture): Promise<void> {
   if (capture.prepare) {
     await capture.prepare({ page, app });
   }

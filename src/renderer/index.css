@@ -548,14 +548,18 @@
 
     /* Elevation — light-mode shadows. */
     --shadow-0: none;
-    --shadow-1: 0 1px 2px color-mix(in srgb, black 6%, transparent),
-                0 1px 1px color-mix(in srgb, black 4%, transparent);
-    --shadow-2: 0 4px 8px color-mix(in srgb, black 6%, transparent),
-                0 2px 4px color-mix(in srgb, black 4%, transparent);
-    --shadow-3: 0 12px 24px color-mix(in srgb, black 10%, transparent),
-                0 4px 8px color-mix(in srgb, black 6%, transparent);
-    --shadow-4: 0 24px 48px color-mix(in srgb, black 16%, transparent),
-                0 8px 16px color-mix(in srgb, black 10%, transparent);
+    --shadow-1:
+      0 1px 2px color-mix(in srgb, black 6%, transparent),
+      0 1px 1px color-mix(in srgb, black 4%, transparent);
+    --shadow-2:
+      0 4px 8px color-mix(in srgb, black 6%, transparent),
+      0 2px 4px color-mix(in srgb, black 4%, transparent);
+    --shadow-3:
+      0 12px 24px color-mix(in srgb, black 10%, transparent),
+      0 4px 8px color-mix(in srgb, black 6%, transparent);
+    --shadow-4:
+      0 24px 48px color-mix(in srgb, black 16%, transparent),
+      0 8px 16px color-mix(in srgb, black 10%, transparent);
 
     /* Vibrancy-friendly background tokens (semi-transparent). */
     --background-sidebar: color-mix(in srgb, var(--neutral-2) 88%, transparent);
@@ -882,14 +886,18 @@
        highlight because shadow alone doesn't communicate elevation
        on dark backgrounds. */
     --shadow-0: none;
-    --shadow-1: 0 1px 2px color-mix(in srgb, black 40%, transparent),
-                inset 0 0.5px 0 color-mix(in srgb, white 6%, transparent);
-    --shadow-2: 0 4px 12px color-mix(in srgb, black 50%, transparent),
-                inset 0 0.5px 0 color-mix(in srgb, white 8%, transparent);
-    --shadow-3: 0 12px 32px color-mix(in srgb, black 60%, transparent),
-                inset 0 0.5px 0 color-mix(in srgb, white 10%, transparent);
-    --shadow-4: 0 24px 56px color-mix(in srgb, black 70%, transparent),
-                inset 0 0.5px 0 color-mix(in srgb, white 12%, transparent);
+    --shadow-1:
+      0 1px 2px color-mix(in srgb, black 40%, transparent),
+      inset 0 0.5px 0 color-mix(in srgb, white 6%, transparent);
+    --shadow-2:
+      0 4px 12px color-mix(in srgb, black 50%, transparent),
+      inset 0 0.5px 0 color-mix(in srgb, white 8%, transparent);
+    --shadow-3:
+      0 12px 32px color-mix(in srgb, black 60%, transparent),
+      inset 0 0.5px 0 color-mix(in srgb, white 10%, transparent);
+    --shadow-4:
+      0 24px 56px color-mix(in srgb, black 70%, transparent),
+      inset 0 0.5px 0 color-mix(in srgb, white 12%, transparent);
 
     /* Vibrancy-friendly background tokens (semi-transparent for dark). */
     --background-sidebar: color-mix(in srgb, var(--neutral-2) 80%, transparent);
