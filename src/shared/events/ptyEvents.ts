@@ -9,3 +9,12 @@ export const ptyExitChannel = defineEvent<{
 }>('pty:exit');
 
 export const ptyInputChannel = defineEvent<string>('pty:input');
+
+/**
+ * Emitted when a lifecycle script command is written to its PTY (i.e. the
+ * setup/run/teardown script has actually been started). Scoped by the
+ * lifecycle script session id.
+ */
+export const lifecycleScriptStartedChannel = defineEvent<{ type: 'setup' | 'run' | 'teardown' }>(
+  'lifecycle-script:started'
+);

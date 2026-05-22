@@ -9,6 +9,7 @@ import { GitService } from '@main/core/git/impl/git-service';
 import { GitRepositoryService } from '@main/core/git/repository-service';
 import { githubConnectionService } from '@main/core/github/services/github-connection-service';
 import { workspaceFileIndexService } from '@main/core/search/workspace-file-index-service';
+import { appSettingsService } from '@main/core/settings/settings-service';
 import { LocalTerminalProvider } from '@main/core/terminals/impl/local-terminal-provider';
 import type { TerminalProvider } from '@main/core/terminals/terminal-provider';
 import type { Workspace } from '@main/core/workspaces/workspace';
@@ -79,6 +80,8 @@ export function createWorkspaceFactory(
     });
     const shellSetup = taskLevelSettings.shellSetup ?? projectSettings.shellSetup;
     const scripts = taskLevelSettings.scripts;
+    const taskAppSettings = await appSettingsService.get('tasks');
+    const autoRunSetupScript = taskAppSettings.autoRunSetupScript;
 
     const workspaceTerminals = new LocalTerminalProvider({
       projectId: context.projectId,
@@ -155,11 +158,22 @@ export function createWorkspaceFactory(
         }
         void workspaceFileIndexService.onWorkspaceCreated(workspaceId, ws);
         if (scripts?.setup) {
-          void ws.lifecycleService.prepareAndRunLifecycleScript({
-            type: 'setup',
-            script: scripts.setup,
-            shellSetup,
-          });
+          if (autoRunSetupScript) {
+            void ws.lifecycleService.prepareAndRunLifecycleScript(
+              {
+                type: 'setup',
+                script: scripts.setup,
+                shellSetup,
+              },
+              { exit: true }
+            );
+          } else {
+            void ws.lifecycleService.prepareLifecycleScript({
+              type: 'setup',
+              script: scripts.setup,
+              shellSetup,
+            });
+          }
         }
         if (scripts?.run) {
           void ws.lifecycleService.prepareLifecycleScript({

@@ -1,6 +1,6 @@
 import { events } from '@main/lib/events';
 import type { IDisposable } from '@main/lib/lifecycle';
-import { ptyExitChannel } from '@shared/events/ptyEvents';
+import { lifecycleScriptStartedChannel, ptyExitChannel } from '@shared/events/ptyEvents';
 import { makePtySessionId } from '@shared/ptySessionId';
 import { createLifecycleScriptTerminalId } from '@shared/terminals';
 import type { Pty } from '../pty/pty';
@@ -141,6 +141,7 @@ export class LifecycleScriptService implements IDisposable {
 
     const command = exit ? `${script.script}; exit` : script.script;
     pty.write(`${command}\n`);
+    events.emit(lifecycleScriptStartedChannel, { type: script.type }, sessionId);
 
     if (exitPromise) {
       await exitPromise;

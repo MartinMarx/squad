@@ -29,6 +29,7 @@ export const notificationSettingsSchema = z.object({
 export const taskSettingsSchema = z.object({
   autoGenerateName: z.boolean(),
   autoTrustWorktrees: z.boolean(),
+  autoRunSetupScript: z.boolean(),
   createBranchAndWorktree: z.boolean(),
 });
 
