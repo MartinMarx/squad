@@ -3,21 +3,21 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@renderer/utils/utils';
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center  justify-center rounded-md border border-transparent bg-clip-padding text-sm font-normal whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all duration-fast ease-out outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          'bg-primary-button-background text-primary-button-foreground hover:bg-primary-button-background-hover border border-primary-button-border',
+          'bg-primary-button-background text-primary-button-foreground hover:bg-primary-button-background-hover border-primary-button-border',
         outline:
-          'border-border bg-background hover:bg-background-1 hover:text-foreground aria-expanded:bg-background-1 aria-expanded:text-foreground',
+          'border-border bg-background hover:bg-background-1 hover:border-border-1 hover:text-foreground aria-expanded:bg-background-1 aria-expanded:text-foreground',
         secondary:
-          'bg-background-2 text-foreground-muted hover:bg-background-2 aria-expanded:bg-background-2 aria-expanded:text-foreground-muted',
+          'bg-background-2 text-foreground-muted hover:bg-background-3 aria-expanded:bg-background-2 aria-expanded:text-foreground-muted',
         ghost:
-          'hover:bg-background-1 hover:text-foreground text-foreground-muted aria-expanded:bg-muted aria-expanded:text-foreground',
+          'hover:bg-background-1 hover:text-foreground text-foreground-muted aria-expanded:bg-background-1 aria-expanded:text-foreground',
         destructive:
-          'bg-background-destructive border border-border-destructive text-foreground-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20',
-        link: 'text-primary',
+          'bg-background-destructive border-border-destructive text-foreground-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20',
+        link: 'text-primary underline-offset-2 hover:underline',
       },
       size: {
         default:
