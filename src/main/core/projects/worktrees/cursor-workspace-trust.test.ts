@@ -19,9 +19,9 @@ describe('markWorktreeAsCursorTrusted', () => {
     const cursorDir = path.join(tmpHome, '.cursor');
     fs.mkdirSync(cursorDir, { recursive: true });
 
-    await markWorktreeAsCursorTrusted('/Users/me/emdash/worktrees/foo/bar-baz', cursorDir);
+    await markWorktreeAsCursorTrusted('/Users/me/squad/worktrees/foo/bar-baz', cursorDir);
 
-    const slug = 'Users-me-emdash-worktrees-foo-bar-baz';
+    const slug = 'Users-me-squad-worktrees-foo-bar-baz';
     const marker = path.join(cursorDir, 'projects', slug, '.workspace-trusted');
     expect(fs.existsSync(marker)).toBe(true);
   });

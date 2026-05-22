@@ -1,19 +1,18 @@
 import { app, clipboard, Menu, shell } from 'electron';
 import { events } from '@main/lib/events';
 import {
-  menuCheckForUpdatesChannel,
   menuCloseTabChannel,
   menuOpenSettingsChannel,
   menuQuitRequestedChannel,
   menuRedoChannel,
   menuUndoChannel,
 } from '@shared/events/appEvents';
-import { EMDASH_DOCS_URL, EMDASH_ISSUES_NEW_URL, EMDASH_RELEASES_URL } from '@shared/urls';
+import { SQUAD_DOCS_URL, SQUAD_ISSUES_NEW_URL, SQUAD_RELEASES_URL } from '@shared/urls';
 import { getMainWindow } from './window';
 
 function copyDebugInfo(): void {
   const lines = [
-    `Emdash ${app.getVersion()}`,
+    `Squad ${app.getVersion()}`,
     `Platform: ${process.platform} ${process.arch}`,
     `Electron: ${process.versions.electron}`,
   ];
@@ -52,10 +51,6 @@ export function setupApplicationMenu(): void {
                 label: 'Settings\u2026',
                 accelerator: 'CmdOrCtrl+,',
                 click: () => events.emit(menuOpenSettingsChannel, undefined),
-              },
-              {
-                label: 'Check for Updates\u2026',
-                click: () => events.emit(menuCheckForUpdatesChannel, undefined),
               },
               { type: 'separator' as const },
               { role: 'services' as const },
@@ -146,25 +141,16 @@ export function setupApplicationMenu(): void {
       role: 'help' as const,
       label: 'Help',
       submenu: [
-        ...(!isMac
-          ? [
-              {
-                label: 'Check for Updates\u2026',
-                click: () => events.emit(menuCheckForUpdatesChannel, undefined),
-              },
-              { type: 'separator' as const },
-            ]
-          : []),
         {
           label: 'Docs',
           click: () => {
-            void shell.openExternal(EMDASH_DOCS_URL);
+            void shell.openExternal(SQUAD_DOCS_URL);
           },
         },
         {
           label: 'Changelog',
           click: () => {
-            void shell.openExternal(EMDASH_RELEASES_URL);
+            void shell.openExternal(SQUAD_RELEASES_URL);
           },
         },
         { type: 'separator' as const },
@@ -174,7 +160,7 @@ export function setupApplicationMenu(): void {
             {
               label: 'Report Issue\u2026',
               click: () => {
-                void shell.openExternal(EMDASH_ISSUES_NEW_URL);
+                void shell.openExternal(SQUAD_ISSUES_NEW_URL);
               },
             },
             {

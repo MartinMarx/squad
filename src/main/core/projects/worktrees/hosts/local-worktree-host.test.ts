@@ -11,9 +11,9 @@ describe('LocalWorktreeHost', () => {
   let outsideDir: string;
 
   beforeEach(() => {
-    repoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'emdash-wtfs-repo-'));
-    worktreeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'emdash-wtfs-worktrees-'));
-    outsideDir = fs.mkdtempSync(path.join(os.tmpdir(), 'emdash-wtfs-outside-'));
+    repoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'squad-wtfs-repo-'));
+    worktreeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'squad-wtfs-worktrees-'));
+    outsideDir = fs.mkdtempSync(path.join(os.tmpdir(), 'squad-wtfs-outside-'));
   });
 
   afterEach(() => {

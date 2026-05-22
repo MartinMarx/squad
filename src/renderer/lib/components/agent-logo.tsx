@@ -24,9 +24,7 @@ const AgentLogo: React.FC<AgentLogoProps> = ({
   const resolvedIsSvg = isSvg ?? logo.trimStart().startsWith('<svg');
 
   if (resolvedIsSvg) {
-    const processed = isDark
-      ? logo.replace(/fill="#26241E"/gi, 'fill="#f4f4f5"')
-      : logo;
+    const processed = isDark ? logo.replace(/fill="#26241E"/gi, 'fill="#f4f4f5"') : logo;
 
     return (
       <span

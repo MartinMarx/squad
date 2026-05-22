@@ -18,11 +18,11 @@ function makePosixHookPostCommand({ eventType, payload }: HookPostCommandOptions
   return (
     'curl -sf -X POST ' +
     '-H "Content-Type: application/json" ' +
-    '-H "X-Emdash-Token: $EMDASH_HOOK_TOKEN" ' +
-    '-H "X-Emdash-Pty-Id: $EMDASH_PTY_ID" ' +
-    `-H "X-Emdash-Event-Type: ${eventType}" ` +
+    '-H "X-Squad-Token: $SQUAD_HOOK_TOKEN" ' +
+    '-H "X-Squad-Pty-Id: $SQUAD_PTY_ID" ' +
+    `-H "X-Squad-Event-Type: ${eventType}" ` +
     payloadCommand +
-    '"http://127.0.0.1:$EMDASH_HOOK_PORT/hook" || true'
+    '"http://127.0.0.1:$SQUAD_HOOK_PORT/hook" || true'
   );
 }
 
@@ -33,22 +33,22 @@ function quotePowerShellString(value: string): string {
 function makeWindowsHookPostCommand({ eventType, payload }: HookPostCommandOptions): string {
   const script = [
     "$ErrorActionPreference = 'SilentlyContinue'",
-    'if (-not $env:EMDASH_HOOK_PORT -or -not $env:EMDASH_HOOK_TOKEN -or -not $env:EMDASH_PTY_ID) { exit 0 }',
+    'if (-not $env:SQUAD_HOOK_PORT -or -not $env:SQUAD_HOOK_TOKEN -or -not $env:SQUAD_PTY_ID) { exit 0 }',
     payload === 'stdin'
       ? '$payload = [Console]::In.ReadToEnd()'
       : `$payload = ${quotePowerShellString(JSON.stringify(payload.json))}`,
     'try { Invoke-WebRequest -UseBasicParsing -Method POST ' +
-      "-Uri ('http://127.0.0.1:' + $env:EMDASH_HOOK_PORT + '/hook') " +
+      "-Uri ('http://127.0.0.1:' + $env:SQUAD_HOOK_PORT + '/hook') " +
       '-Headers @{ ' +
       "'Content-Type' = 'application/json'; " +
-      "'X-Emdash-Token' = $env:EMDASH_HOOK_TOKEN; " +
-      "'X-Emdash-Pty-Id' = $env:EMDASH_PTY_ID; " +
-      `'X-Emdash-Event-Type' = '${eventType}' ` +
+      "'X-Squad-Token' = $env:SQUAD_HOOK_TOKEN; " +
+      "'X-Squad-Pty-Id' = $env:SQUAD_PTY_ID; " +
+      `'X-Squad-Event-Type' = '${eventType}' ` +
       '} -Body $payload | Out-Null } catch { exit 0 }',
   ].join('; ');
   const encodedScript = Buffer.from(script, 'utf16le').toString('base64');
 
-  return `cmd.exe /d /c "echo EMDASH_HOOK_PORT >NUL & powershell.exe -NoProfile -ExecutionPolicy Bypass -EncodedCommand ${encodedScript}"`;
+  return `cmd.exe /d /c "echo SQUAD_HOOK_PORT >NUL & powershell.exe -NoProfile -ExecutionPolicy Bypass -EncodedCommand ${encodedScript}"`;
 }
 
 function makeHookPostCommand(options: HookPostCommandOptions): string {

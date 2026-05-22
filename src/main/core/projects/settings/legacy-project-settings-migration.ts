@@ -55,16 +55,16 @@ async function readLegacyProjectConfig(
 > {
   if (!configReader) return undefined;
   try {
-    if (!(await configReader.exists('.emdash.json'))) return undefined;
-    const { content } = await configReader.read('.emdash.json');
+    if (!(await configReader.exists('.squad.json'))) return undefined;
+    const { content } = await configReader.read('.squad.json');
     const parsed = legacyProjectConfigSchema.safeParse(parseJsonObject(content));
     if (!parsed.success) {
-      log.warn('Failed to parse legacy .emdash.json for migration', parsed.error);
+      log.warn('Failed to parse legacy .squad.json for migration', parsed.error);
       return undefined;
     }
     return parsed.data;
   } catch (error) {
-    log.warn('Failed to read legacy .emdash.json for migration', error);
+    log.warn('Failed to read legacy .squad.json for migration', error);
     return undefined;
   }
 }
@@ -126,7 +126,7 @@ export async function migrateLegacyProjectSettingsIfNeeded({
   }
 
   if (legacy && !shareableAlreadyMigrated) {
-    if ((await git?.isFileCleanlyTracked('.emdash.json')) === false) {
+    if ((await git?.isFileCleanlyTracked('.squad.json')) === false) {
       const legacyShareable = shareableProjectSettingsSchema.parse(legacy);
       nextShareable = mergeShareableProjectSettings(currentShareable, legacyShareable);
     }

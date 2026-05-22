@@ -106,8 +106,8 @@ export interface AgentEnvOptions {
   includeShellVar?: boolean;
 
   /**
-   * Emdash hook server connection details.  When set, injects
-   * EMDASH_HOOK_PORT, EMDASH_PTY_ID, and EMDASH_HOOK_TOKEN so agent CLIs
+   * Squad hook server connection details.  When set, injects
+   * SQUAD_HOOK_PORT, SQUAD_PTY_ID, and SQUAD_HOOK_TOKEN so agent CLIs
    * can call back on lifecycle events.
    */
   hook?: {
@@ -145,7 +145,7 @@ export function buildTerminalEnv(): Record<string, string> {
   // Terminal identity — always override so xterm capabilities are correct.
   env.TERM = 'xterm-256color';
   env.COLORTERM = 'truecolor';
-  env.TERM_PROGRAM = 'emdash';
+  env.TERM_PROGRAM = 'squad';
 
   // Ensure SHELL reflects the user's configured shell on POSIX. Native Windows
   // shells are selected via ComSpec by the spawn resolver, not SHELL.
@@ -186,7 +186,7 @@ export function buildAgentEnv(options: AgentEnvOptions = {}): Record<string, str
   const env: Record<string, string> = {
     TERM: 'xterm-256color',
     COLORTERM: 'truecolor',
-    TERM_PROGRAM: 'emdash',
+    TERM_PROGRAM: 'squad',
     HOME: process.env.HOME || os.homedir(),
     USER: process.env.USER || os.userInfo().username,
     PATH: resolvedPath,
@@ -217,9 +217,9 @@ export function buildAgentEnv(options: AgentEnvOptions = {}): Record<string, str
   }
 
   if (hook && hook.port > 0) {
-    env.EMDASH_HOOK_PORT = String(hook.port);
-    env.EMDASH_PTY_ID = hook.ptyId;
-    env.EMDASH_HOOK_TOKEN = hook.token;
+    env.SQUAD_HOOK_PORT = String(hook.port);
+    env.SQUAD_PTY_ID = hook.ptyId;
+    env.SQUAD_HOOK_TOKEN = hook.token;
   }
 
   return env;

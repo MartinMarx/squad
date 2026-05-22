@@ -19,7 +19,6 @@ import {
 } from './TaskSettingsRows';
 import TerminalSettingsCard from './TerminalSettingsCard';
 import ThemeCard from './ThemeCard';
-import { UpdateCard } from './UpdateCard';
 
 export type SettingsPageTab =
   | 'general'
@@ -62,7 +61,7 @@ export function SettingsPage({
   > = {
     general: {
       title: 'General',
-      description: 'Manage notifications and app updates.',
+      description: 'Manage notifications and task defaults.',
       sections: [
         {
           component: <AutoGenerateTaskNamesRow />,
@@ -79,14 +78,11 @@ export function SettingsPage({
         {
           component: <NotificationSettingsCard />,
         },
-        {
-          component: <UpdateCard />,
-        },
       ],
     },
     account: {
       title: 'Account',
-      description: 'Manage your Emdash account.',
+      description: 'Manage your Squad account.',
       sections: [{ component: <AccountTab /> }],
     },
     'clis-models': {

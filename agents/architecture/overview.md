@@ -2,7 +2,7 @@
 
 ## Process Model
 
-- `src/main/`: Electron main process — app lifecycle, RPC controllers, domain services, database, PTY orchestration, updater, SSH
+- `src/main/`: Electron main process — app lifecycle, RPC controllers, domain services, database, PTY orchestration, SSH
 - `src/preload/`: Electron preload bridge — exposes typed `invoke`, `eventSend`, `eventOn` to renderer
 - `src/renderer/`: React UI — views, components, hooks, contexts, typed RPC client
 - `src/shared/`: Provider registry, IPC primitives (RPC + events), MCP types, skills types, shared domain types

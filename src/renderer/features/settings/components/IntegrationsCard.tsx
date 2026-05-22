@@ -13,7 +13,7 @@ function githubAuthSourceLabel(tokenSource: string | null): string {
   switch (tokenSource) {
     case 'cli':
       return 'GitHub CLI';
-    case 'emdash_oauth':
+    case 'squad_oauth':
       return 'OAuth';
     case 'device_flow':
       return 'device flow';
@@ -95,7 +95,7 @@ const IntegrationsCard: React.FC = () => {
       } else {
         toast({
           title: 'GitHub CLI disconnected',
-          description: 'Emdash no longer has access to GitHub',
+          description: 'Squad no longer has access to GitHub',
         });
       }
     } finally {

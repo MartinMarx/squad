@@ -9,7 +9,7 @@ function workspaceSlug(absoluteWorktreePath: string): string {
 
 /**
  * `cursor-agent` prompts on first launch in an unfamiliar workspace and remembers
- * trust via `~/.cursor/projects/<slug>/.workspace-trusted`. Each emdash worktree
+ * trust via `~/.cursor/projects/<slug>/.workspace-trusted`. Each squad worktree
  * gets a fresh path, so without this every new task hits the prompt.
  *
  * No-op when `~/.cursor` is absent (user doesn't have Cursor installed).

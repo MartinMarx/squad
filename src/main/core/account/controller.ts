@@ -1,11 +1,11 @@
 import { log } from '@main/lib/logger';
 import { createRPCController } from '@shared/ipc/rpc';
-import { emdashAccountService } from './services/emdash-account-service';
+import { squadAccountService } from './services/squad-account-service';
 
 export const accountController = createRPCController({
   getSession: async () => {
     try {
-      return await emdashAccountService.getSession();
+      return await squadAccountService.getSession();
     } catch (error) {
       log.error('Failed to get account session:', error);
       return { user: null, isSignedIn: false, hasAccount: false };
@@ -14,7 +14,7 @@ export const accountController = createRPCController({
 
   signIn: async (provider?: string) => {
     try {
-      const result = await emdashAccountService.signIn(provider);
+      const result = await squadAccountService.signIn(provider);
       return { success: true, user: result.user };
     } catch (error) {
       log.error('Account sign-in failed:', error);
@@ -27,7 +27,7 @@ export const accountController = createRPCController({
 
   signOut: async () => {
     try {
-      await emdashAccountService.signOut();
+      await squadAccountService.signOut();
       return { success: true };
     } catch (error) {
       log.error('Account sign-out failed:', error);
@@ -37,7 +37,7 @@ export const accountController = createRPCController({
 
   checkHealth: async () => {
     try {
-      return await emdashAccountService.checkServerHealth();
+      return await squadAccountService.checkServerHealth();
     } catch {
       return false;
     }
@@ -45,7 +45,7 @@ export const accountController = createRPCController({
 
   validateSession: async () => {
     try {
-      return await emdashAccountService.validateSession();
+      return await squadAccountService.validateSession();
     } catch {
       return false;
     }

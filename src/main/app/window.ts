@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { BrowserWindow } from 'electron';
-import appIcon from '@/assets/images/emdash/emdash_logo.png?asset';
+import appIcon from '@/assets/images/squad/squad_logo.png?asset';
 import { registerExternalLinkHandlers } from '@main/utils/externalLinks';
 import { PRODUCT_NAME } from '@shared/app-identity';
 import { APP_ORIGIN } from './protocol';

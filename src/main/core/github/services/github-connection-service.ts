@@ -34,9 +34,9 @@ export interface DeviceCodeResult {
 
 /**
  * Manages GitHub authentication tokens regardless of how they were obtained
- * (Emdash Account OAuth, Device Flow, or extracted from gh CLI).
+ * (Squad Account OAuth, Device Flow, or extracted from gh CLI).
  */
-export type TokenSource = 'secure_storage' | 'cli' | 'emdash_oauth' | 'device_flow' | null;
+export type TokenSource = 'secure_storage' | 'cli' | 'squad_oauth' | 'device_flow' | null;
 
 export interface GitHubConnectionService {
   getToken(): Promise<string | null>;
@@ -56,7 +56,7 @@ export interface GitHubConnectionService {
   logout(): Promise<void>;
 }
 
-const GITHUB_TOKEN_SECRET_KEY = 'emdash-github-token';
+const GITHUB_TOKEN_SECRET_KEY = 'squad-github-token';
 
 interface GitHubKVSchema extends Record<string, unknown> {
   tokenSource: Exclude<TokenSource, null>;
@@ -80,7 +80,7 @@ export class GitHubConnectionServiceImpl implements GitHubConnectionService {
   private parseTokenSource(raw: unknown): Exclude<TokenSource, null> | null {
     return raw === 'cli' ||
       raw === 'secure_storage' ||
-      raw === 'emdash_oauth' ||
+      raw === 'squad_oauth' ||
       raw === 'device_flow'
       ? raw
       : null;
@@ -248,7 +248,7 @@ export class GitHubConnectionServiceImpl implements GitHubConnectionService {
         return { success: false, error: 'No access token in response' };
       }
 
-      await this.storeToken(accessToken, 'emdash_oauth');
+      await this.storeToken(accessToken, 'squad_oauth');
       const user = await this.getUserInfo(accessToken);
       return { success: true, token: accessToken, user: user || undefined };
     } catch (error) {

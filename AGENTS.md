@@ -15,15 +15,15 @@ ports:
   dev: 3000
 required_env: []
 optional_env:
-  - EMDASH_DB_FILE
-  - EMDASH_DISABLE_NATIVE_DB
-  - EMDASH_DISABLE_CLONE_CACHE
-  - EMDASH_DISABLE_PTY
+  - SQUAD_DB_FILE
+  - SQUAD_DISABLE_NATIVE_DB
+  - SQUAD_DISABLE_CLONE_CACHE
+  - SQUAD_DISABLE_PTY
   - CODEX_SANDBOX_MODE
   - CODEX_APPROVAL_POLICY
 ---
 
-# Emdash Agent Guide
+# Squad Agent Guide
 
 Start here. Load only the linked `agents/` docs that are relevant to the task.
 
@@ -39,7 +39,7 @@ Start here. Load only the linked `agents/` docs that are relevant to the task.
 - Main-process changes: `agents/architecture/main-process.md`
 - Renderer/UI changes: `agents/architecture/renderer.md`
 - Shared types or provider metadata: `agents/architecture/shared.md`
-- Worktree behavior or `.emdash.json`: `agents/workflows/worktrees.md`
+- Worktree behavior or `.squad.json`: `agents/workflows/worktrees.md`
 - Provider integration or CLI behavior: `agents/integrations/providers.md`
 - MCP changes: `agents/integrations/mcp.md`
 
@@ -47,7 +47,6 @@ Start here. Load only the linked `agents/` docs that are relevant to the task.
 
 - Database and migrations: `agents/risky-areas/database.md`
 - PTY/session orchestration: `agents/risky-areas/pty.md`
-- Auto-update and packaging: `agents/risky-areas/updater.md`
 
 ## Conventions
 
@@ -89,6 +88,6 @@ Start here. Load only the linked `agents/` docs that are relevant to the task.
 - Only use manual IPC in `electron-api.d.ts` for methods requiring `event.sender`.
 - New modals must be registered in `src/renderer/core/modal/registry.ts`.
 - New views must be registered in `src/renderer/core/view/registry.ts`.
-- Treat `src/main/core/pty/`, `src/main/core/ssh/`, `src/main/db/`, and updater code as high risk.
-- Avoid editing `dist/`, `release/`, and `build/` unless the task is explicitly about packaging or updater/signing behavior.
+- Treat `src/main/core/pty/`, `src/main/core/ssh/`, and `src/main/db/` as high risk.
+- Avoid editing `dist/`, `release/`, and `build/` unless the task is explicitly about packaging or signing behavior.
 - The docs app in `docs/` is separate from the Electron renderer and also defaults to port `3000`.

@@ -66,7 +66,7 @@ async function createPooledSession(): Promise<PooledSession> {
   const transport = new StreamableHTTPClientTransport(new URL(LINEAR_MCP_SERVER_URL), {
     authProvider: provider,
   });
-  const client = new Client({ name: 'emdash', version: '1.0.0' });
+  const client = new Client({ name: 'squad', version: '1.0.0' });
   await client.connect(transport);
 
   const session: PooledSession = {

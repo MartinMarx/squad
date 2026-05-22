@@ -16,7 +16,7 @@ function checkSource(context, node) {
 
 export default {
   meta: {
-    name: 'emdash',
+    name: 'squad',
   },
   rules: {
     'no-tooling-imports': {

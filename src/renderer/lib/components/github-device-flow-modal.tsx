@@ -1,6 +1,6 @@
 import { AlertCircle, Check, Copy, ExternalLink } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import emdashLogo from '@/assets/images/emdash/emdash_logo_white.svg';
+import squadLogo from '@/assets/images/squad/squad_logo_white.svg';
 import { useToast } from '@renderer/lib/hooks/use-toast';
 import { events, rpc } from '@renderer/lib/ipc';
 import type { BaseModalProps } from '@renderer/lib/modal/modal-provider';
@@ -247,7 +247,7 @@ export function GithubDeviceFlowModal({ onClose, onError }: GithubDeviceFlowModa
   return (
     <>
       <div className="flex flex-col items-center px-8 py-12">
-        <img src={emdashLogo} alt="Emdash" className="mb-8 h-8 opacity-90" />
+        <img src={squadLogo} alt="Squad" className="mb-8 h-8 opacity-90" />
 
         {success ? (
           // Success State
@@ -290,9 +290,7 @@ export function GithubDeviceFlowModal({ onClose, onError }: GithubDeviceFlowModa
           <div className="flex w-full flex-col items-center space-y-6">
             <div className="space-y-2 text-center">
               <h2 className="text-2xl font-semibold">Connect to GitHub</h2>
-              <p className="text-muted-foreground text-sm">
-                Follow these steps to authorize Emdash
-              </p>
+              <p className="text-muted-foreground text-sm">Follow these steps to authorize Squad</p>
             </div>
 
             {userCode && (
@@ -373,7 +371,7 @@ export function GithubDeviceFlowModal({ onClose, onError }: GithubDeviceFlowModa
                 Having{' '}
                 <button
                   onClick={() =>
-                    rpc.app.openExternal('https://github.com/generalaction/emdash/issues')
+                    rpc.app.openExternal('https://github.com/generalaction/squad/issues')
                   }
                   className="text-primary hover:underline focus:underline focus:outline-none"
                 >

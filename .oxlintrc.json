@@ -70,14 +70,14 @@
         "src/preload/**/*.{ts,tsx}"
       ],
       "rules": {
-        "emdash/no-tooling-imports": "error"
+        "squad/no-tooling-imports": "error"
       }
     },
     {
       "files": ["**/*.test.{ts,tsx}"],
       "rules": {
         "typescript/no-explicit-any": "off",
-        "emdash/no-tooling-imports": "off"
+        "squad/no-tooling-imports": "off"
       }
     }
   ]

@@ -6,7 +6,7 @@ The main process is organized into domain modules under `src/main/core/`. Each d
 
 ## Domain Modules (`src/main/core/`)
 
-- **account** — Emdash account service, credential store, provider token registry
+- **account** — Squad account service, credential store, provider token registry
 - **agent-hooks** — HTTP hook server for agent callbacks, event enrichment, OS notifications, hook config writer (Claude/Codex)
 - **app** — App lifecycle service and controller
 - **conversations** — Conversation CRUD, session start, agent event classifiers (per-provider terminal output parsers)
@@ -26,12 +26,11 @@ The main process is organized into domain modules under `src/main/core/`. Each d
 - **ssh** — SSH connection management, credentials, config parsing, client proxy
 - **tasks** — Task CRUD (create, delete, archive, restore, provision)
 - **terminals** — Terminal lifecycle with provider pattern (`local-terminal-provider.ts`, `ssh-terminal-provider.ts`), lifecycle scripts
-- **updates** — Auto-update service
 
 ## Other Main Process Areas
 
 - `src/main/app/` — Menu, protocol handler, window creation
-- `src/main/lib/` — Logger, events, result type, updater error
+- `src/main/lib/` — Logger, events, result type
 - `src/main/db/` — Database schema and initialization
 - `src/main/utils/` — Shell environment, shell escaping, child process env, external links
 - `src/main/core/agent-hooks/` — Hook server, event enrichment, OS notifications, hook config writer for Claude/Codex

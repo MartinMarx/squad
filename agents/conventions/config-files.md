@@ -7,7 +7,7 @@
 - `vitest.config.ts`
 - `tsconfig.json`
 - `drizzle.config.ts`
-- `.emdash.json`
+- `.squad.json`
 - `.nvmrc`
 - `.husky/`
 - `.github/workflows/`

@@ -2,9 +2,7 @@ type ImportMetaWithEnv = ImportMeta & { env?: { VITE_BUILD?: string } };
 
 const isCanary = (import.meta as ImportMetaWithEnv).env?.VITE_BUILD === 'canary';
 
-export const APP_ID = isCanary ? 'com.emdash.canary' : 'com.emdash.stable';
-export const PRODUCT_NAME = isCanary ? 'Emdash Canary' : 'Emdash';
-export const APP_NAME_LOWER = isCanary ? 'emdash-canary' : 'emdash';
-export const UPDATE_CHANNEL = isCanary ? 'v1-canary' : 'v1-stable';
-export const ARTIFACT_PREFIX = isCanary ? 'emdash-canary' : 'emdash';
-export const R2_BASE_URL = 'https://releases.emdash.sh';
+export const APP_ID = isCanary ? 'com.squad.canary' : 'com.squad.stable';
+export const PRODUCT_NAME = isCanary ? 'Squad Canary' : 'Squad';
+export const APP_NAME_LOWER = isCanary ? 'squad-canary' : 'squad';
+export const ARTIFACT_PREFIX = isCanary ? 'squad-canary' : 'squad';

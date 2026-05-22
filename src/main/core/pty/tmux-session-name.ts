@@ -1,7 +1,7 @@
 import type { IExecutionContext } from '@main/core/execution-context/types';
 import { log } from '@main/lib/logger';
 
-const TMUX_SESSION_PREFIX = 'emdash-';
+const TMUX_SESSION_PREFIX = 'squad-';
 const TMUX_HISTORY_LIMIT = 100_000;
 
 export function buildTmuxShellLine(sessionName: string, commandLine: string): string {

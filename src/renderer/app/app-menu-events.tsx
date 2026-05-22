@@ -30,7 +30,7 @@ export function AppMenuEvents({ onOpenSettings }: { onOpenSettings?: () => boole
   useEffect(() => {
     return events.on(menuQuitRequestedChannel, () => {
       showConfirmQuitModal({
-        title: 'Quit Emdash?',
+        title: 'Quit Squad?',
         description: 'Active terminal sessions and running agents will stop when the app quits.',
         confirmLabel: 'Quit',
         onSuccess: () => {

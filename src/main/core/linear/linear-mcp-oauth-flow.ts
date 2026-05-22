@@ -125,7 +125,7 @@ export async function executeLinearMcpOAuthFlow(): Promise<OAuthTokens> {
 
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(
-          '<!doctype html><html><body><p>Linear connected. You can close this window and return to Emdash.</p></body></html>'
+          '<!doctype html><html><body><p>Linear connected. You can close this window and return to Squad.</p></body></html>'
         );
 
         try {

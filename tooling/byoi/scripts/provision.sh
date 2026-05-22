@@ -1,10 +1,10 @@
 #!/bin/bash
 # ──────────────────────────────────────────────────────────────────────────────
-# Emdash BYOI provision script
+# Squad BYOI provision script
 #
-# Called by emdash when a new task is created on a BYOI project. Spins up a
+# Called by squad when a new task is created on a BYOI project. Spins up a
 # fresh Docker container, clones this repo into it, and prints the JSON that
-# emdash needs to SSH into the container.
+# squad needs to SSH into the container.
 #
 # Requirements on the host: docker, jq
 # ──────────────────────────────────────────────────────────────────────────────
@@ -12,7 +12,7 @@ set -euo pipefail
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-IMAGE_NAME="emdash-byoi-workspace"
+IMAGE_NAME="squad-byoi-workspace"
 CONTAINER_USER="devuser"
 CONTAINER_PASS="devpass"
 WORKSPACE_PATH="/home/devuser/workspace"
@@ -43,13 +43,13 @@ fi
 
 # ── Start container ───────────────────────────────────────────────────────────
 
-CONTAINER_NAME="emdash-ws-$(date +%s)-$$"
+CONTAINER_NAME="squad-ws-$(date +%s)-$$"
 
 # Forward API keys if set in the host environment.
 # Add more -e flags here for other keys your agent needs.
 docker run -d \
   --name "$CONTAINER_NAME" \
-  --label "emdash.purpose=byoi-workspace" \
+  --label "squad.purpose=byoi-workspace" \
   -p "0:22" \
   -v "$(pwd):/repo-source:ro" \
   ${ANTHROPIC_API_KEY:+-e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"} \

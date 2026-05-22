@@ -24,7 +24,7 @@ describe('pickPhilosopherName', () => {
     vi.mocked(projectManager.getProject).mockReturnValue({
       repository: {
         getLocalBranchesPayload: vi.fn().mockResolvedValue({
-          localBranches: [{ branch: 'emdash/plato' }],
+          localBranches: [{ branch: 'squad/plato' }],
           currentBranch: 'main',
           isUnborn: false,
         }),
@@ -32,7 +32,7 @@ describe('pickPhilosopherName', () => {
     } as never);
     vi.mocked(appSettingsService.get).mockResolvedValue({
       pushOnCreate: true,
-      branchPrefix: 'emdash',
+      branchPrefix: 'squad',
       appendRandomBranchSuffix: true,
       tmuxByDefault: false,
     });
@@ -41,9 +41,9 @@ describe('pickPhilosopherName', () => {
     expect(result).toMatchObject({
       slug: expect.any(String),
       displayName: expect.any(String),
-      branchName: expect.stringMatching(/^emdash\//),
+      branchName: expect.stringMatching(/^squad\//),
     });
     if ('type' in result) throw new Error('expected picked philosopher');
-    expect(result.branchName).not.toBe('emdash/plato');
+    expect(result.branchName).not.toBe('squad/plato');
   });
 });

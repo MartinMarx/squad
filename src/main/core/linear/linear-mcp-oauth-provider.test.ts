@@ -46,7 +46,7 @@ describe('LinearMcpOAuthProvider', () => {
     await provider.saveClientInformation({ client_id: 'client-id' });
 
     expect(mockSetSecret).toHaveBeenCalledWith(
-      'emdash-linear-oauth-tokens',
+      'squad-linear-oauth-tokens',
       JSON.stringify({
         access_token: 'access-token',
         token_type: 'Bearer',
@@ -62,8 +62,8 @@ describe('LinearMcpOAuthProvider', () => {
 
     await provider.invalidateCredentials('all');
 
-    expect(mockDeleteSecret).toHaveBeenCalledWith('emdash-linear-oauth-tokens');
-    expect(mockDeleteSecret).toHaveBeenCalledWith('emdash-linear-token');
+    expect(mockDeleteSecret).toHaveBeenCalledWith('squad-linear-oauth-tokens');
+    expect(mockDeleteSecret).toHaveBeenCalledWith('squad-linear-token');
     expect(mockKvDel).toHaveBeenCalledWith('clientInformation');
     expect(mockKvDel).toHaveBeenCalledWith('oauthRedirectUrl');
     expect(mockKvDel).toHaveBeenCalledWith('discoveryState');
