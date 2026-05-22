@@ -41,7 +41,7 @@ export const McpServerIcon: React.FC<{ name: string; iconKey?: string }> = ({ na
         <img
           src={icon.url}
           alt={name}
-          className="h-full w-full object-contain brightness-0 dark:invert"
+          className="h-full w-full object-contain brightness-0 emdark:invert"
         />
       );
     }

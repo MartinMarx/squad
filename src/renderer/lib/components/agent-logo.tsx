@@ -42,7 +42,7 @@ const AgentLogo: React.FC<AgentLogoProps> = ({
     <img
       src={logo}
       alt={alt}
-      className={`shrink-0 object-contain ${invertInDark ? 'dark:invert' : ''} ${grayscale ? 'grayscale' : ''} ${className}`}
+      className={`shrink-0 object-contain ${invertInDark ? 'emdark:invert' : ''} ${grayscale ? 'grayscale' : ''} ${className}`}
     />
   );
 };
