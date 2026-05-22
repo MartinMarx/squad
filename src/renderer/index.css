@@ -561,9 +561,11 @@
       0 24px 48px color-mix(in srgb, black 16%, transparent),
       0 8px 16px color-mix(in srgb, black 10%, transparent);
 
-    /* Vibrancy-friendly background tokens (semi-transparent). */
+    /* Vibrancy-friendly background tokens (semi-transparent). Overlay is
+       intentionally LOW opacity so backdrop-blur has real content to blur
+       (not just a solid gray-on-gray). */
     --background-sidebar: color-mix(in srgb, var(--neutral-2) 88%, transparent);
-    --background-overlay: color-mix(in srgb, white 78%, transparent);
+    --background-overlay: color-mix(in srgb, white 55%, transparent);
     --background-titlebar: var(--background);
 
     /* Brand discipline — "special" violin accent for merged-PR etc. */
@@ -905,7 +907,7 @@
        which read as weird. Light mode keeps vibrancy bleed (looks fine
        since vibrancy material is darker than white). */
     --background-sidebar: color-mix(in srgb, var(--neutral-1) 88%, black);
-    --background-overlay: color-mix(in srgb, var(--neutral-2) 72%, transparent);
+    --background-overlay: color-mix(in srgb, var(--neutral-2) 50%, transparent);
     --background-titlebar: var(--background);
 
     /* Brand discipline. */
