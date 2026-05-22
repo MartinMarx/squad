@@ -32,6 +32,18 @@ export function createMainWindow(): BrowserWindow {
           titleBarStyle: 'hiddenInset',
           trafficLightPosition: { x: 10, y: 10 },
           acceptFirstMouse: true,
+          // Native vibrancy material on the window; the renderer's sidebar
+          // uses a semi-transparent --background-sidebar token so the
+          // underlying material shows through. Per DESIGN_BRIEF.md the
+          // vibrancy stays subtle (sidebar + popover overlays only) —
+          // main content + titlebar stay opaque.
+          vibrancy: 'sidebar' as const,
+          visualEffectState: 'followWindow' as const,
+          // Transparent BrowserWindow background lets the vibrancy material
+          // reach renderer pixels that don't paint their own background.
+          // Body is transparent in index.css; opaque surfaces (main panel,
+          // onboarding shell, modals, etc.) paint --background themselves.
+          backgroundColor: '#00000000',
         }
       : {}),
     show: false,

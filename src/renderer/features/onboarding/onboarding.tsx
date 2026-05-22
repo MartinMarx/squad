@@ -13,7 +13,7 @@ export function Onboarding({
   const [steps] = useState(initialSteps);
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center [-webkit-app-region:drag]">
+    <div className="flex h-full w-full flex-col items-center justify-center bg-background [-webkit-app-region:drag]">
       <OnboardingShell steps={steps} onComplete={onComplete} />
     </div>
   );

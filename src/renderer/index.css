@@ -126,6 +126,17 @@
   --color-border-2: var(--border-2);
   --color-border-destructive: var(--border-destructive);
   --color-border-primary: var(--border-primary);
+  --color-border-strong: var(--border-strong);
+  --color-border-focus-ring: var(--border-focus-ring);
+
+  /* Vibrancy / overlay surfaces (semi-transparent — see DESIGN_BRIEF.md). */
+  --color-background-sidebar: var(--background-sidebar);
+  --color-background-overlay: var(--background-overlay);
+  --color-background-titlebar: var(--background-titlebar);
+
+  /* "Special" accent — reserved for merged-PR moments etc. */
+  --color-accent-special: var(--accent-special);
+  --color-accent-special-foreground: var(--accent-special-foreground);
 
   --color-status-in-progress: var(--status-in-progress);
   --color-status-in-review: var(--status-in-review);
@@ -909,7 +920,12 @@
     overflow: hidden;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    /* Transparent so the BrowserWindow's macOS vibrancy material can reach
+       any surface that doesn't paint its own --background. Opaque surfaces
+       (Workspace main panel, modals, onboarding shell, error boundary,
+       welcome overlay) all paint their own background. */
+    background: transparent;
   }
 
   ::selection {
