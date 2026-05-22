@@ -49,16 +49,16 @@ export function HomeMainPanel() {
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
       <div className="container mx-auto flex min-h-full max-w-6xl flex-1 flex-col justify-center px-8 py-8">
-        <div className="mb-3 text-center">
-          <div className="mb-3 flex items-center justify-center">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center">
             <EmdashShimmerLogo
               height={32}
-              color={isDark ? 'var(--color-background-2)' : 'var(--color-foreground)'}
-              shimmerColor={isDark ? 'white' : 'var(--color-foreground-passive)'}
+              color={isDark ? 'var(--color-foreground-muted)' : 'var(--color-foreground)'}
+              shimmerColor={isDark ? 'var(--color-foreground)' : 'var(--color-foreground-passive)'}
             />
           </div>
         </div>
-        <div className="mx-auto mt-8 flex w-full max-w-md flex-col gap-1">
+        <div className="mx-auto flex w-full max-w-lg flex-col gap-2">
           {PROJECT_ACTIONS.map((action, i) => (
             <HomeProjectAction
               key={action.label}

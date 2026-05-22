@@ -29,18 +29,24 @@ export function ActionListItem({
       onClick={disabled ? undefined : onClick}
       onMouseEnter={disabled ? undefined : onMouseEnter}
       className={cn(
-        'group flex w-full items-center justify-between rounded-lg bg-background p-4 text-left transition-all',
+        'group flex w-full items-center justify-between rounded-lg bg-background p-4 text-left transition-all duration-fast ease-out',
         disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-background-1',
-        !disabled && isSelected && 'bg-background-1'
+        !disabled && isSelected && 'bg-accent'
       )}
     >
       <div className="flex items-center gap-3">
-        <Icon className="size-7 text-foreground-passive transition-colors" strokeWidth={1} />
+        <Icon
+          className={cn(
+            'size-7 text-foreground-passive transition-colors duration-fast ease-out',
+            !disabled && isSelected && 'text-accent-foreground'
+          )}
+          strokeWidth={1}
+        />
         <div className="flex flex-col gap-1">
           <span
             className={cn(
-              'whitespace-nowrap leading-none tracking-normal text-sm text-foreground-muted transition-colors',
-              !disabled && isSelected && 'text-foreground'
+              'whitespace-nowrap leading-none tracking-normal text-sm text-foreground-muted transition-colors duration-fast ease-out',
+              !disabled && isSelected && 'text-accent-foreground font-medium'
             )}
           >
             {label}
@@ -51,7 +57,7 @@ export function ActionListItem({
         </div>
       </div>
       {!disabled && isSelected && (
-        <Kbd className="size-6 bg-background-2 pt-1 text-foreground-muted group-hover:text-foreground">
+        <Kbd className="size-6 bg-background-2 pt-1 text-accent-foreground group-hover:text-accent-foreground">
           ⏎
         </Kbd>
       )}
