@@ -1,6 +1,5 @@
 import { FolderOpen, Github, Plus, type LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Titlebar } from '@renderer/lib/components/titlebar/Titlebar';
 import { EmdashShimmerLogo } from '@renderer/lib/emdash-shimmer-logo';
 import { useArrowKeyNavigation } from '@renderer/lib/hooks/use-arrow-key-navigation';
 import { useTheme } from '@renderer/lib/hooks/useTheme';
@@ -28,11 +27,11 @@ const PROJECT_ACTIONS = [
   },
 ] as const;
 
-export function HomeTitlebar() {
-  return <Titlebar />;
-}
-
-export function HomeMainPanel() {
+/**
+ * Cold-start welcome view shown when the user has zero registered projects.
+ * Preserves the original three-action layout from the legacy home view.
+ */
+export function ZeroProjectsEmptyState() {
   const showAddProjectModal = useShowModal('addProjectModal');
   const { selectedIndex, setSelectedIndex } = useArrowKeyNavigation(
     PROJECT_ACTIONS.length,
@@ -57,10 +56,13 @@ export function HomeMainPanel() {
               shimmerColor={isDark ? 'white' : 'var(--color-foreground-passive)'}
             />
           </div>
+          <p className="text-sm text-foreground-muted">
+            Welcome — add a project to see everything at a glance.
+          </p>
         </div>
         <div className="mx-auto mt-8 flex w-full max-w-md flex-col gap-1">
           {PROJECT_ACTIONS.map((action, i) => (
-            <HomeProjectAction
+            <HomeEmptyAction
               key={action.label}
               label={action.label}
               description={action.description}
@@ -76,7 +78,7 @@ export function HomeMainPanel() {
   );
 }
 
-function HomeProjectAction({
+function HomeEmptyAction({
   label,
   description,
   icon,
@@ -103,7 +105,25 @@ function HomeProjectAction({
   );
 }
 
-export const homeView = {
-  TitlebarSlot: HomeTitlebar,
-  MainPanel: HomeMainPanel,
-};
+/**
+ * Mid-state empty: at least one project exists but no tasks. Renders an
+ * inline CTA over the kanban frame.
+ */
+export function NoTasksHint({ onCreateTask }: { onCreateTask: () => void }) {
+  return (
+    <div className="m-2 flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background-1/40 px-4 py-8 text-center">
+      <p className="text-sm font-medium text-foreground">No tasks yet.</p>
+      <p className="text-xs text-foreground-muted">
+        Tasks are work units in your projects — branches, conversations, and worktrees.
+      </p>
+      <button
+        type="button"
+        onClick={onCreateTask}
+        className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-primary-button-background px-3 py-1.5 text-xs font-medium text-primary-button-foreground transition hover:bg-primary-button-background-hover"
+      >
+        <Plus className="size-3.5" />
+        Create your first task
+      </button>
+    </div>
+  );
+}

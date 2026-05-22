@@ -49,7 +49,12 @@ async function bootstrap() {
   viewStateCache.populate(allViewState as Record<string, unknown>);
 
   setupNavigationGuards();
-  if (navResult) appState.navigation.restoreSnapshot(navResult);
+  if (navResult) {
+    // Home is the default app-open view: restore only persisted view params
+    // (so navigating back into a task still has the right ids), not the
+    // last-active view id. See dashboard design Q10.
+    appState.navigation.restoreSnapshot({ ...navResult, currentViewId: 'home' });
+  }
   setupAppCommandProvider();
   setupViewCommandProvider();
   if (sidebarResult) {
