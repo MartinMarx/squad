@@ -173,6 +173,7 @@ export async function createTask(
       id: params.id,
       projectId: params.projectId,
       name: params.name,
+      customTitle: params.linkedIssue?.title ?? null,
       taskBranch,
       status: initialStatus,
       sourceBranch: toStoredBranch(dbSourceBranch),

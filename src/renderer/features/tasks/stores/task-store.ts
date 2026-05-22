@@ -52,6 +52,7 @@ export class TaskStore {
   draftComments: DraftCommentsStore | null = null;
 
   get displayName(): string {
+    if ('customTitle' in this.data && this.data.customTitle) return this.data.customTitle;
     return this.data.name;
   }
 
@@ -182,7 +183,7 @@ export class TaskStore {
         return result;
       }
       runInAction(() => {
-        this.data.name = name;
+        task.customTitle = name;
       });
       return result;
     } catch (e) {

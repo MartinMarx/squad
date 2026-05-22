@@ -109,6 +109,7 @@ export const tasks = sqliteTable(
       .notNull()
       .references(() => projects.id, { onDelete: 'cascade' }),
     name: text('name').notNull(),
+    customTitle: text('custom_title'),
     status: text('status').notNull(),
     sourceBranch: text('source_branch', { mode: 'json' }).$type<StoredBranch>(),
     taskBranch: text('task_branch'),

@@ -56,7 +56,7 @@ export const SidebarVirtualList = observer(function SidebarVirtualList() {
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => ROW_HEIGHT,
+    estimateSize: (index) => (rows[index]?.kind === 'task' ? 48 : ROW_HEIGHT),
     overscan: 8,
   });
 

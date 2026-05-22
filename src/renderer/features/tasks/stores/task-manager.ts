@@ -7,7 +7,11 @@ import { events, rpc } from '@renderer/lib/ipc';
 import { viewStateCache } from '@renderer/lib/stores/view-state-cache';
 import { log } from '@renderer/utils/logger';
 import { prSyncProgressChannel, prUpdatedChannel } from '@shared/events/prEvents';
-import { taskProvisionProgressChannel, taskStatusUpdatedChannel } from '@shared/events/taskEvents';
+import {
+  taskProvisionProgressChannel,
+  taskStatusUpdatedChannel,
+  taskUpdatedChannel,
+} from '@shared/events/taskEvents';
 import type {
   CreateTaskError,
   CreateTaskParams,
@@ -109,6 +113,15 @@ export class TaskManagerStore {
           store.data.status = status as TaskLifecycleStatus;
         });
       }
+    });
+
+    events.on(taskUpdatedChannel, ({ taskId, projectId: evtProjectId, patch }) => {
+      if (evtProjectId !== this.projectId) return;
+      const store = this.tasks.get(taskId);
+      if (!store || !isRegistered(store)) return;
+      runInAction(() => {
+        Object.assign(store.data, patch);
+      });
     });
 
     this._unsubProvisionProgress = events.on(

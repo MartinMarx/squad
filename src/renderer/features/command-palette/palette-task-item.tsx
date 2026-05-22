@@ -20,7 +20,7 @@ export const PaletteTaskItem = observer(function PaletteTaskItem({
   return (
     <Command.Item value={value} onSelect={onSelect} className={PALETTE_ITEM_CLASS}>
       <GitBranch size={14} className="shrink-0 text-foreground/40" />
-      <span className="flex-1 truncate">{taskStore.data.name}</span>
+      <span className="flex-1 truncate">{taskStore.displayName}</span>
       <AgentStatusIndicator status={status} disableTooltip />
     </Command.Item>
   );

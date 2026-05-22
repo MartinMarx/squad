@@ -155,7 +155,7 @@ export function getTerminalsForTask(taskId: string) {
 /** Returns the display name from any task store variant. */
 export function taskDisplayName(store: TaskStore | undefined): string | undefined {
   if (!store) return undefined;
-  return store.data.name;
+  return store.displayName;
 }
 
 /** Returns the error message for error states. */

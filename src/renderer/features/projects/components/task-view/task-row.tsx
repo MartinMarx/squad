@@ -41,7 +41,7 @@ export const TaskRow = observer(function TaskRow({
   const handleDelete = () =>
     showDeleteTask({
       projectId: task.data.projectId,
-      tasks: [{ taskId: task.data.id, taskName: task.data.name }],
+      tasks: [{ taskId: task.data.id, taskName: task.displayName }],
       onSuccess: ({ deleteWorktree, deleteBranch }) =>
         void taskManager?.deleteTasks([task.data.id], { deleteWorktree, deleteBranch }),
     });
@@ -49,7 +49,7 @@ export const TaskRow = observer(function TaskRow({
     showRename({
       projectId: task.data.projectId,
       taskId: task.data.id,
-      currentName: task.data.name,
+      currentName: task.displayName,
     });
 
   const isArchived = Boolean(task.data.archivedAt);
@@ -95,7 +95,7 @@ export const TaskRow = observer(function TaskRow({
         </div>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <div className="flex min-w-0 flex-1 items-center gap-2">
-            <span className="min-w-0 truncate text-left text-sm">{task.data.name}</span>
+            <span className="min-w-0 truncate text-left text-sm">{task.displayName}</span>
             <TaskGitDiffStats task={task} className="shrink-0 text-xs" />
             {currentPr && <PrBadge pr={currentPr} />}
           </div>

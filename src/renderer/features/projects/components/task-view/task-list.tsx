@@ -167,7 +167,7 @@ export const TaskList = observer(function TaskList() {
     const selectedTasks = [...taskView.selectedIds]
       .map((id) => taskManager?.tasks.get(id))
       .filter((t): t is ReadyTask => !!t)
-      .map((t) => ({ taskId: t.data.id, taskName: t.data.name }));
+      .map((t) => ({ taskId: t.data.id, taskName: t.displayName }));
 
     showDeleteTask({
       projectId,

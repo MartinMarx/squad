@@ -48,6 +48,7 @@ function makeTaskRow(values: Partial<TaskRow>): TaskRow {
     id: values.id ?? 'task-1',
     projectId: values.projectId ?? 'project-1',
     name: values.name ?? 'Review PR',
+    customTitle: values.customTitle ?? null,
     status: values.status ?? 'in_progress',
     sourceBranch: values.sourceBranch ?? null,
     taskBranch: values.taskBranch ?? null,

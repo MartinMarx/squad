@@ -1,11 +1,18 @@
 import { defineEvent } from '@shared/ipc/events';
 import type { PullRequest } from '@shared/pull-requests';
+import type { Task } from '@shared/tasks';
 
 export const taskStatusUpdatedChannel = defineEvent<{
   taskId: string;
   projectId: string;
   status: string;
 }>('task:status-updated');
+
+export const taskUpdatedChannel = defineEvent<{
+  projectId: string;
+  taskId: string;
+  patch: Partial<Task>;
+}>('task:updated');
 
 export const taskPrUpdatedChannel = defineEvent<{
   taskId: string;

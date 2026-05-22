@@ -7,7 +7,6 @@ import {
   getTaskManagerStore,
   getTaskStore,
 } from '@renderer/features/tasks/stores/task-selectors';
-import { type TaskStore } from '@renderer/features/tasks/stores/task-store';
 import {
   useNavigate,
   useParams,
@@ -16,7 +15,7 @@ import {
 import { useShowModal } from '@renderer/lib/modal/modal-provider';
 import { cn } from '@renderer/utils/utils';
 import { selectCurrentPr } from '@shared/pull-requests';
-import { PrBadge } from '../../lib/components/pr-badge';
+import { StatusIcon } from '../../lib/components/pr-status-icon';
 import { SidebarMenuRow } from './sidebar-primitives';
 
 interface SidebarTaskItemProps {
@@ -48,7 +47,7 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
     (task.state === 'unprovisioned' &&
       (task.phase === 'provision' || task.phase === 'provision-error'));
 
-  const taskName = task.data.name;
+  const taskName = task.displayName;
 
   const handleProvision = () => {
     if (task.state !== 'unprovisioned' || task.phase !== 'idle') return;
@@ -76,6 +75,8 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
   const git = getTaskGitStore(projectId, taskId);
   const branchName =
     git?.branchName ?? ('taskBranch' in task.data ? task.data.taskBranch : undefined);
+  const showBranch = branchName != null && branchName !== taskName;
+  const pr = 'prs' in task.data ? selectCurrentPr(task.data.prs) : undefined;
   const handleReconnect = undefined;
 
   return (
@@ -93,7 +94,7 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
     >
       <SidebarMenuRow
         className={cn(
-          'group/row flex items-center justify-between px-1 h-8 gap-1',
+          'group/row flex h-12 items-center justify-between gap-1 px-1 py-0',
           rowVariant === 'pinned' ? 'pl-2' : 'pl-8'
         )}
         isActive={isActive}
@@ -103,26 +104,29 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
           navigate('task', { projectId, taskId });
         }}
       >
-        <div className="flex min-w-0 flex-1 items-center gap-1 self-stretch overflow-hidden">
-          <span
-            className={cn(
-              'min-w-0 truncate text-left transition-colors',
-              isBootstrapping && 'text-foreground/40'
-            )}
-          >
-            {taskName}
-          </span>
-          <TaskGitDiffStats task={task} className="flex h-full shrink-0 items-center pr-1 pl-1" />
-          <RenderPrBadge task={task} />
+        <div className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden">
+          <div className="flex min-w-0 items-center gap-1 overflow-hidden leading-tight">
+            <span
+              className={cn(
+                'min-w-0 truncate text-left transition-colors',
+                isBootstrapping && 'text-foreground/40'
+              )}
+            >
+              {taskName}
+            </span>
+            <TaskGitDiffStats task={task} className="flex shrink-0 items-center pr-1 pl-1" />
+          </div>
+          {showBranch && (
+            <div className="flex min-w-0 items-center gap-1 overflow-hidden leading-tight text-foreground-passive">
+              {pr && <StatusIcon pr={pr} className="size-3 shrink-0" disableTooltip />}
+              <span className="min-w-0 truncate text-left text-xs">{branchName}</span>
+            </div>
+          )}
         </div>
-        <TaskSidebarAgentStatus task={task} />
+        <div className="flex shrink-0 items-center self-center">
+          <TaskSidebarAgentStatus task={task} />
+        </div>
       </SidebarMenuRow>
     </TaskContextMenu>
   );
-});
-
-const RenderPrBadge = observer(function RenderPrBadge({ task }: { task: TaskStore }) {
-  if (!('prs' in task.data)) return null;
-  const pr = selectCurrentPr(task.data.prs);
-  return pr ? <PrBadge variant="compact" pr={pr} hoverDelay={100} /> : null;
 });

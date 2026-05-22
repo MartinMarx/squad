@@ -23,6 +23,7 @@ export type Task = {
   id: string;
   projectId: string;
   name: string;
+  customTitle?: string;
   status: TaskLifecycleStatus;
   sourceBranch: Branch | undefined;
   taskBranch?: string;
@@ -97,21 +98,10 @@ export type CreateTaskSuccess = {
   warning?: CreateTaskWarning;
 };
 
-export type RenameTaskError =
-  | { type: 'task-not-found'; taskId: string }
-  | { type: 'project-not-found'; projectId: string }
-  | { type: 'branch-already-exists'; branch: string }
-  | { type: 'branch-rename-failed'; branch: string; message: string };
-
-export type RenameTaskWarning = {
-  type: 'branch-remote-push-failed';
-  branch: string;
-  message: string;
-};
+export type RenameTaskError = { type: 'task-not-found'; taskId: string };
 
 export type RenameTaskSuccess = {
   task: Task;
-  warning?: RenameTaskWarning;
 };
 
 export type ProvisionTaskResult = {

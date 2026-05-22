@@ -192,12 +192,21 @@ export class ConversationManagerStore implements IDisposable {
   }
 
   async maybeAutoRenameFromPrompt(conversationId: string, prompt: string): Promise<void> {
-    if (this.autoTitleAttempted.has(conversationId)) return;
-
     const store = this.conversations.get(conversationId);
     if (!store) return;
-    if (!isDefaultConversationTitle(store.data.providerId, store.data.title)) return;
     if (!isRealTaskInput(prompt)) return;
+
+    void rpc.tasks
+      .maybeGenerateCustomTitle(this.projectId, this.taskId, prompt, store.data.providerId)
+      .catch((err) => {
+        log.warn('ConversationManagerStore: failed to generate task custom title', {
+          taskId: this.taskId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      });
+
+    if (this.autoTitleAttempted.has(conversationId)) return;
+    if (!isDefaultConversationTitle(store.data.providerId, store.data.title)) return;
 
     this.autoTitleAttempted.add(conversationId);
 

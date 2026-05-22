@@ -26,6 +26,7 @@ import {
 import { searchService } from './core/search/search-service';
 import { workspaceFileIndexService } from './core/search/workspace-file-index-service';
 import { appSettingsService } from './core/settings/settings-service';
+import { initializeTaskEventBroadcaster } from './core/tasks/task-event-broadcaster';
 import { viewStateService } from './core/view-state/view-state-service';
 import { initializeDatabase } from './db/initialize';
 import { log } from './lib/logger';
@@ -83,6 +84,7 @@ void app.whenReady().then(async () => {
     await initializeDatabase();
     searchService.initialize();
     workspaceFileIndexService.initialize();
+    initializeTaskEventBroadcaster();
     void editorBufferService.pruneStale();
     try {
       viewStateService.pruneOrphans();

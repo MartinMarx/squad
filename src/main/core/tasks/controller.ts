@@ -1,3 +1,4 @@
+import type { AgentProviderId } from '@shared/agent-provider-registry';
 import { createRPCController } from '@shared/ipc/rpc';
 import type {
   CreateTaskParams,
@@ -34,6 +35,14 @@ export const taskController = createRPCController({
   },
   async renameTask(projectId: string, taskId: string, newName: string) {
     return taskService.renameTask(projectId, taskId, newName);
+  },
+  async maybeGenerateCustomTitle(
+    projectId: string,
+    taskId: string,
+    prompt: string,
+    providerId: AgentProviderId
+  ) {
+    return taskService.maybeGenerateCustomTitle(projectId, taskId, prompt, providerId);
   },
   async updateLinkedIssue(taskId: string, issue?: Issue) {
     return taskService.updateLinkedIssue(taskId, issue);

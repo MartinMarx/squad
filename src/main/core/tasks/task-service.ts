@@ -8,6 +8,7 @@ import { db } from '@main/db/client';
 import { conversations, tasks, terminals, workspaces } from '@main/db/schema';
 import { HookCore, type Hookable } from '@main/lib/hookable';
 import { log } from '@main/lib/logger';
+import type { AgentProviderId } from '@shared/agent-provider-registry';
 import { err, ok, type Result } from '@shared/result';
 import type {
   CreateTaskError,
@@ -25,6 +26,7 @@ import { createTask } from './operations/createTask';
 import { deleteTask } from './operations/deleteTask';
 import { getDeletePreflight } from './operations/getDeletePreflight';
 import { getTasks } from './operations/getTasks';
+import { maybeGenerateCustomTitle } from './operations/maybeGenerateCustomTitle';
 import { renameTask } from './operations/renameTask';
 import { restoreTask } from './operations/restoreTask';
 import { setTaskPinned } from './operations/setTaskPinned';
@@ -193,6 +195,16 @@ export class TaskService implements Hookable<TaskCrudHooks> {
 
   async updateLinkedIssue(taskId: string, issue?: Issue): Promise<void> {
     const task = await updateLinkedIssue(taskId, issue);
+    if (task) this._hooks.callHookBackground('task:updated', task);
+  }
+
+  async maybeGenerateCustomTitle(
+    projectId: string,
+    taskId: string,
+    prompt: string,
+    providerId: AgentProviderId
+  ): Promise<void> {
+    const task = await maybeGenerateCustomTitle(projectId, taskId, prompt, providerId);
     if (task) this._hooks.callHookBackground('task:updated', task);
   }
 

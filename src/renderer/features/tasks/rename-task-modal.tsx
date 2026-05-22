@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react-lite';
 import { useCallback, useState } from 'react';
-import { toast } from 'sonner';
 import { getTaskManagerStore } from '@renderer/features/tasks/stores/task-selectors';
 import { type BaseModalProps } from '@renderer/lib/modal/modal-provider';
 import { Button } from '@renderer/lib/ui/button';
@@ -13,11 +12,7 @@ import {
 } from '@renderer/lib/ui/dialog';
 import { Field, FieldGroup, FieldLabel } from '@renderer/lib/ui/field';
 import { Input } from '@renderer/lib/ui/input';
-import {
-  liveTransformTaskName,
-  MAX_TASK_NAME_LENGTH,
-  normalizeTaskName,
-} from '@renderer/utils/taskNames';
+import { MAX_TASK_NAME_LENGTH } from '@renderer/utils/taskNames';
 import type { RenameTaskError } from '@shared/tasks';
 
 type RenameTaskModalArgs = {
@@ -32,12 +27,6 @@ function formatRenameTaskError(error: RenameTaskError): string {
   switch (error.type) {
     case 'task-not-found':
       return 'Task not found.';
-    case 'project-not-found':
-      return 'Project not found.';
-    case 'branch-already-exists':
-      return `Branch "${error.branch}" already exists. Try a different task name.`;
-    case 'branch-rename-failed':
-      return `Could not rename branch "${error.branch}": ${error.message}`;
   }
 }
 
@@ -56,13 +45,13 @@ export const RenameTaskModal = observer(function RenameTaskModal({
   const siblingNames = new Set(
     Array.from(taskManager?.tasks.values() ?? [])
       .filter((t) => t.state !== 'unregistered' && t.data.id !== taskId)
-      .map((t) => t.data.name)
+      .map((t) => t.displayName)
   );
 
-  const normalizedName = normalizeTaskName(name);
-  const isDuplicate = siblingNames.has(normalizedName);
-  const isUnchanged = normalizedName === currentName;
-  const isEmpty = normalizedName.length === 0;
+  const trimmedName = name.trim();
+  const isDuplicate = siblingNames.has(trimmedName);
+  const isUnchanged = trimmedName === currentName.trim();
+  const isEmpty = trimmedName.length === 0;
   const isValid = !isEmpty && !isDuplicate && !isUnchanged;
 
   const validationMessage = isDuplicate
@@ -72,7 +61,7 @@ export const RenameTaskModal = observer(function RenameTaskModal({
       : undefined;
 
   const handleNameChange = useCallback((value: string) => {
-    setName(liveTransformTaskName(value));
+    setName(value);
     setError(null);
   }, []);
 
@@ -83,23 +72,18 @@ export const RenameTaskModal = observer(function RenameTaskModal({
     setIsSubmitting(true);
     setError(null);
     try {
-      const result = await task.rename(normalizedName);
+      const result = await task.rename(trimmedName);
       if (!result.success) {
         setError(formatRenameTaskError(result.error));
         setIsSubmitting(false);
         return;
-      }
-      if (result.data.warning) {
-        toast.error(
-          `Branch was renamed locally to "${result.data.warning.branch}", but could not be pushed to the remote: ${result.data.warning.message}`
-        );
       }
       onSuccess();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to rename task');
       setIsSubmitting(false);
     }
-  }, [isValid, taskManager, taskId, normalizedName, onSuccess]);
+  }, [isValid, taskManager, taskId, trimmedName, onSuccess]);
 
   return (
     <>
