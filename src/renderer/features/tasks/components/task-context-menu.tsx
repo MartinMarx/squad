@@ -1,4 +1,14 @@
-import { Archive, Copy, Pencil, Pin, PinOff, RotateCcw, Trash2 } from 'lucide-react';
+import {
+  Archive,
+  BellDot,
+  BellOff,
+  Copy,
+  Pencil,
+  Pin,
+  PinOff,
+  RotateCcw,
+  Trash2,
+} from 'lucide-react';
 import React from 'react';
 import { toast } from '@renderer/lib/hooks/use-toast';
 import {
@@ -15,6 +25,10 @@ interface TaskContextMenuProps {
   canPin: boolean;
   isArchived: boolean;
   branchName?: string;
+  /** When true, the task has unseen agent activity — show "Mark as read". */
+  isUnread?: boolean;
+  /** When true, "Mark as unread" / "Mark as read" entries are rendered. */
+  canToggleUnread?: boolean;
   onPin: () => void;
   onUnpin: () => void;
   onRename: () => void;
@@ -22,6 +36,8 @@ interface TaskContextMenuProps {
   onRestore?: () => void;
   onReconnect?: () => void;
   onDelete: () => void;
+  onMarkUnread?: () => void;
+  onMarkRead?: () => void;
 }
 
 export function TaskContextMenu({
@@ -30,6 +46,8 @@ export function TaskContextMenu({
   canPin,
   isArchived,
   branchName,
+  isUnread,
+  canToggleUnread,
   onPin,
   onUnpin,
   onRename,
@@ -37,6 +55,8 @@ export function TaskContextMenu({
   onRestore,
   onReconnect,
   onDelete,
+  onMarkUnread,
+  onMarkRead,
 }: TaskContextMenuProps) {
   const handleCopyBranchName = async () => {
     if (!branchName) return;
@@ -73,6 +93,18 @@ export function TaskContextMenu({
           <Pencil className="size-4" />
           Rename
         </ContextMenuItem>
+        {canToggleUnread &&
+          (isUnread ? (
+            <ContextMenuItem onClick={onMarkRead}>
+              <BellOff className="size-4" />
+              Mark as read
+            </ContextMenuItem>
+          ) : (
+            <ContextMenuItem onClick={onMarkUnread}>
+              <BellDot className="size-4" />
+              Mark as unread
+            </ContextMenuItem>
+          ))}
         {onReconnect && (
           <ContextMenuItem onClick={onReconnect}>
             <RotateCcw className="size-4" />

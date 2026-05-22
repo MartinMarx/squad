@@ -26,6 +26,12 @@ function defineShortcuts<T extends Record<string, AppShortcutDef>>(
 }
 
 export const APP_SHORTCUTS = defineShortcuts({
+  goToHome: {
+    defaultHotkey: 'Mod+1',
+    label: 'Go to Home',
+    description: 'Navigate to the home dashboard',
+    category: 'Navigation',
+  },
   commandPalette: {
     defaultHotkey: 'Mod+K',
     label: 'Command Palette',

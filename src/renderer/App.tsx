@@ -5,7 +5,6 @@ import { WelcomeScreen } from './app/welcome';
 import { Workspace } from './app/workspace';
 import { IntegrationsProvider } from './features/integrations/integrations-provider';
 import { Onboarding } from './features/onboarding/onboarding';
-import { useAccountSession } from './lib/hooks/useAccount';
 import { useLegacyPortStatus } from './lib/hooks/useLegacyPort';
 import { WorkspaceLayoutContextProvider } from './lib/layout/layout-provider';
 import { WorkspaceViewProvider } from './lib/layout/provider';
@@ -21,17 +20,14 @@ import { TooltipProvider } from './lib/ui/tooltip';
 export const HAS_SEEN_ONBOARDING = 'squad:has-seen-onboarding:v1';
 
 type AppView = 'onboarding' | 'welcome' | 'workspace';
-type OnboardingStep = 'sign-in' | 'import';
+type OnboardingStep = 'import';
 
 function AppContent() {
   const [view, setView] = useState<AppView>(() =>
     localStorage.getItem(HAS_SEEN_ONBOARDING) === 'true' ? 'workspace' : 'onboarding'
   );
 
-  const { data: session, isLoading: sessionLoading } = useAccountSession();
   const { data: legacyStatus, isLoading: legacyLoading } = useLegacyPortStatus();
-
-  const isLoading = sessionLoading || legacyLoading;
 
   // Computed once when queries first resolve while in onboarding. Never updated
   // after that so query refetches mid-onboarding (e.g. legacyPortStatus after
@@ -39,14 +35,17 @@ function AppContent() {
   const [frozenSteps, setFrozenSteps] = useState<OnboardingStep[] | null>(null);
 
   useEffect(() => {
-    if (!isLoading && view === 'onboarding' && frozenSteps === null) {
+    if (!legacyLoading && view === 'onboarding' && frozenSteps === null) {
       const computed: OnboardingStep[] = [];
-      if (!session?.isSignedIn) computed.push('sign-in');
       const needsImport = legacyStatus?.hasImportSources && !legacyStatus.portStatus;
       if (needsImport) computed.push('import');
       setFrozenSteps(computed);
+      if (computed.length === 0) {
+        localStorage.setItem(HAS_SEEN_ONBOARDING, 'true');
+        setView('welcome');
+      }
     }
-  }, [view, isLoading, frozenSteps, session, legacyStatus]);
+  }, [view, legacyLoading, frozenSteps, legacyStatus]);
 
   const stepsNeeded = frozenSteps ?? [];
 
@@ -62,7 +61,7 @@ function AppContent() {
   }, [view, stepsNeeded.length]);
 
   const renderContent = () => {
-    if (isLoading || (view === 'onboarding' && frozenSteps === null)) {
+    if (legacyLoading || (view === 'onboarding' && frozenSteps === null)) {
       return null;
     }
     if (view === 'onboarding' && stepsNeeded.length > 0) {

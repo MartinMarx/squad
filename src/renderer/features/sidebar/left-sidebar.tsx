@@ -1,4 +1,4 @@
-import { FolderInput, Library, Settings } from 'lucide-react';
+import { FolderInput, Home, Library, Settings } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import {
@@ -50,6 +50,19 @@ export const LeftSidebar: React.FC = observer(function LeftSidebar() {
       <SidebarSpace />
       <SidebarContainer className="min-h-0 w-full flex-1 border-r-0">
         <SidebarContent className="flex flex-col">
+          <SidebarMenu className="px-2 pt-1">
+            <SidebarMenuButton
+              isActive={isCurrentView(currentView, 'home')}
+              onClick={() => navigate('home')}
+              aria-label="Home"
+              className="w-full justify-start"
+            >
+              <span className="flex items-center gap-2">
+                <Home className="h-5 w-5 text-foreground-tertiary-muted sm:h-4 sm:w-4" />
+                Home
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenu>
           <SidebarPinnedTaskList />
           <SidebarGroup className="mb-0 flex min-h-0 flex-1 flex-col">
             <ProjectsGroupLabel />

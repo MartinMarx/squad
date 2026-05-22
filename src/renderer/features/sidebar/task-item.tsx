@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { TaskSidebarAgentStatus } from '@renderer/features/sidebar/task-sidebar-agent-status';
 import { TaskContextMenu } from '@renderer/features/tasks/components/task-context-menu';
 import { TaskGitDiffStats } from '@renderer/features/tasks/components/task-git-diff-stats';
+import { conversationRegistry } from '@renderer/features/tasks/stores/conversation-registry';
 import {
   getTaskGitStore,
   getTaskManagerStore,
@@ -79,18 +80,26 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
   const pr = 'prs' in task.data ? selectCurrentPr(task.data.prs) : undefined;
   const handleReconnect = undefined;
 
+  const conversations = conversationRegistry.get(taskId);
+  const canToggleUnread = task.state !== 'unregistered' && !!conversations;
+  const isUnread = canToggleUnread ? conversations.taskStatus !== null : false;
+
   return (
     <TaskContextMenu
       isPinned={task.data.isPinned}
       canPin={canPin}
       isArchived={false}
       branchName={branchName}
+      isUnread={isUnread}
+      canToggleUnread={canToggleUnread}
       onPin={() => void task.setPinned(true)}
       onUnpin={() => void task.setPinned(false)}
       onRename={handleRename}
       onArchive={handleArchive}
       onReconnect={handleReconnect}
       onDelete={handleDelete}
+      onMarkUnread={() => conversations?.markAllUnseen()}
+      onMarkRead={() => conversations?.markAllSeen()}
     >
       <SidebarMenuRow
         className={cn(

@@ -15,7 +15,6 @@ import type {
   GitHubUser,
 } from '@shared/github';
 import { useToast } from '../hooks/use-toast';
-import { useAccountSession, useFetchAccountHealth } from '../hooks/useAccount';
 import { useModalContext } from '../modal/modal-provider';
 
 type GithubContextValue = {
@@ -25,7 +24,6 @@ type GithubContextValue = {
   isLoading: boolean;
   isInitialized: boolean;
   githubLoading: boolean;
-  githubStatusMessage: string | undefined;
   needsGhAuth: boolean;
   handleGithubConnect: () => Promise<void>;
   cancelGithubConnect: () => void;
@@ -44,12 +42,8 @@ export function GithubContextProvider({ children }: { children: React.ReactNode 
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { showModal } = useModalContext();
-  const { data: accountSession } = useAccountSession();
-  const hasAccount = accountSession?.hasAccount === true;
-  const fetchAccountHealth = useFetchAccountHealth();
 
   const [githubLoading, setGithubLoading] = useState(false);
-  const [githubStatusMessage, setGithubStatusMessage] = useState<string | undefined>();
 
   const {
     data: statusData,
@@ -175,37 +169,15 @@ export function GithubContextProvider({ children }: { children: React.ReactNode 
 
   const handleGithubConnect = useCallback(async () => {
     setGithubLoading(true);
-    setGithubStatusMessage(undefined);
 
     try {
       const freshStatus = await checkStatus();
       if (freshStatus?.authenticated) {
         setGithubLoading(false);
-        setGithubStatusMessage(undefined);
         return;
       }
 
-      const isServerUp = hasAccount && (await fetchAccountHealth());
-      if (hasAccount && isServerUp) {
-        setGithubStatusMessage('Connecting via Squad account...');
-        const oauthResult = await rpc.github.connectOAuth();
-        if (oauthResult?.success) {
-          await checkStatus();
-          void queryClient.invalidateQueries({ queryKey: ISSUE_CONNECTION_STATUS_QUERY_KEY });
-          if (oauthResult.user) {
-            toast({
-              title: 'Connected to GitHub',
-              description: `Signed in as ${oauthResult.user.login || oauthResult.user.name || 'user'}`,
-            });
-          }
-          setGithubLoading(false);
-          setGithubStatusMessage(undefined);
-          return;
-        }
-      }
-
       setGithubLoading(false);
-      setGithubStatusMessage(undefined);
 
       showModal('githubDeviceFlowModal', {
         onError: handleDeviceFlowError,
@@ -214,34 +186,22 @@ export function GithubContextProvider({ children }: { children: React.ReactNode 
     } catch (error) {
       log.error('GitHub connection error:', error);
       setGithubLoading(false);
-      setGithubStatusMessage(undefined);
       toast({
         title: 'Connection Failed',
         description: 'Failed to connect to GitHub. Please try again.',
         variant: 'destructive',
       });
     }
-  }, [
-    toast,
-    checkStatus,
-    login,
-    showModal,
-    handleDeviceFlowError,
-    hasAccount,
-    fetchAccountHealth,
-    queryClient,
-  ]);
+  }, [toast, checkStatus, login, showModal, handleDeviceFlowError]);
 
   const cancelGithubConnect = useCallback(() => {
-    const flowLabel = githubStatusMessage ? 'OAuth flow' : 'Device flow';
     setGithubLoading(false);
-    setGithubStatusMessage(undefined);
     void rpc.github.authCancel();
     toast({
       title: 'GitHub connection unsuccessful',
-      description: `${flowLabel} was canceled`,
+      description: 'Device flow was canceled',
     });
-  }, [githubStatusMessage, toast]);
+  }, [toast]);
 
   const value: GithubContextValue = {
     authenticated,
@@ -250,7 +210,6 @@ export function GithubContextProvider({ children }: { children: React.ReactNode 
     isLoading,
     isInitialized,
     githubLoading,
-    githubStatusMessage,
     needsGhAuth,
     handleGithubConnect,
     cancelGithubConnect,

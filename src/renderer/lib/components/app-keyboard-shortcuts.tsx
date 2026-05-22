@@ -24,6 +24,7 @@ export function AppKeyboardShortcuts() {
   const commandPaletteHotkey = getEffectiveHotkey('commandPalette', keyboard);
   const closeModalHotkey = getEffectiveHotkey('closeModal', keyboard);
   const toggleLeftSidebarHotkey = getEffectiveHotkey('toggleLeftSidebar', keyboard);
+  const goToHomeHotkey = getEffectiveHotkey('goToHome', keyboard);
 
   const { currentView, lastNonSettingsView } = useWorkspaceSlots();
   const { params: taskParams } = useParams('task');
@@ -65,6 +66,10 @@ export function AppKeyboardShortcuts() {
 
   useHotkey(getHotkeyRegistration('toggleLeftSidebar', keyboard), () => toggleLeft(), {
     enabled: toggleLeftSidebarHotkey !== null,
+  });
+
+  useHotkey(getHotkeyRegistration('goToHome', keyboard), () => navigate('home'), {
+    enabled: goToHomeHotkey !== null,
   });
 
   return null;

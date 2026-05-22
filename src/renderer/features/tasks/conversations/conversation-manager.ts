@@ -151,6 +151,24 @@ export class ConversationManagerStore implements IDisposable {
     });
   }
 
+  /** Force-mark every conversation under this task as unread. */
+  markAllUnseen(): void {
+    runInAction(() => {
+      for (const conv of this.conversations.values()) {
+        conv.markUnseen();
+      }
+    });
+  }
+
+  /** Mark every conversation under this task as read. */
+  markAllSeen(): void {
+    runInAction(() => {
+      for (const conv of this.conversations.values()) {
+        conv.markSeen();
+      }
+    });
+  }
+
   get taskStatus(): AgentStatus | null {
     let hasWorking = false;
     let hasUnseenError = false;
@@ -318,6 +336,7 @@ export class ConversationStore {
       setWorking: action,
       clearWorking: action,
       markSeen: action,
+      markUnseen: action,
       isInitialConversation: computed,
       indicatorStatus: computed,
     });
@@ -365,6 +384,19 @@ export class ConversationStore {
 
   markSeen() {
     this.seen = true;
+  }
+
+  /**
+   * Force-mark this conversation as unread. If the agent is currently idle
+   * we escalate to `'completed'` so the indicator surfaces — otherwise the
+   * existing `indicatorStatus` rules return `null` for idle and the mark
+   * would be invisible.
+   */
+  markUnseen() {
+    if (this.status === 'idle') {
+      this.status = 'completed';
+    }
+    this.seen = false;
   }
 
   dispose() {
