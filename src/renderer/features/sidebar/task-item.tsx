@@ -104,7 +104,7 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
     >
       <SidebarMenuRow
         className={cn(
-          'group/row relative flex h-12 items-center justify-between gap-1 px-1 py-0',
+          'group/row relative flex h-10 items-center justify-between gap-1 px-1 py-0',
           rowVariant === 'pinned' ? 'pl-2' : 'pl-8'
         )}
         isActive={isActive}
@@ -160,7 +160,7 @@ const SidebarJumpIndicator = observer(function SidebarJumpIndicator({
       className={cn(
         'pointer-events-none absolute top-1/2 -translate-y-1/2 rounded bg-background-tertiary-2 px-1 text-[10px] font-medium text-foreground-muted ring-1 ring-foreground/10',
         rowVariant === 'pinned' ? 'left-0.5' : 'left-2',
-        modifierHeld ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-100'
+        modifierHeld ? 'opacity-100' : 'opacity-0'
       )}
     >
       {index}
