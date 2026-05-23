@@ -33,6 +33,7 @@ import { SidebarProjectItem } from './project-item';
 import { SidebarTaskItem } from './task-item';
 
 const ROW_HEIGHT = 32;
+const ROW_GAP = 4;
 
 export const SidebarVirtualList = observer(function SidebarVirtualList() {
   const rows = sidebarStore.sidebarRows;
@@ -56,7 +57,7 @@ export const SidebarVirtualList = observer(function SidebarVirtualList() {
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: (index) => (rows[index]?.kind === 'task' ? 48 : ROW_HEIGHT),
+    estimateSize: (index) => (rows[index]?.kind === 'task' ? 40 : ROW_HEIGHT) + ROW_GAP,
     overscan: 8,
   });
 
